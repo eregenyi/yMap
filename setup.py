@@ -15,7 +15,7 @@ elif sys.version_info < (3,0):
 
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    return open(os.path.join(os.path.dirname(__file__), fname), encoding='utf-8').read()
 
 setup(
 	name = "ymap",
