@@ -90,20 +90,28 @@ genetic_code = {
 
 def translate_dna(dna):
     """ calculate the start position for the final codon """
+    # Translate the given dna sequence into an amino acid sequence. 
+    # preconditions: 
+    # - Assumes dna is valid DNA sequence (only A,T,C,G)
+    # - Semantically, assumes dna is entirely translated i.e. no check for ORF (by identifying start/stop codons)
     last_codon_start = len(dna) - 2 
     protein = "" 
     # process the dna sequence in three base chunks
     for start in range(0,last_codon_start,3): 
         codon = dna[start:start+3]
-        aa = genetic_code.get(codon.upper(), 'X') 
+        aa = genetic_code.get(codon.upper(), 'X') # When no key for given codon in genetic_code, return 'X' instead [X meaning the identity of AA undetermined or atypical]
         protein = protein + aa 
     return protein 
 
 
 def revcomp(dna, reverse=True, complement=True):
     """ reverse complement of a protein in negative strand"""
+    # First reverse the DNA sequence, then convert each base into its complement.
+    # Is there any point in having keyword arguments here? Helps to run same code in different settings I suppose.
+    # preconditions: is dna a valid DNA sequence?
     bases = 'ATGCTACG'
-    complement_dict = {bases[i]:bases[i+4] for i in range(4)}
+    complement_dict = {bases[i]:bases[i+4] for i in range(4)} # produce a dictionary with each base as key and complementary base as value 
+    # [Could just create dictionary in global scope? Saves a few operations each time revcomp is called, but may not be worth it.]
     if reverse:
         dna = reversed(dna)
         result_as_list = None
