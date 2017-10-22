@@ -122,19 +122,29 @@ def revcomp(dna, reverse=True, complement=True):
     return ''.join(result_as_list)
 
 
+# I think this function has already been divided into smaller functions (see following section of code)
 def mutation_file(mutation, d_id):
+    #TODO: This function tries to do too much. Open one file at a time (don't embed 'with... as' but store in appropriate data structures)
         """ defines the mutation types; either Non-Synonmous or Stop Codon"""
-        with open('mutation.txt', 'wb') as t:   
-            with open(mutation, 'rU') as mut: 
+        # Open output mutation.txt file?
+        with open('mutation.txt', 'wb') as t:
+            # Read the input mutation file   
+            with open(mutation, 'rU') as mut:
+                # Process the lines of the input file (generate list m of words separated by whitespace)
                 for m in mut:
                     m = m.rstrip().split()
-                    with open(d_id,'rU') as id:    
+                    #TODO: What is this file for? Where did it originate?
+                    # d_id_map.txt input file: Looks like all CDSs in yeast, their start, end and strand sense
+                    with open(d_id,'rU') as id:
+                        # For every yeast CDS...  
                         for i in id:
                             i = i.rstrip().split()
+                            # Ignore the header 'Chromosome' in the mutation input file and check format of input file (5 columns, whitespace delimited, first column has first letter 'c').
                             if not m[0].startswith('c'.upper()):
-                                if len(m) != 5  or not m[0].startswith('c'.lower()):
+                                if len(m) != 5  or not m[0].startswith('c'.lower()): 
                                     raise StopIteration('Please correct the format of input mutation file')
                                 else:
+                                    # Else correct file format.
                                     if m[4] == i[2]:
                                         take = m[4]+'\t'+m[0]+'\t'+i[3]+'\t'+m[1]+'\t'+i[4]+'\t'+m[2]+'\t'+m[3]+'\t'+i[5]
                                         take1= take.rstrip().split()       
@@ -217,6 +227,8 @@ def mutation_file(mutation, d_id):
 
 
 class YGtPM(object):
+    # Yeast Genes to Protein Modifications??
+    #TODO: Apparently this class defines no attributes, only methods. Find appropriate classes based on functionality seen in below functions.
 
     
     def gff(self):
@@ -262,8 +274,9 @@ class YGtPM(object):
                                             file2.write(result+'\n')
 
 
+    # Why download this GFF file? Filters for 'Baker's yeast [559292]' includes 'modified residue' as column in output:  
+    # SEE http://www.uniprot.org/help/api_queries
     def pTMdata(self):
-
         """Downloads UpiProt data as a raw txt file (uniprot_mod_raw.txt)"""
         rsponse = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=gff&columns=id,feature(MODIFIED%20RESIDUE)')
         page = rsponse.read()
@@ -402,6 +415,7 @@ class YGtPM(object):
                                         domain.write(take3)
                 
     
+    #TODO: How does this function differ from the next function?
     def d_map(self, yeast_id, domain):
 
         """ maps the different proteins ids to domains"""
@@ -953,7 +967,9 @@ def sum_file_map():
             for fi in OrderedDict.fromkeys(fil1):
                 x.write(fi)
 
-
+# TIME: ~47s
+# Uses Resource Manager API of pkg_resources module distributed with setuptools
+# Why are we bothering to effectively copy the files to the ymap directory?
 def resc():
     try:
         r = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_aceksites_interfaceRes_sc.txt").read().decode()
@@ -1027,6 +1043,7 @@ def resc():
 c = YGtPM()
 wd = os.getcwd()
 
+# There are a number of unused variables in this function. Why?
 def data(): 
 
     """ this function will download and clean required data to run ymap methods smoothly """
