@@ -333,6 +333,7 @@ class YGtPM(object):
                                     out.write(p3+'\n')
 
 
+    # Why download this GFF file? Filters for 'Baker's yeast [559292]' includes 'Genes (OLN)' as column in output (What is OLN?):
     def iD(self):
 
         """ This method retrieves the different ID types for maping """
@@ -342,7 +343,9 @@ class YGtPM(object):
         file_1.write(page1)
         file_1.close()
         
-            
+    # Opens yeastID.txt and PTMs.txt.
+    # For every line in yeastID (UniprotID, Systematic SGD GeneID, Common Gene Name): if all 3 names/IDs are present,
+    # then for each uniprot id in yeastID equal to a uniprot id in PTMs, append the corresponding PTMs for that id to the all 3 gene identifiers
     def pmap(self, file_id, file_PTMs):          
 
         """ if proteins ids are not SDG or uniprot or common names, this method maps the ids 
@@ -357,7 +360,7 @@ class YGtPM(object):
                             if len(line) > 2:
                                 if line[0] == i[0]:
                                     result3 = line[0]+'\t'+line[1]+'\t'+line[2]+'\t'+i[1]+'\t'+i[2]
-                                    if result3 > str(0):
+                                    if result3 > str(0): #TODO: Why is this condition needed?
                                         file3 = open('PTM_id_file.txt', 'a')
                                         file3.write(result3+'\n')
                                              
@@ -381,7 +384,7 @@ class YGtPM(object):
                                     file5.write(take+'\n')
                                     summary.write(line1[0]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'PTMs'+'\t'+'UniProt'+'\n')
 
-
+    # There is probably a better way to parse the gff file than this...
     def dclean(self, uniprot_mod_raw):  
 
         """domain data needed to be filters from UniProt file, before mapping domains"""
@@ -393,6 +396,7 @@ class YGtPM(object):
                         a = a.split('=')
                         a1 = a[0].split()
                         if a1[2] == 'Domain':
+                            # Some entries of uniprot_mod_raw have only a 'Note=' description and are handled separately for some reason??
                             if len(a) == 2:
                                 a2 = a[1].rstrip()
                                 take = a1[0]+'\t'+a1[3]+'\t'+a1[4]+'\t'+a2+'\n'
@@ -400,14 +404,17 @@ class YGtPM(object):
                                     with open('domains.txt', 'a') as domain:
                                         domain.write(take)
                                         continue
+                            # Some have 'Note=', 'Ontology_term=' and 'evidence=' descriptions
                             if len(a) == 4:
                                 a3 = a[1].rstrip().split(';')
                                 a4 = a[3].rstrip().split('|')
+                            # If 'PROSITE-ProRule' description is present
                             if len(a4) > 1:
                                 take2 = a1[0]+'\t'+a1[3]+'\t'+a1[4]+'\t'+a3[0]+'\t'+a4[1]+'\n'
                                 if take2 > str(0):
                                     with open('domains.txt', 'a+') as domain:
                                         domain.write(take2)
+                            # If no 'PROSITE-ProRule' description
                             if len(a4) == 1:
                                 take3 = a1[0]+'\t'+a1[3]+'\t'+a1[4]+'\t'+a4[0]+'\n'
                                 if take3 > str(0):
@@ -1114,6 +1121,7 @@ def data():
     except IOError:
         pass
     try:
+        #TODO: This was already done in the resc() function, as were all of the subsequent shutil.copy2 calls. Redundancy.
         z = zipfile.ZipFile(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+'sc_btw_proteins.txt.zip', 'r')
         z.extractall()
     except IOError:
