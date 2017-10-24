@@ -122,40 +122,58 @@ def revcomp(dna, reverse=True, complement=True):
     return ''.join(result_as_list)
 
 
-# I think this function has already been divided into smaller functions (see following section of code)
+# Called from ygenes
 def mutation_file(mutation, d_id):
     #TODO: This function tries to do too much. Open one file at a time (don't embed 'with... as' but store in appropriate data structures)
+    #TODO: Also need more descriptive variable names throughout...
         """ defines the mutation types; either Non-Synonmous or Stop Codon"""
-        # Open output mutation.txt file?
+        #TODO: Open output mutation.txt file - this will overwrite the input mutation.txt file (with mutations at protein level), if present
         with open('mutation.txt', 'wb') as t:
             # Read the input mutation file   
             with open(mutation, 'rU') as mut:
-                # Process the lines of the input file (generate list m of words separated by whitespace)
+                # Process the lines of the input file (generate list m of strings that were separated by whitespace)
                 for m in mut:
                     m = m.rstrip().split()
-                    #TODO: What is this file for? Where did it originate?
-                    # d_id_map.txt input file: Looks like all CDSs in yeast, their start, end and strand sense
+                    # PART 1: d_id_map.txt input file
+                    # Contains uniprotID, sgdID, gene_name, start, end and strand sense of chromosome features (e.g. ?) in yeast genome 
                     with open(d_id,'rU') as id:
-                        # For every yeast CDS...  
+                        # For every yeast chromosome feature...  
                         for i in id:
                             i = i.rstrip().split()
-                            # Ignore the header 'Chromosome' in the mutation input file and check format of input file (5 columns, whitespace delimited, first column has first letter 'c').
+                            # Ignore the header 'Chromosome' in the mutation input file
                             if not m[0].startswith('c'.upper()):
+                                # Check format of input file (5 columns, whitespace delimited, first column has first letter 'c').
                                 if len(m) != 5  or not m[0].startswith('c'.lower()): 
                                     raise StopIteration('Please correct the format of input mutation file')
                                 else:
-                                    # Else correct file format.
+                                    # Else with a correctly formatted file, if the gene name in input file matches that in d_id
+                                    # join the data: gene_name, chromosome, start, position on chromosome?, end, ref_base, alt_base, strand_sense  
                                     if m[4] == i[2]:
                                         take = m[4]+'\t'+m[0]+'\t'+i[3]+'\t'+m[1]+'\t'+i[4]+'\t'+m[2]+'\t'+m[3]+'\t'+i[5]
-                                        take1= take.rstrip().split()       
-                                        with open('gff.txt', 'rU') as orf:     
-                                            linee = orf.readlines()[23078:]
+                                        take1= take.rstrip().split()
+                                        # PART 2: gff.txt 
+                                        # Contains        
+                                        with open('gff.txt', 'rU') as orf:
+                                            # Goes to the FASTA sequences section of .gff file:
+                                            # Contains sequence of each chromosome   
+                                            linee = orf.readlines()[23078:] # NOTE: reads from the 23079th line in gff.txt ('>chrI') because zero-indexing
+                                            # itertools.groupby returns an iterator that returns consecutive keys and groups from an iterable e.g. linee.
+                                            # Only the groups are used below (not the keys)...
+                                            # A generator expression is used to sequentially return the group iterators (ignoring the keys also returned by groupby)
+                                            # In this case, the first group iterator returns '##FASTA', the next returns '>chrI', the next returns the first line
+                                            # of sequence and continues to do so until the next chromosome, then the next group iterator returns '>chrII' etc.
+                                            # The for loop here thus iterates over the group iterators. Calling next on the first iterator returns string '>chrII\n'
+                                            # Then next(up) asks the generator to give the next group iterator (which can returns each line of sequence in chrI)
+                                            # These lines of sequence (once stripped) are joined in a single string seq.
                                             up = (x[1] for x in groupby(linee, lambda line: line[0] == ">")) 
                                             for head in up:
-                                                head = next(head)[1:].strip()
-                                                seq = "".join(s.strip() for s in next(up))
+                                                head = next(head)[1:].strip() # remove the '>' character from '>chr' header of each group
+                                                seq = "".join(s.strip() for s in next(up)) 
+                                                # If 1) chromosomes in the take1 variable match those found in gff
+                                                #    2) gene_name in take1 matches matches gene_name in d_id
+                                                #    3) -ve sense strand in take1 TODO: Is this because -ve sense is the translated strand?
                                                 if head == take1[1] and take1[0] == i[2] and take1[7] == '-':   
-                                                    cod = 1 + (int(take1[4])-int(take1[3]))                       
+                                                    cod = 1 + (int(take1[4])-int(take1[3])) #TODO: 1 + (end - position) gives starting index                         
                                                     cc = math.ceil(int(cod)/float(3))
                                                     c = str(cc).split('.')                         
                                                     cn = int(c[0])-1    
@@ -1050,7 +1068,8 @@ def resc():
 c = YGtPM()
 wd = os.getcwd()
 
-# There are a number of unused variables in this function. Why?
+# There are a number of unused variables in this function. Since the functions don't return anything they're not needed.
+# FIXED by Michiel
 def data(): 
 
     """ this function will download and clean required data to run ymap methods smoothly """
