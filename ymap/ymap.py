@@ -147,22 +147,24 @@ def mutation_file(mutation, d_id):
                                     raise StopIteration('Please correct the format of input mutation file')
                                 else:
                                     # Else with a correctly formatted file, if the gene name in input file matches that in d_id
-                                    # join the data: gene_name, chromosome, start, position on chromosome?, end, ref_base, alt_base, strand_sense  
+                                    # join the data: gene_name, chromosome, start*, position* of mutation on chromosome, end*, ref_base, alt_base, strand_sense
+                                    # Note: attributes marked with * in previous line are all chromosome coordinates
+                                    # Note: It may be arbitrary which chromosome strand is considered +ve and which -ve. See: https://www.biostars.org/p/3423/  
                                     if m[4] == i[2]:
                                         take = m[4]+'\t'+m[0]+'\t'+i[3]+'\t'+m[1]+'\t'+i[4]+'\t'+m[2]+'\t'+m[3]+'\t'+i[5]
                                         take1= take.rstrip().split()
                                         # PART 2: gff.txt 
-                                        # Contains        
+                                        # GFF3 format. Only the ##FASTA sequence section is used from the file. 
                                         with open('gff.txt', 'rU') as orf:
                                             # Goes to the FASTA sequences section of .gff file:
-                                            # Contains sequence of each chromosome   
+                                            #TODO: Contains sequence of each chromosome. What is the strand sense of the chromosome sequence provided?     
                                             linee = orf.readlines()[23078:] # NOTE: reads from the 23079th line in gff.txt ('>chrI') because zero-indexing
                                             # itertools.groupby returns an iterator that returns consecutive keys and groups from an iterable e.g. linee.
                                             # Only the groups are used below (not the keys)...
                                             # A generator expression is used to sequentially return the group iterators (ignoring the keys also returned by groupby)
-                                            # In this case, the first group iterator returns '##FASTA', the next returns '>chrI', the next returns the first line
-                                            # of sequence and continues to do so until the next chromosome, then the next group iterator returns '>chrII' etc.
-                                            # The for loop here thus iterates over the group iterators. Calling next on the first iterator returns string '>chrII\n'
+                                            # In this case, the first group iterator returns '>chrI', the next returns the first line of sequence and continues to do 
+                                            # so until the next chromosome, then the next group iterator returns '>chrII' etc.
+                                            # The for loop here thus iterates over the group iterators. Calling next on the first group iterator returns string '>chrII\n'
                                             # Then next(up) asks the generator to give the next group iterator (which can returns each line of sequence in chrI)
                                             # These lines of sequence (once stripped) are joined in a single string seq.
                                             up = (x[1] for x in groupby(linee, lambda line: line[0] == ">")) 
@@ -171,49 +173,54 @@ def mutation_file(mutation, d_id):
                                                 seq = "".join(s.strip() for s in next(up)) 
                                                 # If 1) chromosomes in the take1 variable match those found in gff
                                                 #    2) gene_name in take1 matches matches gene_name in d_id
-                                                #    3) -ve sense strand in take1 TODO: Is this because -ve sense is the translated strand?
+                                                #    3) -ve sense strand in take1
                                                 if head == take1[1] and take1[0] == i[2] and take1[7] == '-':   
-                                                    cod = 1 + (int(take1[4])-int(take1[3])) #TODO: 1 + (end - position) gives starting index                         
-                                                    cc = math.ceil(int(cod)/float(3))
-                                                    c = str(cc).split('.')                         
-                                                    cn = int(c[0])-1    
-                                                    sli_n = seq[int(take1[2]):int(take1[4])]                  
-                                                    rev_sli_n = revcomp(sli_n, reverse=True, complement=True)  
-                                                    sli_m_n = sli_n[:int(-cod)]+take1[6]+sli_n[int(-cod)+1:] 
-                                                    rev_sli_m_n = revcomp(sli_m_n, reverse=True, complement=True)   
-                                                    wild_type_rev_n = translate_dna(rev_sli_n)                
+                                                    cod = 1 + (int(take1[4])-int(take1[3])) #TODO: 1 + (end - position) gives distance of mutation from end of gene/feature. Why add 1? For indexing from end of the string (see sli_m_n) E.g. PRT1: 1 + (1017652-1016269)                         
+                                                    cc = math.ceil(int(cod)/float(3)) # E.g. PRT1: ceil(1384/3.0) = (461.33333) = 462.0
+                                                    c = str(cc).split('.') #TODO: Could do str(int(cc))? A bit less cryptic, and avoids the need to continually index first element of list c. E.g. PRT1: ['462','0']                        
+                                                    cn = int(c[0])-1 # Records index of mutated AA from protein's start. Why take 1 away here? Because python lists are zero indexed. E.g. PRT1: 461    
+                                                    sli_n = seq[int(take1[2]):int(take1[4])] # Take a slice of the chromosome sequence from the start to the end of the feature                  
+                                                    rev_sli_n = revcomp(sli_n, reverse=True, complement=True) # Take the reverse complement of feature's seq i.e. as though transcribed into mRNA but still with A (NO Uracil) 
+                                                    sli_m_n = sli_n[:int(-cod)]+take1[6]+sli_n[int(-cod)+1:] # Replace the WT/ref base with the mutated base.
+                                                    rev_sli_m_n = revcomp(sli_m_n, reverse=True, complement=True) # Take the reverse complement of the mutated sequence  
+                                                    wild_type_rev_n = translate_dna(rev_sli_n) # translate the reverse complement into AA seq               
                                                     mut_type_n = translate_dna(rev_sli_m_n)
                                                     try:
+                                                        # Assesses if the mutation produced a stop codon (nonsense mutation)
+                                                        # If it did, append pic to end of mutation.txt 
                                                         if wild_type_rev_n[cn] != mut_type_n[cn] and mut_type_n[cn] == '_':
                                                             pic = take1[0]+'\t'+str(c[0])+'\t'+wild_type_rev_n[cn]+'\t'+mut_type_n[cn]+'\t'+'Stop' +'\t'+take1[1]+'\t'+take1[3]
                                                             if pic > str(0): 
                                                                 t = open('mutation.txt', 'a')
                                                                 t.write(pic+'\n')
-                                                    except IndexError as e:
-                                                        pic1 =  take1[0]+ '\t'+ 'Error:'+'\t'+ str(e)
+                                                    except IndexError as e: #TODO: Work out why there could be an IndexError.
+                                                        pic1 =  take1[0]+ '\t'+ 'Error:'+'\t'+ str(e) # Appends an error message to file...
                                                         t = open('mutation.txt', 'a+')
                                                         t.write(pic1+'\n')
-                                                        continue
+                                                        continue # ... to next iteration of for loop above
                                                     try:
+                                                        # Assess if the mutation resulted in AA substitution (missense mutation)
+                                                        # If it did, append pic to end of mutation.txt
                                                         if wild_type_rev_n[cn] != mut_type_n[cn] and mut_type_n[cn] != '_':
                                                             pic = take1[0]+'\t'+str(c[0])+'\t'+wild_type_rev_n[cn]+'\t'+mut_type_n[cn]+'\t'+'Non-Synonymous' +'\t'+take1[1]+'\t'+take1[3]                                                                                                                    
                                                             if pic > str(0):
                                                                 t = open('mutation.txt', 'a+')
                                                                 t.write(pic+'\n')
-                                                    except IndexError as e:
+                                                    except IndexError as e: #TODO: Work out why there could be an IndexError.
                                                         pic1 =  take1[0]+ '\t'+ 'Error:'+'\t'+ str(e)
                                                         t = open('mutation.txt', 'a+')
                                                         t.write(pic1+'\n')
-                                                        continue
+                                                        continue # ... to next iteration of for loop above
+                                                # This next condition's block performs does the same as the above condition's block, but for the +ve sense strand. 
                                                 if head == take1[1] and take1[0]==i[2] and take1[7] == '+':
-                                                    code = int(take1[3])-int(take1[2])
-                                                    code1 = 1 + (int(take1[3])-int(take1[2])) 
-                                                    cce = math.ceil(int(code1)/float(3)) 
+                                                    code = int(take1[3])-int(take1[2]) # (position of mutation - start) gives distance of mutation from start of feature E.g. PRT1: 1016269 - 1015361 = 908 
+                                                    code1 = 1 + (int(take1[3])-int(take1[2])) # add 1 because python lists are zero-indexed
+                                                    cce = math.ceil(int(code1)/float(3)) # find out how many codons there are up to and including the codon that the mutation affects.
                                                     ce = str(cce).split('.') 
-                                                    cp = int(ce[0])-1                  
-                                                    pos = int(take1[2]) - 1                               
-                                                    sli_p = seq[int(pos):int(take1[4])]                   
-                                                    sli_m_p = sli_p[:int(code)]+take1[6]+sli_p[int(code)+1:]  
+                                                    cp = int(ce[0])-1
+                                                    pos = int(take1[2]) - 1 #TODO: Why -1 from start here? Must be indexing again...                              
+                                                    sli_p = seq[int(pos):int(take1[4])] # Take a slice of the chromosome sequence from the (start-1) to the end of the feature                    
+                                                    sli_m_p = sli_p[:int(code)]+take1[6]+sli_p[int(code)+1:] # Perform the replacement of mutation 
                                                     wild_type_p = translate_dna(sli_p)                    
                                                     mut_type_p = translate_dna(sli_m_p)
                                                     try:                   
@@ -994,7 +1001,7 @@ def sum_file_map():
 
 # TIME: ~47s
 # Uses Resource Manager API of pkg_resources module distributed with setuptools
-# Why are we bothering to effectively copy the files to the ymap directory?
+# We are copying necessary files from the ymap/data/PTMcode+PTMfunc_data to the cwd.
 def resc():
     try:
         r = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_aceksites_interfaceRes_sc.txt").read().decode()
@@ -1603,7 +1610,7 @@ def ymap_genes():
             pass
         try:
             y = (time.time() - start_time)
-            os.makedirs('yMap-results'+str(y))
+            os.makedirs('yMap-results'+str(y)) #TODO: Could just call os.mkdir
         except IOError:
             pass
         try:    
@@ -1680,7 +1687,7 @@ def ymap_proteins():
             shutil.move(wd+"/"+'PTMs_within_Proteins', wd+"/"+'yMap-results'+str(y))
             shutil.move(wd+"/"+'PTMs_between_Proteins',wd+"/"+'yMap-results'+str(y))
             shutil.move(wd+"/"+'PTMs_hotSpots',wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'mutation.txt', wd+"/"+'yMap-results'+str(y))
+            shutil.move(wd+"/"+'mutation.txt', wd+"/"+'yMap-results'+str(y)) #TODO: inappropriate to copy mutation.txt (not output from any function called from ymap_proteins)
             shutil.move(wd+"/"+'final_report.txt', wd+"/"+'yMap-results'+str(y))
             shutil.move(wd+"/"+'pvalue.txt', wd+"/"+'yMap-results'+str(y))
             shutil.move(wd+"/"+'biog.txt', wd+"/"+'yMap-results'+str(y))
@@ -1697,6 +1704,7 @@ def web():
     c.bweb('biog.txt')
     return "Web is ready for networks exploration of mutated proteins"
 
+#TODO: Suspected redundant function. 
 def path():
     "Path to the BioGrid ids path for visualisation"
     try:
