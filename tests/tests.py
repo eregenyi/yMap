@@ -32,11 +32,12 @@ class YGtPMTest(unittest.TestCase):
         os.chdir(self.test_dir)
         self.c = YGtPM()
         # self.store_ref = False
-        # at various places out put is compared to stored reference files. put this to true
+        # at various places output is compared to stored reference files. put this to true
         # to regenerate all reference files
 
     def tearDown(self):
         # Remove the directory after the test
+        os.chdir(ref_dir) # need to navigate out of test directory before deleting
         shutil.rmtree(self.test_dir)
 
     def test_class_creation(self):
@@ -66,6 +67,7 @@ class YGtPMTest(unittest.TestCase):
         self.assertTrue(os.path.isfile('PTMs.txt'))
         self.assertTrue(filecmp.cmp('PTMs.txt', os.path.join(ref_dir, 'PTMs.txt')))
 
+        # This test may fail because yeastID.txt is downloaded and data may have changed from that in test_files folder.
         self.c.iD()
         self.assertTrue(os.path.isfile('yeastID.txt'))
         self.assertTrue(filecmp.cmp('yeastID.txt', os.path.join(ref_dir, 'yeastID.txt')))
@@ -83,5 +85,6 @@ class YGtPMTest(unittest.TestCase):
     def test_web(self):
         self.assertTrue(True)
 
+# NOTE: Run from command line. cd to root ymap directory and run 'python -m unittest tests.tests' 
 if __name__ == '__main__':
     unittest.main()
