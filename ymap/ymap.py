@@ -1020,23 +1020,59 @@ def resc():
 c = YGtPM()
 wd = os.getcwd()
 
-# Create (platform-independent) strings for each directory into which result files will be copied
-domains_path = os.path.join(wd, 'Domains') 
-PTMs_path = os.path.join(wd, 'PTMs')
-nuc_bind_path = os.path.join(wd, 'Nucleotide_binding')
-AB_sites_path = os.path.join(wd, 'A-B-sites')
-PDB_path = os.path.join(wd, 'PDB')
-interface_path = os.path.join(wd, 'Interface')
+# Paths for data, input, output directories
+data_path = os.path.join(wd, 'ymap_data')
+input_path = os.path.join(wd, 'input')
+output_path = os.path.join(wd, 'output') 
+
+# Paths for input files
+gene_input_file = os.path.join(input_path, 'mutated_proteins.txt')
+protein_input_file = os.path.join(input_path, 'mutation.txt')
+
+# Paths for data files
+aceksites_path = os.path.join(data_path, '3DID_aceksites_interfaceRes_sc.txt')
+phosphosites_path = os.path.join(data_path, '3DID_phosphosites_interfaceRes_sc.txt')
+ubisites_path = os.path.join(data_path, '3DID_ubisites_interfaceRessc_sc.txt')
+bact_path = os.path.join(data_path, 'bact.txt')
+domains_path = os.path.join(data_path, 'domains.txt')
+d_id_map_path = os.path.join(data_path, 'd_id_map.txt')
+frmt_path = os.path.join(data_path, 'frmt.txt')
+gff_path = os.path.join(data_path, 'gff.txt')
+id_domain_path = os.path.join(data_path, 'id_domain.txt')
+id_nucleotide_path = os.path.join(data_path, 'id_nucleotide.txt')
+nucleotide_path = os.path.join(data_path, 'nucleotide.txt')
+pdb_path = os.path.join(data_path, 'pdb.txt')
+PTMs_path = os.path.join(data_path, 'PTMs.txt')
+PTM_id_file_path = os.path.join(data_path, 'PTM_id_file.txt')
+schotspot_path = os.path.join(data_path, 'schotspot_updated.txt')
+SC_acet_interactions_path = os.path.join(data_path, 'SC_acet_interactions.txt')
+SC_btw_proteins_zip_path = os.path.join(data_path, 'sc_btw_proteins.txt.zip')
+SC_btw_proteins_path = os.path.join(data_path, 'sc_btw_proteins.txt')
+SC_psites_interactions_path = os.path.join(data_path, 'SC_psites_interactions_sc.txt')
+SC_ubi_interactions_path = os.path.join(data_path, 'SC_ubi_interactions_sc.txt')
+SC_within_proteins_path = os.path.join(data_path, 'sc_within_proteins.txt')
+sites_id_path = os.path.join(data_path, 'sites_id.txt')
+uniprot_bioGrid_path = os.path.join(data_path, 'uniprot_bioGrid.txt')
+uniprot_mod_raw_path = os.path.join(data_path, 'uniprot_mod_raw.txt')
+yeastID_path = os.path.join(data_path, 'yeastID.txt')
+
+# Paths for output directories
+domains_path = os.path.join(output_path, 'Domains') 
+PTMs_path = os.path.join(output_path, 'PTMs')
+nuc_bind_path = os.path.join(output_path, 'Nucleotide_binding')
+AB_sites_path = os.path.join(output_path, 'A-B-sites')
+PDB_path = os.path.join(output_path, 'PDB')
+interface_path = os.path.join(output_path, 'Interface')
 interface_acetylation_path = os.path.join(interface_path, 'Acetylation')
 interface_phosphorylation_path = os.path.join(interface_path, 'Phosphorylation')
 interface_ubiquitin_path = os.path.join(interface_path, 'Ubiquitination')
-PPI_path = os.path.join(wd, 'PPI')
+PPI_path = os.path.join(output_path, 'PPI')
 PPI_acetylation_path = os.path.join(PPI_path, 'Acetylation')
 PPI_phosphorylation_path = os.path.join(PPI_path, 'Phosphorylation')
 PPI_ubiquitin_path = os.path.join(PPI_path, 'Ubiquitination')
-PTM_within_path = os.path.join(wd, 'PTMs_within_Proteins')
-PTM_between_path = os.path.join(wd, 'PTMs_between_Proteins')
-PTM_hotspots_path = os.path.join(wd, 'PTMs_hotSpots')
+PTM_within_path = os.path.join(output_path, 'PTMs_within_Proteins')
+PTM_between_path = os.path.join(output_path, 'PTMs_between_Proteins')
+PTM_hotspots_path = os.path.join(output_path, 'PTMs_hotSpots')
 
 
 def data(): 
@@ -1044,6 +1080,8 @@ def data():
     """ this function will download and clean required data to run ymap methods smoothly """
 
     start_time = time.time()
+    os.mkdir(data_path)
+    os.chdir(data_path)
     try:
         resc()
     except IOError:
@@ -1125,6 +1163,7 @@ def data():
         shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+'sc_btw_proteins.txt', wd)    
     except IOError:
         pass
+    os.chdir(wd)
     return "All required data downloaded in %s seconds" % (time.time() - start_time)
 
 
@@ -1552,7 +1591,13 @@ def ymap_genes():
     """ returns all the results of all the codes of yMap; starting from genetics coordinates of proteins """
 
     start_time = time.time()
-    if not os.path.exists('mutation.txt'):
+    if not os.path.exists(protein_input_file):
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
+            os.chdir(output_path)
+        else:
+            os.chdir(output_path)
+        shutil.copy2(gene_input_file, output_path)
         try:
             mutation_types_file()
         except IOError:
@@ -1583,24 +1628,25 @@ def ymap_genes():
         except IOError:
             pass
         try:
-            shutil.move(wd+"/"+'PTMs', wd+"/"+'yMap-results'+str(y))
-            shutil.move('Domains', wd+"/"+'yMap-results'+str(y))
-            shutil.move('Nucleotide_binding',wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'A-B-sites', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PDB', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'Interface', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PPI', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PTMs_within_Proteins', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PTMs_between_Proteins',wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PTMs_hotSpots',wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'mutation.txt', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'final_report.txt', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'pvalue.txt', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'biog.txt', wd+"/"+'yMap-results'+str(y))
-            os.remove(wd+"/"+'mutation_id.txt')
-            os.remove(wd+"/"+'summary.txt')
+            shutil.move(output_path+"/"+'PTMs', output_path+"/"+'yMap-results'+str(y))
+            shutil.move('Domains', output_path+"/"+'yMap-results'+str(y))
+            shutil.move('Nucleotide_binding',output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'A-B-sites', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PDB', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'Interface', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PPI', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PTMs_within_Proteins', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PTMs_between_Proteins',output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PTMs_hotSpots',output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'mutation.txt', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'final_report.txt', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'pvalue.txt', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'biog.txt', output_path+"/"+'yMap-results'+str(y))
+            os.remove(output_path+"/"+'mutation_id.txt')
+            os.remove(output_path+"/"+'summary.txt')
         except IOError: 
             pass
+        os.chdir(wd)
         return "All functional data from genomic coordinates is ready in about %s seconds" % (time.time() - start_time)
 
 
@@ -1609,9 +1655,15 @@ def ymap_proteins():
     """ returns all the results of all the codes of yMap; starting from proteins level mutation positions """
 
     start_time = time.time()
-    if not os.path.exists('mutation.txt'):
+    if not os.path.exists(protein_input_file):
         raise StopIteration('because of missing mutation file')
     else:
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
+            os.chdir(output_path)
+        else:
+            os.chdir(output_path)
+        shutil.copy2(protein_input_file, output_path)
         try:
             uniprot_data()
         except IOError:
@@ -1638,24 +1690,25 @@ def ymap_proteins():
         except IOError:
             pass
         try:
-            shutil.move(wd+"/"+'PTMs', wd+"/"+'yMap-results'+str(y))
-            shutil.move('Domains', wd+"/"+'yMap-results'+str(y))
-            shutil.move('Nucleotide_binding',wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'A-B-sites', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PDB', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'Interface', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PPI', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PTMs_within_Proteins', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PTMs_between_Proteins',wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'PTMs_hotSpots',wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'mutation.txt', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'final_report.txt', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'pvalue.txt', wd+"/"+'yMap-results'+str(y))
-            shutil.move(wd+"/"+'biog.txt', wd+"/"+'yMap-results'+str(y))
-            os.remove(wd+"/"+'mutation_id.txt')
-            os.remove(wd+"/"+'summary.txt')
+            shutil.move(output_path+"/"+'PTMs', output_path+"/"+'yMap-results'+str(y))
+            shutil.move('Domains', output_path+"/"+'yMap-results'+str(y))
+            shutil.move('Nucleotide_binding',output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'A-B-sites', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PDB', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'Interface', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PPI', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PTMs_within_Proteins', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PTMs_between_Proteins',output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'PTMs_hotSpots',output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'mutation.txt', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'final_report.txt', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'pvalue.txt', output_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_path+"/"+'biog.txt', output_path+"/"+'yMap-results'+str(y))
+            os.remove(output_path+"/"+'mutation_id.txt')
+            os.remove(output_path+"/"+'summary.txt')
         except IOError: 
             pass
+        os.chdir(wd)
         return "All functional data from proteins mutation-positions is ready in about %s seconds" % (time.time() - start_time)
 
 
