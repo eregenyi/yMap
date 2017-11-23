@@ -75,15 +75,138 @@ class YGtPMTest(unittest.TestCase):
         self.c.pmap('yeastID.txt', 'PTMs.txt')
         self.assertTrue(os.path.isfile('PTM_id_file.txt'))
         self.assertTrue(filecmp.cmp('PTM_id_file.txt', os.path.join(ref_dir, 'PTM_id_file.txt')))
+        
+        
+    # 1 TEST PER FUNCTION
+    # ydata downloads - these tests are low priority
+    def test_gff(self):
+        pass
+    
+    def test_iD(self):
+        # See Michiel's implementation
+        pass
+    
+    def test_pTMdata(self):
+        pass
+    
+    def test_bioGrid(self):
+        pass
+    
+    def test_resc(self):
+        # To test copying text and zip files - UNNECESSARY?
+        pass
+    
+    
+    # ydata processing
+    # uniprot_mod_raw.txt processing
+    def test_ab(self):
+        pass
+    
+    def test_clean(self):
+        pass
+    
+    def test_dclean(self):
+        pass
+    
+    def test_nucleotide(self):
+        pass 
+    
+    # ydata processing
+    # gff.txt processing
+    def test_frmt(self):
+        pass
+    
+    # yeastID.txt processing
+    def test_id_map(self):
+        pass
+    
+    def test_id(self):
+        pass
+    
+    def test_pmap(self):
+        # See Michiel's implementation
+        pass
+    
+    def test_d_map(self):
+        pass
+    
+    def test_n_map(self):
+        pass
+    
+    def test_pdb_c(self):
+        pass
+    
+    def test_mu_map(self):
+        pass
+    
+    # ygenes
+    # Conversion of gene-level mutation file
+    def test_mutation_file(self):
+        pass
+    
+    def test_revcomp(self):
+        pass
+    
+    def test_translate_dna(self):
+        pass
+    
+    
+    # yproteins
+    # uniprot_data()
+    def test_mmap(self):
+        pass
+    
+    def test_ptm_map(self):
+        pass
+    
+    def test_dmap(self):
+        pass
+    
+    def test_nucleotide_map(self):
+        pass
+    
+    def test_pdb(self):
+        pass
+        
+    # functional_data()
+    # intf()
+    def test_interface(self):
+        # For each 3DID_<site>_interfaceRes_sc.txt file
+        pass
+    
+    # pi()
+    def test_ppi(self):
+        # For each SC_<site>_interactions_sc.txt
+        pass
+    
+    # withP()    
+    def test_withinPro(self):
+        pass
+    
+    # betweenP()
+    def test_betweenPro(self):
+        pass
+    
+    # hotS()
+    def test_hotspot(self):
+        pass
+    
+    
+    # Output functions
+    def test_enrich(self):
+        pass
+    
+    def test_preWeb(self):
+        pass
+    
+    def test_sum_file_map(self):
+        pass
+    
+    
+    # yweb
+    def test_bweb(self):
+        pass
 
-    def test_ymap_proteins(self):
-        self.assertTrue(True)
-
-    def test_ymap_genes(self):
-        self.assertTrue(True)
-
-    def test_web(self):
-        self.assertTrue(True)
 
 # NOTE: Run from command line. cd to root ymap directory and run 'python -m unittest tests.tests' 
 if __name__ == '__main__':
