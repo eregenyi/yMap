@@ -9,6 +9,9 @@ from ymap.ymap import data, ymap_proteins, ymap_genes, web, YGtPM
 
 ref_dir = os.path.abspath('test_files')
 
+# Create object to allow function calls
+#TODO: Remove the class from ymap.py - because it is pointless
+c = YGtPM()
 
 class Timer:
     def __enter__(self):
@@ -18,72 +21,29 @@ class Timer:
     def __exit__(self, *args):
         self.end = time.clock()
         self.interval = self.end - self.start
+   
 
-
-class YGtPMTest(unittest.TestCase):
-    """
-    YMap tests
-    """
-
+class DataDownloadTest(unittest.TestCase):
+    '''
+    Test ydata downloads - these tests are low priority
+    '''
     def setUp(self):
         # Create a temporary directory
-        # self.ref_dir = os.path.abspath('test_files')
         self.test_dir = tempfile.mkdtemp()
         os.chdir(self.test_dir)
-        self.c = YGtPM()
-        # self.store_ref = False
-        # at various places output is compared to stored reference files. put this to true
-        # to regenerate all reference files
-
+        
     def tearDown(self):
-        # Remove the directory after the test
-        os.chdir(ref_dir) # need to navigate out of test directory before deleting
+        os.chdir(ref_dir) # navigate out of test directory before deleting
         shutil.rmtree(self.test_dir)
-
-    def test_class_creation(self):
-        """
-        testing the creation of YGtPM
-        """
-        self.assertIsInstance(self.c, YGtPM)
-        self.c.pTMdata()
-        self.assertTrue(os.path.isfile('uniprot_mod_raw.txt'))
-
-    def test_data(self):
-        """
-        testing the steps in data()
-        """
-
-        self.assertIsInstance(self.c, YGtPM)
-        try:  # the actual download can only be performed a limit number of times per hour
-            raise RuntimeError  # this is to prevent connecting the database during development comment for real tesing
-            self.c.pTMdata()
-            if self.store_ref:
-                shutil.copy('uniprot_mod_raw.txt', ref_dir)  # saving the reference data
-        except:
-            shutil.copy(os.path.join(ref_dir, 'uniprot_mod_raw.txt'), '.')
-        self.assertTrue(os.path.isfile('uniprot_mod_raw.txt'))
-
-        self.c.clean('uniprot_mod_raw.txt')  # produces PTMs.txt
-        self.assertTrue(os.path.isfile('PTMs.txt'))
-        self.assertTrue(filecmp.cmp('PTMs.txt', os.path.join(ref_dir, 'PTMs.txt')))
-
-        # This test may fail because yeastID.txt is downloaded and data may have changed from that in test_files folder.
-        self.c.iD()
-        self.assertTrue(os.path.isfile('yeastID.txt'))
-        self.assertTrue(filecmp.cmp('yeastID.txt', os.path.join(ref_dir, 'yeastID.txt')))
-
-        self.c.pmap('yeastID.txt', 'PTMs.txt')
-        self.assertTrue(os.path.isfile('PTM_id_file.txt'))
-        self.assertTrue(filecmp.cmp('PTM_id_file.txt', os.path.join(ref_dir, 'PTM_id_file.txt')))
         
-        
-    # 1 TEST PER FUNCTION
-    # ydata downloads - these tests are low priority
     def test_gff(self):
         pass
     
     def test_iD(self):
-        # See Michiel's implementation
+        # This test may fail because yeastID.txt is downloaded and data may have changed from that in test_files folder.
+#         c.iD()
+#         self.assertTrue(os.path.isfile('yeastID.txt'))
+#         self.assertTrue(filecmp.cmp('yeastID.txt', os.path.join(ref_dir, 'yeastID.txt')))
         pass
     
     def test_pTMdata(self):
@@ -96,22 +56,69 @@ class YGtPMTest(unittest.TestCase):
         # To test copying text and zip files - UNNECESSARY?
         pass
     
+# ydata processing
+class UniprotRawProcessingTest(unittest.TestCase):        
+    '''
+    Test uniprot_mod_raw.txt processing
+    '''
     
-    # ydata processing
-    # uniprot_mod_raw.txt processing
+    def setUp(self):
+        # Create a temporary directory
+        self.test_dir = tempfile.mkdtemp()
+        os.chdir(self.test_dir)
+        # Setup filenames and paths
+        uniprot = 'uniprot_mod_raw.txt'
+        bact = 'bact.txt'
+        ptms = 'PTMs.txt'
+        domains = 'domains.txt'
+        nucleotide = 'nucleotide.txt'
+        
+        self.ref_bact = os.path.join(ref_dir, bact)
+        self.bact = os.path.join(self.test_dir, bact)
+        self.ref_ptms = os.path.join(ref_dir, ptms)
+        self.ptms = os.path.join(self.test_dir, ptms)
+        self.ref_domains = os.path.join(ref_dir, domains)
+        self.domains = os.path.join(self.test_dir, domains)
+        self.ref_nucleotide = os.path.join(ref_dir, nucleotide)
+        self.nucleotide = os.path.join(self.test_dir, nucleotide)
+        
+        # Copy uniprot_mod_raw.txt to temporary directory
+        self.ref_uniprot_file = os.path.join(ref_dir, uniprot)
+        self.uniprot_file = shutil.copy(self.ref_uniprot_file, self.test_dir)
+        
+    def tearDown(self):
+        os.chdir(ref_dir) # navigate out of test directory before deleting
+        shutil.rmtree(self.test_dir)
+    
     def test_ab(self):
-        pass
-    
+        c.ab(self.uniprot_file)
+        
+        self.assertTrue(os.path.isfile(self.bact))
+#         shutil.copy(self.bact, ref_dir) #TODO: Remove this (after file initially obtained)
+        self.assertTrue(filecmp.cmp(self.bact, self.ref_bact))
+        
     def test_clean(self):
-        pass
+        c.clean(self.uniprot_file)
+        
+        self.assertTrue(os.path.isfile(self.ptms))
+#         shutil.copy(self.ptms, ref_dir) #TODO: Remove this (after file obtained)
+        self.assertTrue(filecmp.cmp(self.ptms, self.ref_ptms))
     
     def test_dclean(self):
-        pass
+        c.dclean(self.uniprot_file)
+        
+        self.assertTrue(os.path.isfile(self.domains))
+#         shutil.copy(self.domains, ref_dir) #TODO: Remove this (after file obtained)
+        self.assertTrue(filecmp.cmp(self.domains, self.ref_domains))
     
     def test_nucleotide(self):
-        pass 
+        c.nucleotide() #TODO: Modify nucleotide() in ymap.py to take uniprot_file as argument
+        
+        self.assertTrue(os.path.isfile(self.nucleotide))
+#         shutil.copy(self.nucleotide, ref_dir) #TODO: Remove this (after file obtained)
+        self.assertTrue(filecmp.cmp(self.nucleotide, self.ref_nucleotide))
     
-    # ydata processing
+
     # gff.txt processing
     def test_frmt(self):
         pass
@@ -124,7 +131,9 @@ class YGtPMTest(unittest.TestCase):
         pass
     
     def test_pmap(self):
-        # See Michiel's implementation
+#         self.c.pmap('yeastID.txt', 'PTMs.txt')
+#         self.assertTrue(os.path.isfile('PTM_id_file.txt'))
+#         self.assertTrue(filecmp.cmp('PTM_id_file.txt', os.path.join(ref_dir, 'PTM_id_file.txt')))
         pass
     
     def test_d_map(self):
