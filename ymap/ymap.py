@@ -345,7 +345,6 @@ class YGtPM(object):
     def ptm_map(self, mutation_file, PTM_id_file):
 
         """ This method maps the overlap between mutated codons from previous method to the PTM sites"""
-        summary = open('summary.txt', 'w')
         with open('mutated_proteins.txt', 'w') as file5:
             with open(mutation_file, 'r') as mutation_file:
                 for line in mutation_file:
@@ -356,10 +355,10 @@ class YGtPM(object):
                             if line[0] == line1[2] and line[1] == line1[3]:
                                 take = line1[0]+'\t'+line1[1]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'UniProt'
                                 if take > str(0):
-                                    file5 = open('mutated_proteins.txt', 'a')
-                                    summary = open('summary.txt', 'a')
-                                    file5.write(take+'\n')
-                                    summary.write(line1[0]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'PTMs'+'\t'+'UniProt'+'\n')
+                                    with open('mutated_proteins.txt', 'a') as file5:
+                                        file5.write(take+'\n')
+                                    with open('summary.txt', 'a') as summary:                                    
+                                        summary.write(line1[0]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'PTMs'+'\t'+'UniProt'+'\n')
 
 
     def dclean(self, uniprot_mod_raw):  
@@ -562,8 +561,8 @@ class YGtPM(object):
                                 take = a[2]+'\t'+ a[3]+'\t'+m[1]+'\t'+'UniProt'
                                 if take > str(0):
                                     with open('ab_mutation_file.txt', 'a') as out: 
-                                        summary = open('summary.txt', 'a+')
                                         out.write(take+'\n')
+                                    with open('summary.txt', 'a+') as summary:                                    
                                         summary.write(a[2]+'\t'+a[0]+'\t'+m[1]+'\t'+ a[3]+'\t'+'Active/Binding site'+'\t'+'UniProt'+'\n')
 
 
@@ -625,8 +624,8 @@ class YGtPM(object):
                                         take = line2[0]+'\t'+line1[0]+'\t'+line2[4]+'\t'+line1[1]+'\t'+line2[4]+'\t'+line2[6]+'\t'+'UniProt'
                                         if take > str(0):
                                             with open('nucleotide_map.txt', 'a') as mp:
-                                                summary = open('summary.txt', 'a+')
                                                 mp.write(take+'\n')
+                                            with open('summary.txt', 'a+') as summary:                                            
                                                 summary.write(line2[0]+'\t'+line1[0]+'\t'+line1[1]+'\t'+line2[4]+'\t'+'Nucleotide-Binding'+'\t'+'UniProt'+'\n')
                                 except IndexError:
                                     pass
@@ -742,8 +741,8 @@ class YGtPM(object):
                                         take = m[0]+'\t'+m[1]+'\t'+m[2]+'\t'+i[1]+'\t'+i[2]+'\t'+m[3]+'\t'+i[3]+'\t'+i[4]+'\t'+'UniProt'
                                         if take > str(0):
                                             with open('stru_mutation.txt', 'a+') as s:
-                                                summary = open('summary.txt', 'a+')
                                                 s.write(take+'\n')
+                                            with open('summary.txt', 'a+') as summary:
                                                 summary.write(m[0]+'\t'+m[2]+'\t'+m[3]+'\t'+i[4]+'\t'+i[1]+'\t'+'UniProt'+'\n')
                                 except IndexError:
                                     pass
@@ -782,8 +781,8 @@ def interface(file1, mutation):
                                     for di in id:
                                         di = di.split()
                                         if len(di) > 2 and di[2] == fi[1]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'Interface'+'\t'+'PTMfunc'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'Interface'+'\t'+'PTMfunc'+'\n')
                                             if take2 > str(0):
                                                 with open('interface_mutation.txt', 'a') as out:
                                                     out.write(take2+'\n')
@@ -809,8 +808,8 @@ def ppi(file1,mutation):
                                     for di in i:
                                         di = di.split()
                                         if len(di) > 2 and di[2] == fi[0]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+'\t'+'PPI'+'\t'+'PTMfunc'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+'\t'+'PPI'+'\t'+'PTMfunc'+'\n')
                                             if take > str(0):
                                                 with open('ppi_mutation.txt', 'a') as out:
                                                     out.write(take+'\n')
@@ -822,8 +821,8 @@ def ppi(file1,mutation):
                                     for di in i:
                                         di=di.split()
                                         if len(di) > 2 and di[2] == fi[0]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+'\t'+'PPI'+'\t'+'PTMfunc'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+'\t'+'PPI'+'\t'+'PTMfunc'+'\n')
                                             if take2 > str(0):
                                                 with open('ppi_mutation.txt', 'a+') as out:
                                                     out.write(take2+'\n')
@@ -850,8 +849,8 @@ def withinPro(file2, mutation):
                                     for di in id:
                                         di=di.split()
                                         if len(di) > 2 and di[2] == fi[1]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[3]+'\t'+fi[2]+'\t'+'WithinProtein'+'\t'+'PTMcode'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[3]+'\t'+fi[2]+'\t'+'WithinProtein'+'\t'+'PTMcode'+'\n')
                                             if take2 > str(0):
                                                 with open('within_protein.txt', 'a') as file1:
                                                     file1.write(take2+'\n')
@@ -863,8 +862,8 @@ def withinPro(file2, mutation):
                                     for di in id:
                                         di=di.split()
                                         if len(di) > 2 and di[2] == fi[1]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[3]+'\t'+fi[2]+'\t'+'WithinProtein'+'\t'+'PTMcode'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[3]+'\t'+fi[2]+'\t'+'WithinProtein'+'\t'+'PTMcode'+'\n')
                                             if take3 > str(0):
                                                 with open('within_protein.txt', 'a+') as file1:
                                                     file1.write(take3+'\n')
@@ -891,8 +890,8 @@ def betweenPro(fileb, mutation):
                                     for di in id:
                                         di = di.split()
                                         if len(di) > 2 and di[2] == fi[0]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'BetweenProteins'+'\t'+'PTMcode'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'BetweenProteins'+'\t'+'PTMcode'+'\n')
                                             if take2 > str(0):
                                                 with open('ptm_between_proteins.txt', 'a') as file1:
                                                     file1.write(take2+'\n')
@@ -904,8 +903,8 @@ def betweenPro(fileb, mutation):
                                     for di in id:
                                         di = di.split()
                                         if len(di) > 2 and di[2] == fi[0]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'BetweenProteins'+'\t'+'PTMcode'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'BetweenProteins'+'\t'+'PTMcode'+'\n')
                                             if take3 > str(0):
                                                 with open('ptm_between_proteins.txt', 'a+') as file1:
                                                     file1.write(take3+'\n')
@@ -934,8 +933,8 @@ def hotspot(fileh, mutation):
                                     for di in id:
                                         di = di.split()
                                         if len(di) > 2 and di[2] == fi[1]:
-                                            summary = open('summary.txt', 'a+')
-                                            summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'HotSpot'+'\t'+'PTMFunc'+'\n')
+                                            with open('summary.txt', 'a+') as summary:
+                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'HotSpot'+'\t'+'PTMFunc'+'\n')
                                             if take > str(0):
                                                 with open('hotspot.txt', 'a') as hotspot:
                                                     hotspot.write(take+'\n')
