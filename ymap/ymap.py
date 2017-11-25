@@ -345,7 +345,7 @@ class YGtPM(object):
     def ptm_map(self, mutation_file, PTM_id_file):
 
         """ This method maps the overlap between mutated codons from previous method to the PTM sites"""
-        with open('mutated_proteins.txt', 'w') as file5:
+        with open('mapped_ptms.txt', 'w') as file5:
             with open(mutation_file, 'r') as mutation_file:
                 for line in mutation_file:
                     line = line.split()
@@ -355,7 +355,7 @@ class YGtPM(object):
                             if line[0] == line1[2] and line[1] == line1[3]:
                                 take = line1[0]+'\t'+line1[1]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'UniProt'
                                 if take > str(0):
-                                    with open('mutated_proteins.txt', 'a') as file5:
+                                    with open('mapped_ptms.txt', 'a') as file5:
                                         file5.write(take+'\n')
                                     with open('summary.txt', 'a') as summary:                                    
                                         summary.write(line1[0]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'PTMs'+'\t'+'UniProt'+'\n')
