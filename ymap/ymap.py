@@ -118,10 +118,10 @@ def revcomp(dna, reverse=True, complement=True):
 def mutation_file(mutation, d_id):
         """ defines the mutation types; either Non-Synonmous or Stop Codon"""
         with open('mutation.txt', 'wb') as t:   
-            with open(mutation, 'rU') as mut: 
+            with open(mutation, 'r') as mut: 
                 for m in mut:
                     m = m.rstrip().split()
-                    with open(d_id,'rU') as id:    
+                    with open(d_id, 'r') as id:    
                         for i in id:
                             i = i.rstrip().split()
                             if not m[0].startswith('c'.upper()):
@@ -131,7 +131,7 @@ def mutation_file(mutation, d_id):
                                     if m[4] == i[2]:
                                         take = m[4]+'\t'+m[0]+'\t'+i[3]+'\t'+m[1]+'\t'+i[4]+'\t'+m[2]+'\t'+m[3]+'\t'+i[5]
                                         take1= take.rstrip().split()       
-                                        with open('gff.txt', 'rU') as orf:     
+                                        with open('gff.txt', 'r') as orf:     
                                             linee = orf.readlines()[23078:]
                                             up = (x[1] for x in groupby(linee, lambda line: line[0] == ">")) 
                                             for head in up:
@@ -269,7 +269,7 @@ class YGtPM(object):
         """
 
         with open('PTMs.txt', 'w') as out:
-            with open(UniProt_file,'rU') as UniProt_file_name:
+            with open(UniProt_file, 'r') as UniProt_file_name:
                 for l in UniProt_file_name:
                     if not l.startswith('##'):
                         line = l.split()
@@ -347,7 +347,7 @@ class YGtPM(object):
         """ This method maps the overlap between mutated codons from previous method to the PTM sites"""
         summary = open('summary.txt', 'w')
         with open('mutated_proteins.txt', 'w') as file5:
-            with open(mutation_file, 'rU') as mutation_file:
+            with open(mutation_file, 'r') as mutation_file:
                 for line in mutation_file:
                     line = line.split()
                     with open(PTM_id_file, 'r') as file_PTMs:
@@ -367,7 +367,7 @@ class YGtPM(object):
         """domain data needed to be filters from UniProt file, before mapping domains"""
 
         with open('domains.txt', 'w') as domain:
-            with open(uniprot_mod_raw, 'rU') as raw:
+            with open(uniprot_mod_raw, 'r') as raw:
                 for a in raw:
                     if not a.startswith('##'):
                         a = a.split('=')
@@ -400,7 +400,7 @@ class YGtPM(object):
         """ maps the different proteins ids to domains"""
         
         with open('id_domain.txt','w') as id_domain:
-            with open(yeast_id, 'rU') as fl:
+            with open(yeast_id, 'r') as fl:
                 for f in fl:
                     f = f.split()
                     with open(domain,'r') as dp:
@@ -440,7 +440,7 @@ class YGtPM(object):
         
         with open('domains_mapped.txt', 'w') as mp:
             with open('summary.txt', 'a+') as summary:
-                with open(file1,'rU') as f:
+                with open(file1, 'r') as f:
                     for line in f:
                         line1=line.split()
                         with open(file2, 'r') as f2:
@@ -493,7 +493,7 @@ class YGtPM(object):
         see main text for how pvalue is calculated"""
         k = []
         with open('pvalue.txt','w') as out:
-            with open(file1, 'rU') as f:
+            with open(file1, 'r') as f:
                 k = [(line.split())[1] for line in f]
                 res = annotations.get_enriched_terms(k)
                 if len(res) == 0:
@@ -512,7 +512,7 @@ class YGtPM(object):
         """Prepares raw Uniprot data for yeast active and binding sites mutation analysis"""
 
         with open('bact.txt','w') as file2:
-            with open(file_raw, 'rU') as d:
+            with open(file_raw, 'r') as d:
                 for f in d:
                     if not f.startswith('##'):
                         f = f.split()
@@ -533,7 +533,7 @@ class YGtPM(object):
         """ maps proteins ids to active and binding sites containing proteins"""
 
         with open('sites_id.txt', 'w') as file_id:
-            with open(act, 'rU') as a:
+            with open(act, 'r') as a:
                 for a in a:
                     a = a.split()
                     with open('yeastID.txt')as id:
@@ -552,7 +552,7 @@ class YGtPM(object):
         """ maps mutations to proteins ab (active and binding sites) """ 
 
         with open('ab_mutation_file.txt', 'w') as out: 
-            with open(file_sites, 'rU') as s:
+            with open(file_sites, 'r') as s:
                 for a in s:
                     a = a.split()
                     with open(mutation, 'r') as mu:
@@ -572,7 +572,7 @@ class YGtPM(object):
         """ prepares the UniProt data for the nucleotide motifs mapping to mutations """
 
         with open('nucleotide.txt', 'w') as t:
-            with open('uniprot_mod_raw.txt', 'rU') as file_raw:
+            with open('uniprot_mod_raw.txt', 'r') as file_raw:
                 for fi in file_raw:
                     if not fi.startswith('##'):
                         f = fi.split()
@@ -590,7 +590,7 @@ class YGtPM(object):
         """ maps different proteins ids to nucleotides data """
 
         with open('id_nucleotide.txt', 'w') as  id_domain:
-            with open(yeast_id, 'rU') as fl:
+            with open(yeast_id, 'r') as fl:
                 for fe in fl:
                     f = fe.split()
                     with open(domain,'r') as dp:
@@ -609,7 +609,7 @@ class YGtPM(object):
         """ maps mutations to protein-nucleotide binding motifs """
         
         with open('nucleotide_map.txt', 'w') as mp:
-            with open(file1,'rU') as f:
+            with open(file1, 'r') as f:
                 for line in f:
                     line1 = line.split()
                     with open(file2, 'r') as f2:
@@ -649,7 +649,7 @@ class YGtPM(object):
         """ maps mutations to BioGrid ids """ 
 
         with open('biog.txt', 'w') as out:
-            with open(file1, 'rU') as fl:
+            with open(file1, 'r') as fl:
                 for f in fl:
                     f = f.rstrip().split()
                     if len(f) > 1:
@@ -671,7 +671,7 @@ class YGtPM(object):
         """ opens the BioGrid db in browser with as many tabs as mutated proteins""" 
 
         url = 'http://thebiogrid.org/'
-        fl = open(file1, 'rU')
+        fl = open(file1, 'r')
         for f in OrderedDict.fromkeys(fl):
             f = f.split()
             webbrowser.open(url + f[1])
@@ -682,7 +682,7 @@ class YGtPM(object):
         """ Structure data filtration from UniProt"""
 
         with open('pdb.txt', 'w') as stru:
-            with open(file_1, 'rU') as raw:
+            with open(file_1, 'r') as raw:
                 for r in raw:
                     if not r.startswith('##'):
                         line = r.split()
@@ -726,7 +726,7 @@ class YGtPM(object):
         """ This code maps mutations to the proteins structural regions"""
 
         with open('stru_mutation.txt', 'w') as s:
-            with open(file_pdb, 'rU') as raw:
+            with open(file_pdb, 'r') as raw:
                 for i in raw:
                     i = i.split()
                     with open('mutation_id.txt') as mu: 
@@ -766,7 +766,7 @@ def interface(file1, mutation):
     """PTM present at the interface of two proteins and known to play role in interaction (Beltrao et al. Cell 2012)"""
     
     with open('interface_mutation.txt', 'w') as out:
-        with open(file1, 'rU') as f:
+        with open(file1, 'r') as f:
             for l in f:
                 line = l.split()
                 if len(line) > 5:
@@ -795,7 +795,7 @@ def ppi(file1,mutation):
     """ PTM present at the interface of two proteins and known to play role in interaction (PTMfunc; Beltrao et al. Cell 2012)"""
 
     with open('ppi_mutation.txt', 'w') as out:
-        with open(file1, 'rU') as f:
+        with open(file1, 'r') as f:
             for ls in f:
                 line = ls.split()
                 with open (mutation) as mu:
@@ -834,7 +834,7 @@ def withinPro(file2, mutation):
     """ PTMs (predicted) involved in the crosstalk within a given protein at baker's years (Minguez el 2012)"""
 
     with open('within_protein.txt', 'w') as file1:
-        with open(file2, 'rU') as f:
+        with open(file2, 'r') as f:
             for l in f:
                 line = l.split()
                 if len(line)>19:
@@ -875,7 +875,7 @@ def betweenPro(fileb, mutation):
     """ PTMs (predicted) involved in the crosstalk in different proteins at baker's years (PTMcode 2.0; Minguez el 2012) """
 
     with open('ptm_between_proteins.txt', 'w') as file1:
-        with open(fileb, 'rU') as f:
+        with open(fileb, 'r') as f:
             for l in f:
                 line = l.split()
                 if len(line)>20:
@@ -920,7 +920,7 @@ def hotspot(fileh, mutation):
     """ PTMs containing motifs in a close proximity are named hotspots (Beltrao et al. Cell 2012)"""
 
     with open('hotspot.txt', 'w') as hotspot:
-        with open(fileh, 'rU') as f:
+        with open(fileh, 'r') as f:
             for l in f:
                 line = l.split()
                 with open(mutation, 'r') as mu:
