@@ -1648,7 +1648,7 @@ def ymap_genes():
     """ returns all the results of all the codes of yMap; starting from genetics coordinates of proteins """
 
     start_time = time.time()
-    if not os.path.exists(protein_input_file):
+    if not os.path.exists('mutation.txt'):
         if not os.path.exists(output_path):
             os.mkdir(output_path)
             os.chdir(output_path)
@@ -1694,8 +1694,8 @@ def ymap_genes():
             shutil.move(output_path+"/"+'PTMs_within_Proteins', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'PTMs_between_Proteins',output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'PTMs_hotSpots',output_path+"/"+'yMap-results'+str(y))
-            shutil.move(protein_input_file, output_path+"/"+'yMap-results'+str(y))
-            shutil.move(gene_input_file, output_path+"/"+'yMap-results'+str(y))
+            shutil.move('mutation.txt', output_path+"/"+'yMap-results'+str(y))
+            shutil.move('mutated_proteins.txt', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'final_report.txt', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'pvalue.txt', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'biog.txt', output_path+"/"+'yMap-results'+str(y))
@@ -1712,7 +1712,7 @@ def ymap_proteins():
     """ returns all the results of all the codes of yMap; starting from proteins level mutation positions """
 
     start_time = time.time()
-    if not os.path.exists(protein_input_file):
+    if not os.path.exists('mutation.txt'):
         raise StopIteration('because of missing mutation file')
     else:
         if not os.path.exists(output_path):
@@ -1756,7 +1756,7 @@ def ymap_proteins():
             shutil.move(output_path+"/"+'PTMs_within_Proteins', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'PTMs_between_Proteins',output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'PTMs_hotSpots',output_path+"/"+'yMap-results'+str(y))
-            shutil.move(protein_input_file, output_path+"/"+'yMap-results'+str(y))
+            shutil.move('mutation.txt', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'final_report.txt', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'pvalue.txt', output_path+"/"+'yMap-results'+str(y))
             shutil.move(output_path+"/"+'biog.txt', output_path+"/"+'yMap-results'+str(y))
