@@ -1025,9 +1025,67 @@ def resc():
 
 
 c = YGtPM()
-wd = os.getcwd()
+wd = os.getcwd() 
 
-# Paths for data, input, output directories
+# Setup filenames
+# Input files
+mutation_prot = 'mutation.txt'
+mutation_gene = 'mutated_proteins.txt'
+
+# Intermediate processing files
+uniprot = 'uniprot_mod_raw.txt' # downloaded
+bact = 'bact.txt'
+ptms = 'PTMs.txt'
+domains = 'domains.txt'
+nucleotide = 'nucleotide.txt'
+pdb = 'pdb.txt'
+
+gff = 'gff.txt' # downloaded
+frmt = 'frmt.txt'
+
+yeastID = 'yeastID.txt' # downloaded
+d_id_map = 'd_id_map.txt' # Links Uniprot ID to Gene ID, ORF start, ORF stop, strand orientation 
+sites_id = 'sites_id.txt'
+ptm_id = 'PTM_id_file.txt'
+domain_id = 'id_domain.txt'
+nucleotide_id = 'id_nucleotide.txt' # Nucleotide binding sites
+
+# Downloaded and copied PTMfunc and PTMcode data files
+interface_acet = '3DID_aceksites_interfaceRes_sc.txt'
+interface_phos = '3DID_phosphosites_interfaceRes_sc.txt'
+interface_ubiq = '3DID_ubisites_interfaceRessc_sc.txt'
+regulatory_hotspots = 'schotspot_updated.txt'
+interact_acet = 'SC_acet_interactions.txt'
+interact_phos = 'SC_psites_interactions_sc.txt'
+interact_ubiq = 'SC_ubi_interactions_sc.txt'
+within_prot = 'sc_within_proteins.txt'
+between_prot_zip = 'sc_btw_proteins.txt.zip'
+between_prot = 'sc_btw_proteins.txt'
+
+uniprot_biogrid = 'uniprot_bioGrid.txt' # downloaded
+
+# Output files
+summary = 'summary.txt'
+
+mapped_sites = 'ab_mutation_file.txt'
+mapped_ptms = 'mapped_ptms.txt'
+mapped_domains = 'domains_mapped.txt'
+mapped_nucleotide = 'nucleotide_map.txt'
+mapped_mutation_pos = 'mutation_id.txt' 
+mapped_struct = 'stru_mutation.txt' # Structural regions of protein e.g. beta sheet, alpha helix, turn 
+
+mapped_interface_acet = 'interface_mutation.txt'
+mapped_interface_phos = 'interface_mutation.txt'
+mapped_interface_ubiq = 'interface_mutation.txt'
+mapped_interact_acet = 'ppi_mutation.txt'
+mapped_interact_phos = 'ppi_mutation.txt'
+mapped_interact_ubiq = 'ppi_mutation.txt'
+mapped_hotspot = 'hotspot.txt'
+mapped_within_prot = 'within_protein.txt'
+mapped_between_prot = 'ptm_between_proteins.txt'
+
+# Setup directory tree paths 
+# Data, input, output directories
 data_path = os.path.join(wd, 'ymap_data')
 input_path = os.path.join(wd, 'input')
 output_path = os.path.join(wd, 'output') 
@@ -1050,24 +1108,30 @@ ptm_within_dir_path = os.path.join(output_path, 'PTMs_within_Proteins')
 ptm_between_dir_path = os.path.join(output_path, 'PTMs_between_Proteins')
 ptm_hotspot_dir_path = os.path.join(output_path, 'PTMs_hotSpots')
 
-# Paths for output files
-# ab_mutation_file.txt
-# biog.txt
-# domains_mapped.txt
-# final_report.txt
-# hotspot.txt
-# interface_mutation.txt
-# mutated_proteins.txt
-# mutation_id.txt
-# nucleotide_map.txt
-# ppi_mutation.txt
-# ptm_between_proteins.txt
-# pvalue.txt
-# stru_mutation.txt
-# summary.txt
-# within_protein.txt
+dirs = [
+    domains_dir_path,  
+    ptms_dir_path, 
+    nuc_bind_dir_path, 
+    ab_sites_dir_path, 
+    pdb_dir_path, 
+    interface_dir_path, 
+    interface_acet_dir_path, 
+    interface_phos_dir_path, 
+    interface_ubiq_dir_path, 
+    ppi_dir_path, 
+    ppi_acet_dir_path, 
+    ppi_phos_dir_path, 
+    ppi_ubiq_dir_path, 
+    ptm_within_dir_path, 
+    ptm_between_dir_path, 
+    ptm_hotspot_dir_path
+]
 
 
+def makeDirTree(dirs):
+    for directory in dirs:
+        os.makedirs(directory)
+    
 def data(): 
 
     """ this function will download and clean required data to run ymap methods smoothly """
