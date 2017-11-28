@@ -1029,84 +1029,84 @@ wd = os.getcwd()
 
 # Setup filenames
 # Input files
-mutation_prot = 'mutation.txt'
-mutation_gene = 'mutated_proteins.txt'
+mutation_prot_file = 'mutation.txt'
+mutation_gene_file = 'mutated_proteins.txt'
 
 # Intermediate processing files
-uniprot = 'uniprot_mod_raw.txt' # downloaded
-bact = 'bact.txt'
-ptms = 'PTMs.txt'
-domains = 'domains.txt'
-nucleotide = 'nucleotide.txt'
-pdb = 'pdb.txt'
+uniprot_file = 'uniprot_mod_raw.txt' # downloaded
+bact_file = 'bact.txt'
+ptms_file = 'PTMs.txt'
+domains_file = 'domains.txt'
+nucleotide_file = 'nucleotide.txt'
+pdb_file = 'pdb.txt'
 
-gff = 'gff.txt' # downloaded
-frmt = 'frmt.txt'
+gff_file = 'gff.txt' # downloaded
+frmt_file = 'frmt.txt'
 
-yeastID = 'yeastID.txt' # downloaded
-d_id_map = 'd_id_map.txt' # Links Uniprot ID to Gene ID, ORF start, ORF stop, strand orientation 
-sites_id = 'sites_id.txt'
-ptm_id = 'PTM_id_file.txt'
-domain_id = 'id_domain.txt'
-nucleotide_id = 'id_nucleotide.txt' # Nucleotide binding sites
+yeastID_file = 'yeastID.txt' # downloaded
+d_id_map_file = 'd_id_map.txt' # Links Uniprot ID to Gene ID, ORF start, ORF stop, strand orientation 
+sites_id_file = 'sites_id.txt'
+ptm_id_file = 'PTM_id_file.txt'
+domain_id_file = 'id_domain.txt'
+nucleotide_id_file = 'id_nucleotide.txt' # Nucleotide binding sites
 
 # Downloaded and copied PTMfunc and PTMcode data files
-interface_acet = '3DID_aceksites_interfaceRes_sc.txt'
-interface_phos = '3DID_phosphosites_interfaceRes_sc.txt'
-interface_ubiq = '3DID_ubisites_interfaceRessc_sc.txt'
-regulatory_hotspots = 'schotspot_updated.txt'
-interact_acet = 'SC_acet_interactions.txt'
-interact_phos = 'SC_psites_interactions_sc.txt'
-interact_ubiq = 'SC_ubi_interactions_sc.txt'
-within_prot = 'sc_within_proteins.txt'
-between_prot_zip = 'sc_btw_proteins.txt.zip'
-between_prot = 'sc_btw_proteins.txt'
+interface_acet_file = '3DID_aceksites_interfaceRes_sc.txt'
+interface_phos_file = '3DID_phosphosites_interfaceRes_sc.txt'
+interface_ubiq_file = '3DID_ubisites_interfaceRessc_sc.txt'
+regulatory_hotspots_file = 'schotspot_updated.txt'
+interact_acet_file = 'SC_acet_interactions.txt'
+interact_phos_file = 'SC_psites_interactions_sc.txt'
+interact_ubiq_file = 'SC_ubi_interactions_sc.txt'
+within_prot_file = 'sc_within_proteins.txt'
+between_prot_zip_file = 'sc_btw_proteins.txt.zip'
+between_prot_file = 'sc_btw_proteins.txt'
 
-uniprot_biogrid = 'uniprot_bioGrid.txt' # downloaded
+uniprot_biogrid_file = 'uniprot_bioGrid.txt' # downloaded
 
 # Output files
-summary = 'summary.txt'
+summary_file = 'summary.txt'
 
-mapped_sites = 'ab_mutation_file.txt'
-mapped_ptms = 'mapped_ptms.txt'
-mapped_domains = 'domains_mapped.txt'
-mapped_nucleotide = 'nucleotide_map.txt'
-mapped_mutation_pos = 'mutation_id.txt' 
-mapped_struct = 'stru_mutation.txt' # Structural regions of protein e.g. beta sheet, alpha helix, turn 
+mapped_sites_file = 'ab_mutation_file.txt'
+mapped_ptms_file = 'mapped_ptms.txt'
+mapped_domains_file = 'domains_mapped.txt'
+mapped_nucleotide_file = 'nucleotide_map.txt'
+mapped_mutation_pos_file = 'mutation_id.txt' 
+mapped_struct_file = 'stru_mutation.txt' # Structural regions of protein e.g. beta sheet, alpha helix, turn 
 
-mapped_interface_acet = 'interface_mutation.txt'
-mapped_interface_phos = 'interface_mutation.txt'
-mapped_interface_ubiq = 'interface_mutation.txt'
-mapped_interact_acet = 'ppi_mutation.txt'
-mapped_interact_phos = 'ppi_mutation.txt'
-mapped_interact_ubiq = 'ppi_mutation.txt'
-mapped_hotspot = 'hotspot.txt'
-mapped_within_prot = 'within_protein.txt'
-mapped_between_prot = 'ptm_between_proteins.txt'
+mapped_interface_acet_file = 'interface_mutation.txt'
+mapped_interface_phos_file = 'interface_mutation.txt'
+mapped_interface_ubiq_file = 'interface_mutation.txt'
+mapped_interact_acet_file = 'ppi_mutation.txt'
+mapped_interact_phos_file = 'ppi_mutation.txt'
+mapped_interact_ubiq_file = 'ppi_mutation.txt'
+mapped_hotspot_file = 'hotspot.txt'
+mapped_within_prot_file = 'within_protein.txt'
+mapped_between_prot_file = 'ptm_between_proteins.txt'
 
 # Setup directory tree paths 
 # Data, input, output directories
-data_path = os.path.join(wd, 'ymap_data')
-input_path = os.path.join(wd, 'input')
-output_path = os.path.join(wd, 'output') 
+data_dir_path = os.path.join(wd, 'ymap_data')
+input_dir_path = os.path.join(wd, 'input')
+output_dir_path = os.path.join(wd, 'output') 
 
 # Paths for output directories
-domains_dir_path = os.path.join(output_path, 'Domains') 
-ptms_dir_path = os.path.join(output_path, 'PTMs')
-nuc_bind_dir_path = os.path.join(output_path, 'Nucleotide_binding')
-ab_sites_dir_path = os.path.join(output_path, 'A-B-sites')
-pdb_dir_path = os.path.join(output_path, 'PDB')
-interface_dir_path = os.path.join(output_path, 'Interface')
+domains_dir_path = os.path.join(output_dir_path, 'Domains') 
+ptms_dir_path = os.path.join(output_dir_path, 'PTMs')
+nuc_bind_dir_path = os.path.join(output_dir_path, 'Nucleotide_binding')
+ab_sites_dir_path = os.path.join(output_dir_path, 'A-B-sites')
+pdb_dir_path = os.path.join(output_dir_path, 'PDB')
+interface_dir_path = os.path.join(output_dir_path, 'Interface')
 interface_acet_dir_path = os.path.join(interface_dir_path, 'Acetylation')
 interface_phos_dir_path = os.path.join(interface_dir_path, 'Phosphorylation')
 interface_ubiq_dir_path = os.path.join(interface_dir_path, 'Ubiquitination')
-ppi_dir_path = os.path.join(output_path, 'PPI')
+ppi_dir_path = os.path.join(output_dir_path, 'PPI')
 ppi_acet_dir_path = os.path.join(ppi_dir_path, 'Acetylation')
 ppi_phos_dir_path = os.path.join(ppi_dir_path, 'Phosphorylation')
 ppi_ubiq_dir_path = os.path.join(ppi_dir_path, 'Ubiquitination')
-ptm_within_dir_path = os.path.join(output_path, 'PTMs_within_Proteins')
-ptm_between_dir_path = os.path.join(output_path, 'PTMs_between_Proteins')
-ptm_hotspot_dir_path = os.path.join(output_path, 'PTMs_hotSpots')
+ptm_within_dir_path = os.path.join(output_dir_path, 'PTMs_within_Proteins')
+ptm_between_dir_path = os.path.join(output_dir_path, 'PTMs_between_Proteins')
+ptm_hotspot_dir_path = os.path.join(output_dir_path, 'PTMs_hotSpots')
 
 dirs = [
     domains_dir_path,  
@@ -1137,8 +1137,8 @@ def data():
     """ this function will download and clean required data to run ymap methods smoothly """
 
     start_time = time.time()
-    os.mkdir(data_path)
-    os.chdir(data_path)
+    os.mkdir(data_dir_path)
+    os.chdir(data_dir_path)
     try:
         resc()
     except IOError:
@@ -1268,9 +1268,9 @@ def ptm():
             pass
         try:
             os.mkdir(ptms_dir_path)
-            shutil.move(output_path+"/"+'mutated_proteins.txt', ptms_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ptms_dir_path)
-            shutil.move(output_path+"/"+'biog.txt', ptms_dir_path)
+            shutil.move(output_dir_path+"/"+'mutated_proteins.txt', ptms_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ptms_dir_path)
+            shutil.move(output_dir_path+"/"+'biog.txt', ptms_dir_path)
         except IOError:
             pass
     return "PTMs mapped in %s seconds" % (time.time() - start_time)
@@ -1301,9 +1301,9 @@ def domain():
         except IOError:
             pass
         try:
-            shutil.move(output_path+"/"+'domains_mapped.txt', domains_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', domains_dir_path)
-            shutil.move(output_path+"/"+'biog.txt', domains_dir_path)
+            shutil.move(output_dir_path+"/"+'domains_mapped.txt', domains_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', domains_dir_path)
+            shutil.move(output_dir_path+"/"+'biog.txt', domains_dir_path)
         except IOError:
             pass
     return "Domains mapped in %s seconds" % (time.time() - start_time)
@@ -1334,9 +1334,9 @@ def nucleo():
         except IOError:
             pass
         try:
-            shutil.move(output_path+"/"+'nucleotide_map.txt', nuc_bind_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', nuc_bind_dir_path)
-            shutil.move(output_path+"/"+'biog.txt', nuc_bind_dir_path)
+            shutil.move(output_dir_path+"/"+'nucleotide_map.txt', nuc_bind_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', nuc_bind_dir_path)
+            shutil.move(output_dir_path+"/"+'biog.txt', nuc_bind_dir_path)
         except IOError:
             pass
     return "Nucleotide_binding domains mapped in %s seconds" % (time.time() - start_time)
@@ -1364,9 +1364,9 @@ def ab():
             pass
         try:
             os.mkdir(ab_sites_dir_path)
-            shutil.move(output_path+"/"+'ab_mutation_file.txt', ab_sites_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ab_sites_dir_path)
-            shutil.move(output_path+"/"+'biog.txt', ab_sites_dir_path)
+            shutil.move(output_dir_path+"/"+'ab_mutation_file.txt', ab_sites_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ab_sites_dir_path)
+            shutil.move(output_dir_path+"/"+'biog.txt', ab_sites_dir_path)
         except IOError:
             pass
     return "Active-Binding proteins sites mapped in %s seconds" % (time.time() - start_time)
@@ -1398,9 +1398,9 @@ def struc_map():
             pass
         try:
             os.mkdir(pdb_dir_path)
-            shutil.move(output_path+"/"+'stru_mutation.txt', pdb_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', pdb_dir_path)
-            shutil.move(output_path+"/"+'biog.txt', pdb_dir_path)
+            shutil.move(output_dir_path+"/"+'stru_mutation.txt', pdb_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', pdb_dir_path)
+            shutil.move(output_dir_path+"/"+'biog.txt', pdb_dir_path)
         except IOError:
             pass
         return "Mutations are mapped to structural features in %s seconds" % (time.time() - start_time)
@@ -1426,8 +1426,8 @@ def intf():
         try:
             os.mkdir(interface_dir_path)
             os.mkdir(interface_acet_dir_path)
-            shutil.move(output_path+"/"+'interface_mutation.txt', interface_acet_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', interface_acet_dir_path)
+            shutil.move(output_dir_path+"/"+'interface_mutation.txt', interface_acet_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', interface_acet_dir_path)
         except IOError:
             pass
         try:
@@ -1440,8 +1440,8 @@ def intf():
             pass
         try:
             os.mkdir(interface_phos_dir_path)
-            shutil.move(output_path+"/"+'interface_mutation.txt', interface_phos_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', interface_phos_dir_path)
+            shutil.move(output_dir_path+"/"+'interface_mutation.txt', interface_phos_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', interface_phos_dir_path)
         except IOError:
             pass
         try:   
@@ -1454,8 +1454,8 @@ def intf():
             pass
         try:
             os.mkdir(interface_ubiq_dir_path)
-            shutil.move(output_path+"/"+'interface_mutation.txt', interface_ubiq_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', interface_ubiq_dir_path)
+            shutil.move(output_dir_path+"/"+'interface_mutation.txt', interface_ubiq_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', interface_ubiq_dir_path)
         except IOError:
             pass
         return "run time is %s seconds" % (time.time() - start_time)
@@ -1476,8 +1476,8 @@ def pi():
         try:
             os.mkdir(ppi_dir_path)
             os.mkdir(ppi_acet_dir_path)
-            shutil.move(output_path+"/"+'ppi_mutation.txt', ppi_acet_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ppi_acet_dir_path)
+            shutil.move(output_dir_path+"/"+'ppi_mutation.txt', ppi_acet_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ppi_acet_dir_path)
         except IOError:
             pass
         try:
@@ -1490,8 +1490,8 @@ def pi():
             pass
         try:
             os.mkdir(ppi_phos_dir_path)
-            shutil.move(output_path+"/"+'ppi_mutation.txt', ppi_phos_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ppi_phos_dir_path)
+            shutil.move(output_dir_path+"/"+'ppi_mutation.txt', ppi_phos_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ppi_phos_dir_path)
         except IOError:
             pass
     
@@ -1505,8 +1505,8 @@ def pi():
             pass 
         try:
             os.mkdir(ppi_ubiq_dir_path)
-            shutil.move(output_path+"/"+'ppi_mutation.txt', ppi_ubiq_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ppi_ubiq_dir_path)
+            shutil.move(output_dir_path+"/"+'ppi_mutation.txt', ppi_ubiq_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ppi_ubiq_dir_path)
         except IOError:
             pass
         return "run time is %s seconds" % (time.time() - start_time)
@@ -1526,8 +1526,8 @@ def withP():
             pass
         try:
             os.mkdir(ptm_within_dir_path)
-            shutil.move(output_path+"/"+'within_protein.txt', ptm_within_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ptm_within_dir_path)
+            shutil.move(output_dir_path+"/"+'within_protein.txt', ptm_within_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ptm_within_dir_path)
         except IOError:
             pass
         return "run time is %s seconds" % (time.time() - start_time)
@@ -1547,8 +1547,8 @@ def betweenP():
             pass
         try:
             os.mkdir(ptm_between_dir_path)
-            shutil.move(output_path+"/"+'ptm_between_proteins.txt', ptm_between_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ptm_between_dir_path)
+            shutil.move(output_dir_path+"/"+'ptm_between_proteins.txt', ptm_between_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ptm_between_dir_path)
         except IOError:
             pass
         return "run time is %s seconds" % (time.time() - start_time)
@@ -1569,8 +1569,8 @@ def hotS():
             pass
         try:
             os.mkdir(ptm_hotspot_dir_path)
-            shutil.move(output_path+"/"+'hotspot.txt', ptm_hotspot_dir_path)
-            shutil.move(output_path+"/"+'pvalue.txt', ptm_hotspot_dir_path)
+            shutil.move(output_dir_path+"/"+'hotspot.txt', ptm_hotspot_dir_path)
+            shutil.move(output_dir_path+"/"+'pvalue.txt', ptm_hotspot_dir_path)
         except IOError:
             pass
         return "run time is %s seconds" % (time.time() - start_time)
@@ -1649,11 +1649,11 @@ def ymap_genes():
 
     start_time = time.time()
     if not os.path.exists('mutation.txt'):
-        if not os.path.exists(output_path):
-            os.mkdir(output_path)
-            os.chdir(output_path)
+        if not os.path.exists(output_dir_path):
+            os.mkdir(output_dir_path)
+            os.chdir(output_dir_path)
         else:
-            os.chdir(output_path)
+            os.chdir(output_dir_path)
         try:
             mutation_types_file()
         except IOError:
@@ -1684,23 +1684,23 @@ def ymap_genes():
         except IOError:
             pass
         try:
-            shutil.move(output_path+"/"+'PTMs', output_path+"/"+'yMap-results'+str(y))
-            shutil.move('Domains', output_path+"/"+'yMap-results'+str(y))
-            shutil.move('Nucleotide_binding',output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'A-B-sites', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PDB', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'Interface', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PPI', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PTMs_within_Proteins', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PTMs_between_Proteins',output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PTMs_hotSpots',output_path+"/"+'yMap-results'+str(y))
-            shutil.move('mutation.txt', output_path+"/"+'yMap-results'+str(y))
-            shutil.move('mutated_proteins.txt', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'final_report.txt', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'pvalue.txt', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'biog.txt', output_path+"/"+'yMap-results'+str(y))
-            os.remove(output_path+"/"+'mutation_id.txt')
-            os.remove(output_path+"/"+'summary.txt')
+            shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move('Nucleotide_binding',output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'A-B-sites', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PDB', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'Interface', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PPI', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move('mutation.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move('mutated_proteins.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'final_report.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'pvalue.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'biog.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            os.remove(output_dir_path+"/"+'mutation_id.txt')
+            os.remove(output_dir_path+"/"+'summary.txt')
         except IOError: 
             pass
         os.chdir(wd)
@@ -1715,11 +1715,11 @@ def ymap_proteins():
     if not os.path.exists('mutation.txt'):
         raise StopIteration('because of missing mutation file')
     else:
-        if not os.path.exists(output_path):
-            os.mkdir(output_path)
-            os.chdir(output_path)
+        if not os.path.exists(output_dir_path):
+            os.mkdir(output_dir_path)
+            os.chdir(output_dir_path)
         else:
-            os.chdir(output_path)
+            os.chdir(output_dir_path)
         try:
             uniprot_data()
         except IOError:
@@ -1746,22 +1746,22 @@ def ymap_proteins():
         except IOError:
             pass
         try:
-            shutil.move(output_path+"/"+'PTMs', output_path+"/"+'yMap-results'+str(y))
-            shutil.move('Domains', output_path+"/"+'yMap-results'+str(y))
-            shutil.move('Nucleotide_binding',output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'A-B-sites', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PDB', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'Interface', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PPI', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PTMs_within_Proteins', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PTMs_between_Proteins',output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'PTMs_hotSpots',output_path+"/"+'yMap-results'+str(y))
-            shutil.move('mutation.txt', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'final_report.txt', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'pvalue.txt', output_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_path+"/"+'biog.txt', output_path+"/"+'yMap-results'+str(y))
-            os.remove(output_path+"/"+'mutation_id.txt')
-            os.remove(output_path+"/"+'summary.txt')
+            shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move('Nucleotide_binding',output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'A-B-sites', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PDB', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'Interface', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PPI', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move('mutation.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'final_report.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'pvalue.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(output_dir_path+"/"+'biog.txt', output_dir_path+"/"+'yMap-results'+str(y))
+            os.remove(output_dir_path+"/"+'mutation_id.txt')
+            os.remove(output_dir_path+"/"+'summary.txt')
         except IOError: 
             pass
         os.chdir(wd)
