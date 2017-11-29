@@ -115,7 +115,7 @@ def revcomp(dna, reverse=True, complement=True):
     return ''.join(result_as_list)
 
 
-def mutation_file(mutation, d_id):
+def mutation_file(mutation, d_id, output_dir):
         """ defines the mutation types; either Non-Synonmous or Stop Codon"""
         with open(mutation_prot_file, 'wb') as t:   
             with open(mutation, 'r') as mut: 
@@ -212,7 +212,7 @@ def mutation_file(mutation, d_id):
 class YGtPM(object):
 
     
-    def gff(self):
+    def gff(self, output_dir):
         """ The genomic coordinates downloaded in gff formate for further processing to calculate mutated codons, if not
               available, see next method"""
         rsponse = urlopen("http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff")
@@ -222,7 +222,7 @@ class YGtPM(object):
         file.close()
         
 
-    def frmt(self, file_gff):
+    def frmt(self, file_gff, output_dir):
         """This method format the gff file into a tsv one, with protein id, start and end with strand orientation"""
         with open(frmt_file,'w') as file4:
             with open(file_gff, 'r') as file_gff:
@@ -239,7 +239,7 @@ class YGtPM(object):
                                 file4.write(result2+'\n')
 
 
-    def id_map(self, file_id, frmt):        
+    def id_map(self, file_id, frmt, output_dir):        
         with open(d_id_map_file, 'w') as file2:
             with open(file_id, 'r') as file_id_name:
                 for line in file_id_name:
@@ -255,7 +255,7 @@ class YGtPM(object):
                                             file2.write(result+'\n')
 
 
-    def pTMdata(self):
+    def pTMdata(self, output_dir):
 
         """Downloads UpiProt data as a raw txt file (uniprot_mod_raw.txt)"""
         rsponse = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=gff&columns=id,feature(MODIFIED%20RESIDUE)')
@@ -264,7 +264,7 @@ class YGtPM(object):
         fil.write(page)
         fil.close()
 
-    def clean(self, UniProt_file):
+    def clean(self, UniProt_file, output_dir):
         """ cleans file uniprot_mod_raw.txt into a tab separated PTMs.txt
         """
 
@@ -313,7 +313,7 @@ class YGtPM(object):
                                 out.write(p3+'\n')
 
 
-    def iD(self):
+    def iD(self, output_dir):
 
         """ This method retrieves the different ID types for maping """
         rsponse = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=tab&columns=id,genes(OLN),%2Cgenes(PREFERRED)')
@@ -323,7 +323,7 @@ class YGtPM(object):
         file_1.close()
         
     # TODO: there seems to be a serious bit of optimization possible here. The second input file should be opened once
-    def pmap(self, file_id, file_PTMs):          
+    def pmap(self, file_id, file_PTMs, output_dir):          
         """
         if proteins ids are not SDG or uniprot or common names, this method maps the ids
         """
@@ -342,7 +342,7 @@ class YGtPM(object):
                                         file3.write(result3+'\n')
                                              
 
-    def ptm_map(self, mutation_file, PTM_id_file):
+    def ptm_map(self, mutation_file, PTM_id_file, output_dir):
 
         """ This method maps the overlap between mutated codons from previous method to the PTM sites"""
         with open(mapped_ptms_file, 'w') as file5:
@@ -361,7 +361,7 @@ class YGtPM(object):
                                         summary.write(line1[0]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'PTMs'+'\t'+'UniProt'+'\n')
 
 
-    def dclean(self, uniprot_mod_raw):  
+    def dclean(self, uniprot_mod_raw, output_dir):  
 
         """domain data needed to be filters from UniProt file, before mapping domains"""
 
@@ -394,7 +394,7 @@ class YGtPM(object):
                                         domain.write(take3)
                 
     
-    def d_map(self, yeast_id, domain):
+    def d_map(self, yeast_id, domain, output_dir):
 
         """ maps the different proteins ids to domains"""
         
@@ -433,7 +433,7 @@ class YGtPM(object):
                                             id_domain.write(take4)
 
 
-    def dmap(self, file1, file2):
+    def dmap(self, file1, file2, output_dir):
 
         """ maps mutations to the yeast domains"""
         
@@ -485,7 +485,7 @@ class YGtPM(object):
                                     except IndexError:
                                         pass
     
-    def enrich(self, file1):
+    def enrich(self, file1, output_dir):
 
         """ This method performed enrichment analysis of mutated proteins and
         return the p value of functional enrichment of mutated proteins functional regions/residues; 
@@ -506,7 +506,7 @@ class YGtPM(object):
                                
 
 
-    def ab(self, file_raw): 
+    def ab(self, file_raw, output_dir): 
 
         """Prepares raw Uniprot data for yeast active and binding sites mutation analysis"""
 
@@ -527,7 +527,7 @@ class YGtPM(object):
                                     file2.write(take2+'\n')
                             
                              
-    def id(self, act, yeast_id): 
+    def id(self, act, yeast_id, output_dir): 
 
         """ maps proteins ids to active and binding sites containing proteins"""
 
@@ -546,7 +546,7 @@ class YGtPM(object):
                                             file_id.write(take+'\n')
 
 
-    def mmap(self, file_sites, mutation):
+    def mmap(self, file_sites, mutation, output_dir):
 
         """ maps mutations to proteins ab (active and binding sites) """ 
 
@@ -566,7 +566,7 @@ class YGtPM(object):
                                         summary.write(a[2]+'\t'+a[0]+'\t'+m[1]+'\t'+ a[3]+'\t'+'Active/Binding site'+'\t'+'UniProt'+'\n')
 
 
-    def nucleotide(self):
+    def nucleotide(self, output_dir):
 
         """ prepares the UniProt data for the nucleotide motifs mapping to mutations """
 
@@ -584,7 +584,7 @@ class YGtPM(object):
                                     t.write(f[0]+'\t'+f[2]+'\t'+f[4]+'\t'+f[5]+'\t'+take1[0]+'\n')
 
 
-    def n_map(self, yeast_id, domain): 
+    def n_map(self, yeast_id, domain, output_dir): 
 
         """ maps different proteins ids to nucleotides data """
 
@@ -603,7 +603,7 @@ class YGtPM(object):
                                             id_domain.write(take+'\n')
 
 
-    def nucleotide_map(self, file1, file2):
+    def nucleotide_map(self, file1, file2, output_dir):
 
         """ maps mutations to protein-nucleotide binding motifs """
         
@@ -631,7 +631,7 @@ class YGtPM(object):
                                     pass
 
 
-    def bioGrid(self):
+    def bioGrid(self, output_dir):
 
         """ Downloads BioGrid ids of yeast proteins from UniProt for further processing including mapping and web browsing
         WARNING: requires powerful machines to work with as its expensive to open in machines with low memory
@@ -643,7 +643,7 @@ class YGtPM(object):
         file1.close()
     
 
-    def preWeb(self, file1, mutation ): 
+    def preWeb(self, file1, mutation, output_dir): 
 
         """ maps mutations to BioGrid ids """ 
 
@@ -676,7 +676,7 @@ class YGtPM(object):
             webbrowser.open(url + f[1])
 
 
-    def pdb_c(self, file_1):
+    def pdb_c(self, file_1, output_dir):
 
         """ Structure data filtration from UniProt"""
 
@@ -701,7 +701,7 @@ class YGtPM(object):
                                         stru.write(tak3+'\n')
 
     
-    def mu_map(self):
+    def mu_map(self, output_dir):
 
         """ mutations proteins mapped to the yeastID file"""
 
@@ -720,7 +720,7 @@ class YGtPM(object):
                                             f.write(take+'\n')
 
 
-    def pdb(self, file_pdb):
+    def pdb(self, file_pdb, output_dir):
 
         """ This code maps mutations to the proteins structural regions"""
 
@@ -760,7 +760,7 @@ class YGtPM(object):
 #PTM types, present at interface  and/or ppi.
 
 
-def interface(file1, mutation):
+def interface(file1, mutation, output_dir):
 
     """PTM present at the interface of two proteins and known to play role in interaction (Beltrao et al. Cell 2012)"""
     
@@ -789,7 +789,7 @@ def interface(file1, mutation):
                                                 
          
 
-def ppi(file1,mutation):
+def ppi(file1, mutation, output_dir):
 
     """ PTM present at the interface of two proteins and known to play role in interaction (PTMfunc; Beltrao et al. Cell 2012)"""
 
@@ -828,7 +828,7 @@ def ppi(file1,mutation):
                                                     out.write(take2+'\n')
                     
     
-def withinPro(file2, mutation):
+def withinPro(file2, mutation, output_dir):
 
     """ PTMs (predicted) involved in the crosstalk within a given protein at baker's years (Minguez el 2012)"""
 
@@ -869,7 +869,7 @@ def withinPro(file2, mutation):
                                                     file1.write(take3+'\n')
                          
 
-def betweenPro(fileb, mutation):
+def betweenPro(fileb, mutation, output_dir):
 
     """ PTMs (predicted) involved in the crosstalk in different proteins at baker's years (PTMcode 2.0; Minguez el 2012) """
 
@@ -914,7 +914,7 @@ def betweenPro(fileb, mutation):
 # dictionary di[2] as keys list of di[0]'s as  values, for a given fi[1] you can then retreive all corresponging di[0]'s
 # don't open hotspot again and again it is already
 # there are many other cases where something similar hapens
-def hotspot(fileh, mutation):
+def hotspot(fileh, mutation, output_dir):
 
     """ PTMs containing motifs in a close proximity are named hotspots (Beltrao et al. Cell 2012)"""
 
@@ -940,7 +940,7 @@ def hotspot(fileh, mutation):
                                                     hotspot.write(take+'\n')
                           
 
-def sum_file_map():  
+def sum_file_map(output_dir):  
 
     """ reports all the results in a 'final-report' file """
 
@@ -950,7 +950,7 @@ def sum_file_map():
                 x.write(fi)
 
 
-def resc():
+def resc(output_dir):
     """
     documentation needed....
     """
