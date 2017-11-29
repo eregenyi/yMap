@@ -527,7 +527,7 @@ class YGtPM(object):
                                     file2.write(take2+'\n')
                             
                              
-    def id(self, bact_input, yeastID_input, sites_id_output): 
+    def id(self, yeastID_input, bact_input, sites_id_output): 
 
         """ maps proteins ids to active and binding sites containing proteins"""
 
@@ -643,12 +643,12 @@ class YGtPM(object):
         file1.close()
     
 
-    def preWeb(self, biogrid_input, mapped_mut_input, biog_output): 
+    def preWeb(self, uniprot_biogrid_input, mapped_mut_input, biog_output): 
 
         """ maps mutations to BioGrid ids """ 
 
         with open(biog_output, 'w') as out:
-            with open(biogrid_input, 'r') as fl:
+            with open(uniprot_biogrid_input, 'r') as fl:
                 for f in fl:
                     f = f.rstrip().split()
                     if len(f) > 1:
@@ -760,7 +760,7 @@ class YGtPM(object):
 #PTM types, present at interface  and/or ppi.
 
 
-def interface(interface_sites_input, mut_prot_input, yeastID_input, mapped_interface_output, summary_output):
+def interface(yeastID_input, interface_sites_input, mut_prot_input, mapped_interface_output, summary_output):
 
     """PTM present at the interface of two proteins and known to play role in interaction (Beltrao et al. Cell 2012)"""
     
@@ -789,7 +789,7 @@ def interface(interface_sites_input, mut_prot_input, yeastID_input, mapped_inter
                                                 
          
 
-def ppi(ppi_input, mut_prot_input, yeastID_input, mapped_ppi_output, summary_output):
+def ppi(yeastID_input, ppi_input, mut_prot_input, mapped_ppi_output, summary_output):
 
     """ PTM present at the interface of two proteins and known to play role in interaction (PTMfunc; Beltrao et al. Cell 2012)"""
 
@@ -828,7 +828,7 @@ def ppi(ppi_input, mut_prot_input, yeastID_input, mapped_ppi_output, summary_out
                                                     out.write(take2+'\n')
                     
     
-def withinPro(within_prot_input, mut_prot_input, yeastID_input, mapped_within_prot_output, summary_output):
+def withinPro(yeastID_input, within_prot_input, mut_prot_input, mapped_within_prot_output, summary_output):
 
     """ PTMs (predicted) involved in the crosstalk within a given protein at baker's years (Minguez el 2012)"""
 
@@ -869,7 +869,7 @@ def withinPro(within_prot_input, mut_prot_input, yeastID_input, mapped_within_pr
                                                     file1.write(take3+'\n')
                          
 
-def betweenPro(between_prot_input, mut_prot_input, yeastID_input, mapped_between_prot_output, summary_output):
+def betweenPro(yeastID_input, between_prot_input, mut_prot_input, mapped_between_prot_output, summary_output):
 
     """ PTMs (predicted) involved in the crosstalk in different proteins at baker's years (PTMcode 2.0; Minguez el 2012) """
 
@@ -914,7 +914,7 @@ def betweenPro(between_prot_input, mut_prot_input, yeastID_input, mapped_between
 # dictionary di[2] as keys list of di[0]'s as  values, for a given fi[1] you can then retreive all corresponging di[0]'s
 # don't open hotspot again and again it is already
 # there are many other cases where something similar hapens
-def hotspot(regulatory_hotspots_input, mut_prot_input, yeastID_input, mapped_hotspot_output, summary_output):
+def hotspot(yeastID_input, regulatory_hotspots_input, mut_prot_input, mapped_hotspot_output, summary_output):
 
     """ PTMs containing motifs in a close proximity are named hotspots (Beltrao et al. Cell 2012)"""
 
@@ -957,59 +957,59 @@ def resc(output_dir):
 
     try:
         r = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_aceksites_interfaceRes_sc.txt").read().decode()
-        with open(interface_acet_file,'w') as h:
+        with open(interface_acet_file_path,'w') as h:
             h.write(r+'\n')
     except IOError:
         pass
     try:
         ri = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_phosphosites_interfaceRes_sc.txt").read().decode()
-        with open(interface_phos_file,'w') as hi:
+        with open(interface_phos_file_path,'w') as hi:
             hi.write(ri+'\n')
     except IOError:
         pass
     try:
         riu = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_ubisites_interfaceRessc_sc.txt").read().decode()
-        with open(interface_ubiq_file,'w') as hiu:
+        with open(interface_ubiq_file_path,'w') as hiu:
             hiu.write(riu+'\n')
     except IOError:
         pass
     try:
         rac = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_acet_interactions.txt").read().decode()
-        with open(interact_acet_file,'w') as hia:
+        with open(interact_acet_file_path,'w') as hia:
             hia.write(rac+'\n')
     except IOError:
         pass
     try:
         t = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_btw_proteins.txt.zip").read()
-        with open(between_prot_zip_file,'wb') as ht:
+        with open(between_prot_zip_file_path,'wb') as ht:
             ht.write(t)
     except IOError:
         pass
     try:
-        zipfile.ZipFile(between_prot_zip_file, 'r').extractall()
+        zipfile.ZipFile(between_prot_zip_file_path, 'r').extractall()
     except IOError:
         pass
     try:
         rps = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_psites_interactions_sc.txt").read().decode()
-        with open(interact_phos_file,'w') as hip:
+        with open(interact_phos_file_path,'w') as hip:
             hip.write(rps+'\n')
     except IOError:
         pass
     try:
         rui = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_ubi_interactions_sc.txt").read().decode()
-        with open(interact_ubiq_file,'w') as hui:
+        with open(interact_ubiq_file_path,'w') as hui:
             hui.write(rui+'\n')
     except IOError:
         pass
     try:
         rin = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_within_proteins.txt").read().decode()
-        with open(within_prot_file,'w') as hin:
+        with open(within_prot_file_path,'w') as hin:
             hin.write(rin+'\n')
     except IOError:
         pass
     try:
         rsc = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/schotspot_updated.txt").read().decode()
-        with open(regulatory_hotspots_file,'w') as his:
+        with open(regulatory_hotspots_file_path,'w') as his:
             his.write(rsc+'\n')
     except IOError:
         pass
@@ -1206,67 +1206,67 @@ def data():
     os.mkdir(data_dir_path)
     os.chdir(data_dir_path)
     try:
-        resc()
+        resc(data_dir_path)
     except IOError:
         pass
     try:
-        c.pTMdata()
+        c.pTMdata(uniprot_file_path)
     except IOError:
         pass
     try:
-        c.clean(uniprot_file)
+        c.clean(uniprot_file_path, ptms_file_path)
     except IOError:
         pass
     try:
-        c.iD()  # this method does not return anything, all the rest below also don't
+        c.iD(yeastID_file_path)  # this method does not return anything, all the rest below also don't
     except IOError:
         pass
     try:
-        c.pmap(yeastID_file, ptms_file)
+        c.pmap(yeastID_file_path, ptms_file_path, ptm_id_file_path)
     except IOError:
         pass
     try:
-        c.dclean(uniprot_file)
+        c.dclean(uniprot_file_path, domains_file_path)
     except IOError:
         pass
     try:
-        c.d_map(yeastID_file, domains_file)
+        c.d_map(yeastID_file_path, domains_file_path, domain_id_file_path)
     except IOError:
         pass
     try:
-        c.ab(uniprot_file)
+        c.ab(uniprot_file_path, bact_file_path)
     except IOError:
             pass
     try:
-        c.id(bact_file, yeastID_file)
+        c.id(yeastID_file_path, bact_file_path, sites_id_file_path)
     except IOError:
             pass
     try:
-        c.bioGrid()
+        c.bioGrid(uniprot_biogrid_file_path)
     except IOError:
             pass
     try:
-        c.pdb_c(uniprot_file)
+        c.pdb_c(uniprot_file_path, pdb_file_path)
     except IOError:
         pass
     try:
-        c.gff()
+        c.gff(gff_file_path)
     except IOError:
         pass
     try:
-        c.frmt(gff_file)
+        c.frmt(gff_file_path, frmt_file_path)
     except IOError:
         pass
     try:
-        c.id_map(yeastID_file, frmt_file)
+        c.id_map(yeastID_file_path, frmt_file_path, d_id_map_file_path)
     except IOError:
         pass
     try:
-        c.nucleotide(uniprot_file)
+        c.nucleotide(uniprot_file_path, nucleotide_file_path)
     except IOError:
         pass
     try:
-        c.n_map(yeastID_file, nucleotide_file)
+        c.n_map(yeastID_file_path, nucleotide_file_path, nucleotide_id_file_path)
     except IOError:
         pass
     try:
@@ -1301,7 +1301,7 @@ def mutation_types_file():
 
     start_time = time.time()
     try:
-        mutation_file(mutation_gene_file, d_id_map_file)
+        mutation_file(mutation_gene_file_path, gff_file_path, d_id_map_file_path, mutation_prot_file_path)
     except IOError:
         pass
     return "Mutations with mutations types are available to map on functional entities"
@@ -1317,19 +1317,19 @@ def ptm():
     """ PTMs mapping to mutations """
 
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
         try:
-            a = c.ptm_map(mutation_prot_file, ptm_id_file)
+            a = c.ptm_map(mutation_prot_file_path, ptm_id_file_path, mapped_ptms_file_path, summary_file_path)
         except IOError:
             pass
         try:    
-            p = c.enrich(mapped_ptms_file)
+            p = c.enrich(mapped_ptms_file_path)
         except IOError:
             pass
         try:
-            c.preWeb(uniprot_biogrid_file, mapped_ptms_file)
+            c.preWeb(uniprot_biogrid_file_path, mapped_ptms_file_path)
         except IOError:
             pass
         try:
@@ -1347,19 +1347,19 @@ def domain():
     """ protein domain mapping """
 
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
         try:
-            dom = c.dmap(mutation_prot_file, domain_id_file)
+            dom = c.dmap(mutation_prot_file_path, domain_id_file_path, mapped_domains_file_path, summary_file_path)
         except IOError:
             pass
         try:
-           p = c.enrich(mapped_domains_file)  
+           p = c.enrich(mapped_domains_file_path)  
         except IOError:
             pass
         try:
-            c.preWeb(uniprot_biogrid_file, mapped_domains_file)
+            c.preWeb(uniprot_biogrid_file_path, mapped_domains_file_path)
         except IOError:
             pass
         try:
@@ -1380,19 +1380,19 @@ def nucleo():
     """ DNA-protein binding motif mapping """
 
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
         try:
-            c.nucleotide_map(mutation_prot_file, nucleotide_id_file)
+            c.nucleotide_map(mutation_prot_file_path, nucleotide_id_file_path, mapped_nucleotide_file_path, summary_file_path)
         except IOError:
             pass
         try:
-           p = c.enrich(mapped_nucleotide_file)  
+           p = c.enrich(mapped_nucleotide_file_path)  
         except IOError:
             pass
         try:
-            c.preWeb(uniprot_biogrid_file, mapped_nucleotide_file)
+            c.preWeb(uniprot_biogrid_file_path, mapped_nucleotide_file_path)
         except IOError:
             pass
         try:
@@ -1413,19 +1413,19 @@ def ab():
     """ active and binding site mapping """
 
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
             raise StopIteration('because of missing mutation file')
     else:
         try:
-            mm = c.mmap(mutation_prot_file, sites_id_file)
+            mm = c.mmap(mutation_prot_file_path, sites_id_file_path, mapped_sites_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_sites_file)
+            p = c.enrich(mapped_sites_file_path)
         except IOError:
             pass
         try:
-            c.preWeb(uniprot_biogrid_file, mapped_sites_file)
+            c.preWeb(uniprot_biogrid_file_path, mapped_sites_file_path)
         except IOError:
             pass
         try:
@@ -1443,23 +1443,23 @@ def struc_map():
     """ structural regions mapping """
 
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
         try:
-            c.mu_map(yeastID_file, mutation_prot_file)
+            c.mu_map(yeastID_file_path, mutation_prot_file_path, mapped_mutation_pos_file_path)
         except IOError:
             pass
         try:
-            pd = c.pdb(pdb_file, mapped_mutation_pos_file)
+            pd = c.pdb(pdb_file_path, mapped_mutation_pos_file_path, mapped_struct_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_struct_file)
+            p = c.enrich(mapped_struct_file_path)
         except IOError:
             pass
         try:
-            c.preWeb(uniprot_biogrid_file, mapped_struct_file)
+            c.preWeb(uniprot_biogrid_file_path, mapped_struct_file_path)
         except IOError:
             pass
         try:
@@ -1478,15 +1478,15 @@ def intf():
         user's mutational data on Yeast proteins from PTMfunc (also 3DID db) and PTMcode 2.0"""
     
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
         try:
-            interface(interface_acet_file ,mutation_prot_file)
+            interface(yeastID_file_path, interface_acet_file_path, mutation_prot_file_path, mapped_interface_acet_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_interface_acet_file)
+            p = c.enrich(mapped_interface_acet_file_path)
         except IOError:
             pass 
         try:
@@ -1497,11 +1497,11 @@ def intf():
         except IOError:
             pass
         try:
-            interface(interface_phos_file ,mutation_prot_file)
+            interface(yeastID_file_path, interface_phos_file_path, mutation_prot_file_path, mapped_interface_phos_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_interface_phos_file)
+            p = c.enrich(mapped_interface_phos_file_path)
         except IOError:
             pass
         try:
@@ -1511,11 +1511,11 @@ def intf():
         except IOError:
             pass
         try:   
-            interface(interface_ubiq_file ,mutation_prot_file)
+            interface(yeastID_file_path, interface_ubiq_file_path, mutation_prot_file_path, mapped_interface_ubiq_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_interface_ubiq_file)
+            p = c.enrich(mapped_interface_ubiq_file_path)
         except IOError:
             pass
         try:
@@ -1528,15 +1528,15 @@ def intf():
 
 def pi():
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
             raise StopIteration('because of missing mutation file')
     else:
         try:
-            ppi(interact_acet_file, mutation_prot_file)
+            ppi(yeastID_file_path, interact_acet_file_path, mutation_prot_file_path, mapped_interact_acet_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            c.enrich(mapped_interact_acet_file)
+            c.enrich(mapped_interact_acet_file_path)
         except IOError:
             pass
         try:
@@ -1547,11 +1547,11 @@ def pi():
         except IOError:
             pass
         try:
-            ppi(interact_phos_file, mutation_prot_file)
+            ppi(yeastID_file_path, interact_phos_file_path, mutation_prot_file_path, mapped_interact_phos_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_interact_phos_file)
+            p = c.enrich(mapped_interact_phos_file_path)
         except IOError:
             pass
         try:
@@ -1562,11 +1562,11 @@ def pi():
             pass
     
         try:
-            ppi(interact_ubiq_file, mutation_prot_file)
+            ppi(yeastID_file_path, interact_ubiq_file_path, mutation_prot_file_path, mapped_interact_ubiq_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            c.enrich(mapped_interact_ubiq_file)
+            c.enrich(mapped_interact_ubiq_file_path)
         except IOError:
             pass 
         try:
@@ -1579,15 +1579,15 @@ def pi():
 
 def withP():
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
             raise StopIteration('because of missing mutation file')
     else:
         try:
-            withinPro(within_prot_file,mutation_prot_file)
+            withinPro(yeastID_file_path, within_prot_file_path, mutation_prot_file_path, mapped_within_prot_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_within_prot_file)
+            p = c.enrich(mapped_within_prot_file_path)
         except IOError:
             pass
         try:
@@ -1600,15 +1600,15 @@ def withP():
 
 def betweenP():
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
             raise StopIteration('because of missing mutation file')
     else:
         try:
-            betweenPro(between_prot_file, mutation_prot_file)
+            betweenPro(yeastID_file_path, between_prot_file_path, mutation_prot_file_path, mapped_between_prot_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_between_prot_file)
+            p = c.enrich(mapped_between_prot_file_path)
         except IOError:
             pass
         try:
@@ -1622,15 +1622,15 @@ def betweenP():
 
 def hotS():
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
             raise StopIteration('because of missing mutation file')
     else:
         try:
-            hotspot(regulatory_hotspots_file, mutation_prot_file)
+            hotspot(yeastID_file_path, regulatory_hotspots_file_path, mutation_prot_file_path, mapped_hotspot_file_path, summary_file_path)
         except IOError:
             pass
         try:
-            p = c.enrich(mapped_hotspot_file)
+            p = c.enrich(mapped_hotspot_file_path)
         except IOError:
             pass
         try:
@@ -1678,7 +1678,7 @@ def functional_data():
 
     """ to perform all functions on UniProt(like ptm, domain and ab () functions) all together """
 
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
             raise StopIteration('because of missing mutation file')
     else:
         try:
@@ -1714,7 +1714,7 @@ def ymap_genes():
     """ returns all the results of all the codes of yMap; starting from genetics coordinates of proteins """
 
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    if not os.path.exists(mutation_prot_file_path):
         if not os.path.exists(output_dir_path):
             os.mkdir(output_dir_path)
             os.chdir(output_dir_path)
@@ -1733,7 +1733,7 @@ def ymap_genes():
         except IOError:
             pass
         try:
-            sum_file_map(final_report_file)
+            sum_file_map(final_report_file_path)
         except IOError:
             pass
         try:
@@ -1742,11 +1742,11 @@ def ymap_genes():
         except IOError:
             pass
         try:    
-            p = c.enrich(final_report_file)
+            p = c.enrich(final_report_file_path)
         except IOError:
             pass
         try:
-            c.preWeb(uniprot_biogrid_file, final_report_file)
+            c.preWeb(uniprot_biogrid_file_path, final_report_file_path)
         except IOError:
             pass
         try:
@@ -1760,13 +1760,13 @@ def ymap_genes():
             shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(mutation_prot_file, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(mutation_gene_file, output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(mutation_prot_file_path, output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(mutation_gene_file_path, output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
-            os.remove(output_dir_path+"/"+mapped_mutation_pos_file)
-            os.remove(output_dir_path+"/"+summary_file)
+            os.remove(mapped_mutation_pos_file_path)          
+            os.remove(summary_file_path)
         except IOError: 
             pass
         os.chdir(wd)
@@ -1778,7 +1778,7 @@ def ymap_proteins():
     """ returns all the results of all the codes of yMap; starting from proteins level mutation positions """
 
     start_time = time.time()
-    mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file)
+    mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file_path)
     if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
@@ -1794,7 +1794,7 @@ def ymap_proteins():
         except IOError:
             pass
         try:
-            sum_file_map(final_report_file)
+            sum_file_map(final_report_file_path)
         except IOError:
             pass
         try:
@@ -1803,11 +1803,11 @@ def ymap_proteins():
         except IOError:
             pass
         try:    
-            p = c.enrich(final_report_file)
+            p = c.enrich(final_report_file_path)
         except IOError:
             pass
         try:
-            c.preWeb(uniprot_biogrid_file, final_report_file)
+            c.preWeb(uniprot_biogrid_file_path, final_report_file_path)
         except IOError:
             pass
         try:
@@ -1821,12 +1821,12 @@ def ymap_proteins():
             shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(mutation_prot_file, output_dir_path+"/"+'yMap-results'+str(y))
+            shutil.move(mutation_prot_file_path, output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
             shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
-            os.remove(output_dir_path+"/"+mapped_mutation_pos_file)
-            os.remove(output_dir_path+"/"+summary_file)
+            os.remove(mapped_mutation_pos_file_path)
+            os.remove(summary_file_path)
         except IOError: 
             pass
         os.chdir(wd)
