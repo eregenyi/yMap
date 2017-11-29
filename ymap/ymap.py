@@ -1135,11 +1135,48 @@ dirs = [
     ptm_hotspot_dir_path
 ]
 
-
 def makeDirTree(dirs):
     for directory in dirs:
         os.makedirs(directory)
-    
+
+# Setup paths to input and data files
+# Input files
+mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file)
+mutation_gene_file_path = os.path.join(input_dir_path, mutation_gene_file)
+
+# Intermediate processing files
+uniprot_file_path = os.path.join(data_dir_path, uniprot_file)
+bact_file_path = os.path.join(data_dir_path, bact_file)
+ptms_file_path = os.path.join(data_dir_path, ptms_file)
+domains_file_path = os.path.join(data_dir_path, domains_file)
+nucleotide_file_path = os.path.join(data_dir_path, nucleotide_file)
+pdb_file_path = os.path.join(data_dir_path, pdb_file)
+
+gff_file_path = os.path.join(data_dir_path, gff_file)
+frmt_file_path = os.path.join(data_dir_path, frmt_file)
+
+yeastID_file_path = os.path.join(data_dir_path, yeastID_file)
+d_id_map_file_path = os.path.join(data_dir_path, d_id_map_file) 
+sites_id_file_path = os.path.join(data_dir_path, sites_id_file)
+ptm_id_file_path = os.path.join(data_dir_path, ptm_id_file)
+domain_id_file_path = os.path.join(data_dir_path, domain_id_file)
+nucleotide_id_file_path = os.path.join(data_dir_path, nucleotide_id_file)
+
+# Downloaded and copied PTMfunc and PTMcode data files
+interface_acet_file_path = os.path.join(data_dir_path, interface_acet_file)
+interface_phos_file_path = os.path.join(data_dir_path, interface_phos_file)
+interface_ubiq_file_path = os.path.join(data_dir_path, interface_ubiq_file)
+regulatory_hotspots_file_path = os.path.join(data_dir_path, regulatory_hotspots_file)
+interact_acet_file_path = os.path.join(data_dir_path, interact_acet_file)
+interact_phos_file_path = os.path.join(data_dir_path, interact_phos_file)
+interact_ubiq_file_path = os.path.join(data_dir_path, interact_ubiq_file)
+within_prot_file_path = os.path.join(data_dir_path, within_prot_file)
+between_prot_zip_file_path = os.path.join(data_dir_path, between_prot_zip_file)
+between_prot_file_path = os.path.join(data_dir_path, between_prot_file)
+
+uniprot_biogrid_file_path = os.path.join(data_dir_path, uniprot_biogrid_file)
+
+
 def data(): 
 
     """ this function will download and clean required data to run ymap methods smoothly """
