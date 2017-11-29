@@ -1720,14 +1720,13 @@ def ymap_proteins():
     """ returns all the results of all the codes of yMap; starting from proteins level mutation positions """
 
     start_time = time.time()
-    if not os.path.exists(mutation_prot_file):
+    mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file)
+    if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
-        if not os.path.exists(output_dir_path):
-            os.mkdir(output_dir_path)
-            os.chdir(output_dir_path)
-        else:
-            os.chdir(output_dir_path)
+        os.makedirs(output_dir_path, exist_ok = True)
+        os.chdir(output_dir_path)
+        shutil.move(mutation_prot_file_path, output_dir_path)
         try:
             uniprot_data()
         except IOError:
