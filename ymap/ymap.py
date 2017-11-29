@@ -31,6 +31,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+from ymap import biog_file
 try:
     from builtins import next
     from builtins import str
@@ -485,12 +486,13 @@ class YGtPM(object):
                                     except IndexError:
                                         pass
     
-    def enrich(self, mapped_mut_input, p_value_output):
+    def enrich(self, mapped_mut_input):
 
         """ This method performed enrichment analysis of mutated proteins and
         return the p value of functional enrichment of mutated proteins functional regions/residues; 
         see main text for how pvalue is calculated"""
         k = []
+        p_value_output = os.path.join(os.path.dirname(mapped_mut_input), p_value_file)
         with open(p_value_output,'w') as out:
             with open(mapped_mut_input, 'r') as f:
                 k = [(line.split())[1] for line in f]
@@ -643,10 +645,10 @@ class YGtPM(object):
         file1.close()
     
 
-    def preWeb(self, uniprot_biogrid_input, mapped_mut_input, biog_output): 
+    def preWeb(self, uniprot_biogrid_input, mapped_mut_input): 
 
         """ maps mutations to BioGrid ids """ 
-
+        biog_output = os.path.join(os.path.dirname(mapped_mut_input), biog_file) 
         with open(biog_output, 'w') as out:
             with open(uniprot_biogrid_input, 'r') as fl:
                 for f in fl:
