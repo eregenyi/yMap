@@ -1139,7 +1139,7 @@ def makeDirTree(dirs):
     for directory in dirs:
         os.makedirs(directory)
 
-# Setup paths to input and data files
+# Setup paths to data, input and output files
 # Input files
 mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file)
 mutation_gene_file_path = os.path.join(input_dir_path, mutation_gene_file)
@@ -1175,6 +1175,27 @@ between_prot_zip_file_path = os.path.join(data_dir_path, between_prot_zip_file)
 between_prot_file_path = os.path.join(data_dir_path, between_prot_file)
 
 uniprot_biogrid_file_path = os.path.join(data_dir_path, uniprot_biogrid_file)
+
+# Paths to output files
+summary_file_path = os.path.join(output_dir_path, summary_file)
+final_report_file_path = os.path.join(output_dir_path, final_report_file)
+
+mapped_sites_file_path = os.path.join(output_dir_path, mapped_sites_file)
+mapped_ptms_file_path = os.path.join(output_dir_path, mapped_ptms_file)
+mapped_domains_file_path = os.path.join(output_dir_path, mapped_domains_file)
+mapped_nucleotide_file_path = os.path.join(output_dir_path, mapped_nucleotide_file)
+mapped_mutation_pos_file_path = os.path.join(output_dir_path, mapped_mutation_pos_file)
+mapped_struct_file_path = os.path.join(output_dir_path, mapped_struct_file)
+
+mapped_interface_acet_file_path = os.path.join(output_dir_path, mapped_interface_acet_file)
+mapped_interface_phos_file_path = os.path.join(output_dir_path, mapped_interface_phos_file)
+mapped_interface_ubiq_file_path = os.path.join(output_dir_path, mapped_interface_ubiq_file)
+mapped_interact_acet_file_path = os.path.join(output_dir_path, mapped_interact_acet_file)
+mapped_interact_phos_file_path = os.path.join(output_dir_path, mapped_interact_phos_file)
+mapped_interact_ubiq_file_path = os.path.join(output_dir_path, mapped_interact_ubiq_file)
+mapped_hotspot_file_path = os.path.join(output_dir_path, mapped_hotspot_file)
+mapped_within_prot_file_path = os.path.join(output_dir_path, mapped_within_prot_file)
+mapped_between_prot_file_path = os.path.join(output_dir_path, mapped_between_prot_file)
 
 
 def data(): 
