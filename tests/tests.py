@@ -399,20 +399,22 @@ class FunctionalMappingTest(unittest.TestCase):
         # For each 3DID_<site>_interfaceRes_sc.txt file
         ymap.interface(self.yeastID, self.interface_acet, self.mutation_prot, self.mapped_interface_acet, self.summary)
         
+        self.assertTrue(path.isfile(self.mapped_interface_acet))
+        copy(self.mapped_interface_acet, ref_mapped_interface_acet) #TODO: Remove this (after file initially obtained)
+        self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_acet))
+        
+        
         ymap.interface(self.yeastID, self.interface_phos, self.mutation_prot, self.mapped_interface_phos, self.summary)
+        
+        self.assertTrue(path.isfile(self.mapped_interface_phos))
+        copy(self.mapped_interface_phos, ref_mapped_interface_phos) #TODO: Remove this (after file initially obtained)
+        self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_phos))
+        
         
         ymap.interface(self.yeastID, self.interface_ubiq, self.mutation_prot, self.mapped_interface_ubiq, self.summary)
         
-        self.assertTrue(path.isfile(self.mapped_interface_acet)) #TODO: Change the order to asserting file exists, then copying then comparing files for each file in turn
-        self.assertTrue(path.isfile(self.mapped_interface_phos))
         self.assertTrue(path.isfile(self.mapped_interface_ubiq))
-        
-        copy(self.mapped_interface_acet, ref_mapped_interface_acet) #TODO: Remove this (after file initially obtained)
-        copy(self.mapped_interface_phos, ref_mapped_interface_phos) #TODO: Remove this (after file initially obtained)
         copy(self.mapped_interface_ubiq, ref_mapped_interface_ubiq) #TODO: Remove this (after file initially obtained)
-        
-        self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_acet))
-        self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_phos))
         self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_ubiq))
     
     # pi()
@@ -420,20 +422,20 @@ class FunctionalMappingTest(unittest.TestCase):
         # For each SC_<site>_interactions_sc.txt
         ymap.ppi(self.yeastID, self.interact_acet, self.mutation_prot, self.mapped_interact_acet, self.summary)
         
+        self.assertTrue(path.isfile(self.mapped_interact_acet))
+        copy(self.mapped_interact_acet, ref_mapped_interact_acet) #TODO: Remove this (after file initially obtained)
+        self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_acet))
+        
         ymap.ppi(self.yeastID, self.interact_phos, self.mutation_prot, self.mapped_interact_phos, self.summary)
+        
+        self.assertTrue(path.isfile(self.mapped_interact_phos))
+        copy(self.mapped_interact_phos, ref_mapped_interact_phos) #TODO: Remove this (after file initially obtained)
+        self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_phos))
         
         ymap.ppi(self.yeastID, self.interact_ubiq, self.mutation_prot, self.mapped_interact_ubiq, self.summary)
         
-        self.assertTrue(path.isfile(self.mapped_interact_acet))
-        self.assertTrue(path.isfile(self.mapped_interact_phos))
         self.assertTrue(path.isfile(self.mapped_interact_ubiq))
-        
-        copy(self.mapped_interact_acet, ref_mapped_interact_acet) #TODO: Remove this (after file initially obtained)
-        copy(self.mapped_interact_phos, ref_mapped_interact_phos) #TODO: Remove this (after file initially obtained)
         copy(self.mapped_interact_ubiq, ref_mapped_interact_ubiq) #TODO: Remove this (after file initially obtained)
-        
-        self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_acet))
-        self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_phos))
         self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_ubiq))
     
     # withP()    
