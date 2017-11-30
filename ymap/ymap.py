@@ -31,7 +31,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
-from ymap import biog_file
 try:
     from builtins import next
     from builtins import str
@@ -942,12 +941,12 @@ def hotspot(yeastID_input, regulatory_hotspots_input, mut_prot_input, mapped_hot
                                                     hotspot.write(take+'\n')
                           
 
-def sum_file_map(summary_output, final_report_output):  
+def sum_file_map(summary_input, final_report_output):  
 
     """ reports all the results in a 'final-report' file """
 
     with open(final_report_output, 'w') as x:
-        with open(summary_output) as fil1:
+        with open(summary_input) as fil1:
             for fi in OrderedDict.fromkeys(fil1):
                 x.write(fi)
 
@@ -1735,7 +1734,7 @@ def ymap_genes():
         except IOError:
             pass
         try:
-            sum_file_map(final_report_file_path)
+            sum_file_map(summary_file_path, final_report_file_path)
         except IOError:
             pass
         try:
@@ -1780,13 +1779,11 @@ def ymap_proteins():
     """ returns all the results of all the codes of yMap; starting from proteins level mutation positions """
 
     start_time = time.time()
-    mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file_path)
     if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('because of missing mutation file')
     else:
         os.makedirs(output_dir_path, exist_ok = True)
         os.chdir(output_dir_path)
-        shutil.move(mutation_prot_file_path, output_dir_path)
         try:
             uniprot_data()
         except IOError:
@@ -1796,7 +1793,7 @@ def ymap_proteins():
         except IOError:
             pass
         try:
-            sum_file_map(final_report_file_path)
+            sum_file_map(summary_file_path, final_report_file_path)
         except IOError:
             pass
         try:
