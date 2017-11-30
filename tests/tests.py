@@ -7,6 +7,9 @@ from time import clock
 from filecmp import cmp
 import ymap.ymap as ymap 
 
+# Set this to True when you want to regenerate reference files for future testing
+generate_ref_files = True
+
 # Reference directory paths
 ref_dir = path.abspath('test_files')
 
@@ -140,35 +143,40 @@ class UniprotRawProcessingTest(unittest.TestCase):
         c.ab(self.uniprot_file, self.bact)
         
         self.assertTrue(path.isfile(self.bact))
-        copy(self.bact, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.bact, ref_dir)
         self.assertTrue(cmp(self.bact, ref_bact))
         
     def test_clean(self):
         c.clean(self.uniprot_file, self.ptms)
         
         self.assertTrue(path.isfile(self.ptms))
-        copy(self.ptms, ref_dir) #TODO: Remove this (after file obtained)
+        if generate_ref_files:
+            copy(self.ptms, ref_dir)
         self.assertTrue(cmp(self.ptms, ref_ptms))
     
     def test_dclean(self):
         c.dclean(self.uniprot_file, self.domains)
         
         self.assertTrue(path.isfile(self.domains))
-        copy(self.domains, ref_dir) #TODO: Remove this (after file obtained)
+        if generate_ref_files:
+            copy(self.domains, ref_dir)
         self.assertTrue(cmp(self.domains, ref_domains))
     
     def test_nucleotide(self):
         c.nucleotide(self.uniprot_file, self.nucleotide)
         
         self.assertTrue(path.isfile(self.nucleotide))
-        copy(self.nucleotide, ref_dir) #TODO: Remove this (after file obtained)
+        if generate_ref_files:
+            copy(self.nucleotide, ref_dir)
         self.assertTrue(cmp(self.nucleotide, ref_nucleotide))
     
     def test_pdb_c(self):
         c.pdb_c(self.uniprot_file, self.pdb)
         
         self.assertTrue(path.isfile(self.pdb))
-        copy(self.pdb, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.pdb, ref_dir)
         self.assertTrue(cmp(self.pdb, ref_pdb))
 
     # gff.txt processing
@@ -196,7 +204,8 @@ class GffProcessingTest(unittest.TestCase):
         c.frmt(self.gff, self.frmt)
         
         self.assertTrue(path.isfile(self.frmt))
-        copy(self.frmt, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.frmt, ref_dir)
         self.assertTrue(cmp(self.frmt, ref_frmt))
     
     # yeastID.txt processing
@@ -233,35 +242,40 @@ class YeastIDProcessingTest(unittest.TestCase):
         c.id_map(self.yeastID, self.frmt, self.d_id_map)
         
         self.assertTrue(path.isfile(self.d_id_map))
-        copy(self.d_id_map, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.d_id_map, ref_dir)
         self.assertTrue(cmp(self.d_id_map, ref_d_id_map))
     
     def test_id(self):
         c.id(self.yeastID, self.bact, self.sites_id)
         
         self.assertTrue(path.isfile(self.sites_id))
-        copy(self.sites_id, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.sites_id, ref_dir)
         self.assertTrue(cmp(self.sites_id, ref_sites_id))
     
     def test_pmap(self):
         c.pmap(self.yeastID, self.ptms, self.ptm_id)
         
         self.assertTrue(path.isfile(self.ptm_id))
-        copy(self.ptm_id, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.ptm_id, ref_dir)
         self.assertTrue(cmp(self.ptm_id, ref_ptm_id))
     
     def test_d_map(self):
         c.d_map(self.yeastID, self.domains, self.domain_id)
         
         self.assertTrue(path.isfile(self.domain_id))
-        copy(self.domain_id, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.domain_id, ref_dir)
         self.assertTrue(cmp(self.domain_id, ref_domain_id))
     
     def test_n_map(self):
         c.n_map(self.yeastID, self.nucleotide, self.nucleotide_id)
         
         self.assertTrue(path.isfile(self.nucleotide_id))
-        copy(self.nucleotide_id, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.nucleotide_id, ref_dir)
         self.assertTrue(cmp(self.nucleotide_id, ref_nucleotide_id))
     
     
@@ -306,7 +320,8 @@ class UniprotMappingTest(unittest.TestCase):
         c.mu_map(self.yeastID, self.mutation_prot, self.mapped_mutation_pos)
         
         self.assertTrue(path.isfile(self.mapped_mutation_pos))
-        copy(self.mapped_mutation_pos, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_mutation_pos, ref_dir)
         self.assertTrue(cmp(self.mapped_mutation_pos, ref_mapped_mutation_pos))
     
     def test_pdb(self):
@@ -316,39 +331,45 @@ class UniprotMappingTest(unittest.TestCase):
         c.pdb(self.pdb, self.mapped_mutation_pos, self.mapped_struct, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_struct))
-        copy(self.mapped_struct, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_struct, ref_dir)
         self.assertTrue(cmp(self.mapped_struct, ref_mapped_struct))
         #TODO: Not sure how to implement check of summary...
 #         self.assertTrue(path.isfile(self.summary)) 
-#         copy(self.summary, ref_dir) #TODO: Remove this (after file initially obtained)
+#         if generate_ref_files:
+#             copy(self.summary, ref_dir)
 #         self.assertTrue(cmp(self.summary, ref_summary))
 
     def test_mmap(self):
         c.mmap(self.mutation_prot, self.sites_id, self.mapped_sites, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_sites))
-        copy(self.mapped_sites, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_sites, ref_dir)
         self.assertTrue(cmp(self.mapped_sites, ref_mapped_sites))
     
     def test_ptm_map(self):
         c.ptm_map(self.mutation_prot, self.ptm_id, self.mapped_ptms, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_ptms))
-        copy(self.mapped_ptms, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_ptms, ref_dir)
         self.assertTrue(cmp(self.mapped_ptms, ref_mapped_ptms))
     
     def test_dmap(self):
         c.dmap(self.mutation_prot, self.domain_id, self.mapped_domains, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_domains))
-        copy(self.mapped_domains, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_domains, ref_dir)
         self.assertTrue(cmp(self.mapped_domains, ref_mapped_domains))
     
     def test_nucleotide_map(self):
         c.nucleotide_map(self.mutation_prot, self.nucleotide_id, self.mapped_nucleotide, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_nucleotide))
-        copy(self.mapped_nucleotide, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_nucleotide, ref_dir)
         self.assertTrue(cmp(self.mapped_nucleotide, ref_mapped_nucleotide))
     
 
@@ -400,21 +421,24 @@ class FunctionalMappingTest(unittest.TestCase):
         ymap.interface(self.yeastID, self.interface_acet, self.mutation_prot, self.mapped_interface_acet, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interface_acet))
-        copy(self.mapped_interface_acet, ref_mapped_interface_acet) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_interface_acet, ref_mapped_interface_acet)
         self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_acet))
         
         
         ymap.interface(self.yeastID, self.interface_phos, self.mutation_prot, self.mapped_interface_phos, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interface_phos))
-        copy(self.mapped_interface_phos, ref_mapped_interface_phos) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_interface_phos, ref_mapped_interface_phos)
         self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_phos))
         
         
         ymap.interface(self.yeastID, self.interface_ubiq, self.mutation_prot, self.mapped_interface_ubiq, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interface_ubiq))
-        copy(self.mapped_interface_ubiq, ref_mapped_interface_ubiq) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_interface_ubiq, ref_mapped_interface_ubiq)
         self.assertTrue(cmp(self.mapped_interface_acet, ref_mapped_interface_ubiq))
     
     # pi()
@@ -423,19 +447,22 @@ class FunctionalMappingTest(unittest.TestCase):
         ymap.ppi(self.yeastID, self.interact_acet, self.mutation_prot, self.mapped_interact_acet, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interact_acet))
-        copy(self.mapped_interact_acet, ref_mapped_interact_acet) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_interact_acet, ref_mapped_interact_acet)
         self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_acet))
         
         ymap.ppi(self.yeastID, self.interact_phos, self.mutation_prot, self.mapped_interact_phos, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interact_phos))
-        copy(self.mapped_interact_phos, ref_mapped_interact_phos) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_interact_phos, ref_mapped_interact_phos)
         self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_phos))
         
         ymap.ppi(self.yeastID, self.interact_ubiq, self.mutation_prot, self.mapped_interact_ubiq, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interact_ubiq))
-        copy(self.mapped_interact_ubiq, ref_mapped_interact_ubiq) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_interact_ubiq, ref_mapped_interact_ubiq)
         self.assertTrue(cmp(self.mapped_interact_acet, ref_mapped_interact_ubiq))
     
     # withP()    
@@ -443,7 +470,8 @@ class FunctionalMappingTest(unittest.TestCase):
         ymap.withinPro(self.yeastID, self.within_prot, self.mutation_prot, self.mapped_within_prot, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_within_prot))
-        copy(self.mapped_within_prot, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_within_prot, ref_dir)
         self.assertTrue(cmp(self.mapped_within_prot, ref_mapped_within_prot))
     
     # betweenP()
@@ -451,7 +479,8 @@ class FunctionalMappingTest(unittest.TestCase):
         ymap.betweenPro(self.yeastID, self.between_prot, self.mutation_prot, self.mapped_between_prot, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_between_prot))
-        copy(self.mapped_between_prot, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_between_prot, ref_dir)
         self.assertTrue(cmp(self.mapped_between_prot, ref_mapped_between_prot))
     
     # hotS()
@@ -459,7 +488,8 @@ class FunctionalMappingTest(unittest.TestCase):
         ymap.hotspot(self.yeastID, self.hotspot, self.mutation_prot, self.mapped_hotspot, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_hotspot))
-        copy(self.mapped_hotspot, ref_dir) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mapped_hotspot, ref_dir)
         self.assertTrue(cmp(self.mapped_hotspot, ref_mapped_hotspot))
     
             
@@ -491,7 +521,8 @@ class GeneToProteinTest(unittest.TestCase):
         ymap.mutation_file(self.mutation_gene, self.gff, self.d_id_map, self.mutation_prot)
         
         self.assertTrue(path.isfile(self.mutation_prot))
-        copy(self.mutation_prot, ref_mutation_prot_converted) #TODO: Remove this (after file initially obtained)
+        if generate_ref_files:
+            copy(self.mutation_prot, ref_mutation_prot_converted)
         self.assertTrue(cmp(self.mutation_prot, ref_mutation_prot_converted))
     
     def test_revcomp(self):
