@@ -6,6 +6,7 @@ from os import chdir, mkdir, makedirs, path
 from time import clock
 from filecmp import cmp
 import ymap.ymap as ymap 
+from ymap import final_report_file
 
 # Set this to True when you want to regenerate reference files for future testing
 generate_ref_files = True
@@ -35,8 +36,11 @@ ref_ptm_id = path.join(ref_dir, ymap.ptm_id_file)
 ref_domain_id = path.join(ref_dir, ymap.domain_id_file)
 ref_nucleotide_id = path.join(ref_dir, ymap.nucleotide_id_file)
 
+ref_uniprot_biogrid = path.join(ref_dir, ymap.uniprot_biogrid_file)
+
 
 ref_summary = path.join(ref_dir, ymap.summary_file)
+ref_final_report = path.join(ref_dir, ymap.final_report_file)
 
 ref_mapped_sites = path.join(ref_dir, ymap.mapped_sites_file)
 ref_mapped_ptms = path.join(ref_dir, ymap.mapped_ptms_file)
@@ -64,6 +68,9 @@ ref_mapped_interact_ubiq = path.join(ref_dir, 'ubiq_' + ymap.mapped_interact_ubi
 ref_mapped_hotspot = path.join(ref_dir, ymap.mapped_hotspot_file)
 ref_mapped_within_prot = path.join(ref_dir, ymap.mapped_within_prot_file)
 ref_mapped_between_prot = path.join(ref_dir, ymap.mapped_between_prot_file)
+
+ref_p_value = path.join(ref_dir, ymap.p_value_file)
+ref_biog = path.join(ref_dir, ymap.biog_file)
 
 # Create object to allow function calls
 #TODO: Remove the class from ymap.py - because it is pointless
@@ -533,15 +540,74 @@ class GeneToProteinTest(unittest.TestCase):
 
     
     
-    # Output functions
-    def test_enrich(self):
-        pass
+    # GO enrichment, Biogrid network and final report
+class FinalAnalysisTest(unittest.TestCase):
+    '''
+    Test production of files containing p-values for GO enrichment and files containing Biogrid IDs
+    Test conversion of summary file into final report file
+    '''
     
-    def test_preWeb(self):
-        pass
+    def setUp(self):
+        # Create a temporary directory
+        self.test_dir = mkdtemp()
+        chdir(self.test_dir)
+        
+        # Copy reference files to temporary directory
+        self.uniprot_biogrid = copy(ref_uniprot_biogrid, ymap.uniprot_biogrid_file)
+        #TODO: Don't think it's necessary to test each file separately. Only test the final report file?
+#         self.mapped_interface_acet = copy(ref_mapped_interface_acet, ymap.mapped_interface_acet_file)
+#         self.mapped_interface_phos = copy(ref_mapped_interface_phos, ymap.mapped_interface_phos_file)
+#         self.mapped_interface_ubiq = copy(ref_mapped_interface_ubiq, ymap.mapped_interface_ubiq_file)
+#         self.mapped_interact_acet = copy(ref_mapped_interact_acet, ymap.mapped_interact_acet_file)
+#         self.mapped_interact_phos = copy(ref_mapped_interact_phos, ymap.mapped_interact_phos_file)
+#         self.mapped_interact_ubiq = copy(ref_mapped_interact_ubiq, ymap.mapped_interact_ubiq_file)
+#         self.mapped_hotspot = copy(ref_mapped_hotspot, ymap.mapped_hotspot_file)
+#         self.mapped_within_prot = copy(ref_mapped_within_prot, ymap.mapped_within_prot_file)
+#         self.mapped_between_prot = copy(ref_mapped_between_prot, ymap.mapped_between_prot_file)
+#         self.mapped_sites = copy(ref_mapped_sites, ymap.mapped_sites_file)
+#         self.mapped_ptms = copy(ref_mapped_ptms, ymap.mapped_ptms_file)
+#         self.mapped_domains = copy(ref_mapped_domains, ymap.mapped_domains_file)
+#         self.mapped_nucleotide = copy(ref_mapped_nucleotide, ymap.mapped_nucleotide_file)
+#         self.mapped_struct = copy(ref_mapped_struct, ymap.mapped_struct_file)
+
+        # Setup temporary file paths
+        self.final_report = path.join(self.test_dir, ymap.final_report_file)
+        self.p_value = path.join(self.test_dir, ymap.p_value_file)
+        self.biog = path.join(self.test_dir, ymap.biog_file)
+                    
+    def tearDown(self):
+        chdir(ref_dir) # navigate out of test directory before deleting
+        rmtree(self.test_dir)
     
     def test_sum_file_map(self):
-        pass
+        self.summary = copy(ref_summary, ymap.summary_file)
+        
+        ymap.sum_file_map(self.summary, self.final_report)
+        
+        self.assertTrue(path.isfile(self.final_report))
+        if generate_ref_files:
+            copy(self.final_report, ref_final_report)
+        self.assertTrue(cmp(self.final_report, ref_final_report))
+    
+    def test_enrich(self):
+        self.final_report = copy(ref_final_report, ymap.final_report_file)
+        
+        c.enrich(self.final_report)
+        
+        self.assertTrue(path.isfile(self.p_value))
+        if generate_ref_files:
+            copy(self.p_value, ref_p_value)
+        self.assertTrue(cmp(self.p_value, ref_p_value))
+    
+    def test_preWeb(self):
+        self.final_report = copy(ref_final_report, ymap.final_report_file)
+        
+        c.preWeb(self.uniprot_biogrid, self.biog)
+        
+        self.assertTrue(path.isfile(self.biog))
+        if generate_ref_files:
+            copy(self.biog, ref_biog)
+        self.assertTrue(cmp(self.biog, ref_biog))
     
     
     # yweb
