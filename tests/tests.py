@@ -1,11 +1,11 @@
 from __future__ import print_function, absolute_import, division, unicode_literals
 import unittest
-import tempfile
-import shutil
-import os
-import time
-import filecmp
-from ymap.ymap import data, ymap_proteins, ymap_genes, web, YGtPM, interface, ppi, withinPro, betweenPro, hotspot, mutation_file, revcomp, translate_dna 
+from tempfile import mkdtemp
+from shutil import copy, rmtree
+from os import chdir, mkdir, makedirs, path
+from time import clock
+from filecmp import cmp
+import ymap.ymap as ymap 
 
 # Setup filenames
 # Input files
