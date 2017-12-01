@@ -284,24 +284,26 @@ def iD(yeastID_output):
         output_file.write(uniprot.read())
 
     
-# TODO: there seems to be a serious bit of optimization possible here. The second input file should be opened once
 def pmap(yeastID_input, ptms_input, ptm_id_output):          
-    """
-    if proteins ids are not SDG or uniprot or common names, this method maps the ids
-    """
-    with open(ptm_id_output, 'w') as file3:
-        with open(yeastID_input, 'r') as file_id_name:
-            for lin in file_id_name:
-                line = lin.split()
-                with open(ptms_input) as ptms:
-                    for i in ptms:
-                        i = i.split()
-                        if len(line) > 2:
-                            if line[0] == i[0]:
-                                result3 = line[0]+'\t'+line[1]+'\t'+line[2]+'\t'+i[1]+'\t'+i[2]
-                                if result3 > str(0):
-                                    #  file3 = open(ptm_id_file, 'a')
-                                    file3.write(result3+'\n')
+    """Map Uniprot IDs to gene names and post-translational modifications (PTMs)."""
+    gene_names = {}
+    lines = []
+    with open(yeastID_input, 'r') as proteins:
+        next(proteins) # skip the header
+        for line in proteins:
+            uniprot_id, sgd_name, common_name = line.rstrip('\n').split('\t')
+            if common_name == '': common_name = 'NA'
+            if sgd_name == '': sgd_name = 'NA'
+            gene_names[uniprot_id] = [uniprot_id, sgd_name, common_name] #TODO: Implement a separate function to return a protein/gene names dictionary i.e. gene_names. This will then be passed all functions that need to use the yeastID.txt file.
+    with open(ptms_input, 'r') as ptms:
+        for line in ptms:
+            uniprot_id, ptm_pos, modification = line.rstrip().split('\t')
+            new_line = gene_names[uniprot_id].copy()
+            new_line.extend([ptm_pos, modification])
+            new_line = '\t'.join(new_line) + '\n'
+            lines.append(new_line)
+    with open(ptm_id_output, 'w') as ptm_id:
+        ptm_id.writelines(lines)
                                          
 
 def ptm_map(mut_prot_input, ptm_id_input, mapped_ptms_output, summary_output):
