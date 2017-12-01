@@ -259,53 +259,21 @@ def pTMdata(uniprot_output):
     with open(uniprot_output,'wb') as output_file:
         output_file.write(uniprot.read())
 
-def make_ptms_file(uniprot_input, ptms_output):
-    """ cleans file uniprot_mod_raw.txt into a tab separated PTMs.txt
-    """
 
-    with open(ptms_output, 'w') as out:
-        with open(uniprot_input, 'r') as UniProt_file_name:
-            for l in UniProt_file_name:
-                if not l.startswith('##'):
-                    line = l.split()
-                    if line[2] == 'Lipidation':
-                        lll = line[0]+'\t'+line[4]+'\t'+line[8]
-                        ll = lll.split()
-                        ll = ll[2].split('=')
-                        p = line[0]+'\t'+line[4]+'\t'+ll[1]
-                        if p > str(0):
-                            # PTMs.txt is already open under out and being opened again and again...
-                            # this could cause problems check if you cannot just remove all the opens...
-                            # out = open(ptms_file, 'a')
-                            out.write(p+'\n')
-                            continue
-                    if line[2] == 'Glycosylation':
-                        ggg = line[0]+'\t'+line[4]+'\t'+line[8]
-                        gg = ggg.split()
-                        gg =  gg[2].split('=')
-                        p1 = line[0]+'\t'+line[4]+'\t'+gg[1]
-                        if p1 > str(0):
-                            # out = open(ptms_file, 'a+')
-                            out.write(p1+'\n')
-                            continue
-                    if line[2] == 'Modified':
-                        mmm = line[0]+'\t'+line[4]+'\t'+line[9]
-                        mm = mmm.split()
-                        mm = mm[2].split('=')
-                        mm = mm[1].split(';')
-                        p2 = line[0]+'\t'+line[4]+'\t'+mm[0]
-                        if p2 > str(0):
-                            #out = open(ptms_file, 'a+')
-                            out.write(p2+'\n')
-                            continue
-                    if line[2] == 'Cross-link': #ubiquitination
-                        ccc = line[0]+'\t'+line[4]+'\t'+line[8]
-                        cc = ccc.split()
-                        cc = cc[2].split('=')
-                        p3 = line[0]+'\t'+line[4]+'\t'+cc[1]
-                        if p3 > str(0):
-                            #with open(ptms_file, 'a+') as out:
-                            out.write(p3+'\n')
+def make_ptms_file(uniprot_input, ptms_output):
+    """Extract Post-Translational Modification (PTM) data from a downloaded Uniprot file and write to tab-delimited (tsv) file."""
+    annotation_regex = re.compile(r'Note=(.*?)(;|$)') # Alternation needed for entries that only contain a "Note" in the attribute string (see below)
+    lines = []
+    with open(uniprot_input, 'r') as uniprot:
+        for line in uniprot:
+            if not line.startswith('##'): #TODO: Decide whether this implementation is better than "if line.startswith('##'): continue"
+                uniprot_id, source, feature, start, end, score, strand, frame, attribute = line.rstrip().split('\t')
+                if feature in ('Lipidation', 'Glycosylation', 'Modified residue', 'Cross-link'):
+                    modification = annotation_regex.match(attribute).group(1)
+                    new_line = '\t'.join([uniprot_id, start, modification]) + '\n'
+                    lines.append(new_line)
+    with open(ptms_output, 'w') as ptms:
+        ptms.writelines(lines)
 
 
 def iD(yeastID_output):
