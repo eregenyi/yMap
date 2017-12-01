@@ -73,10 +73,6 @@ ref_mapped_between_prot = path.join(ref_dir, ymap.mapped_between_prot_file)
 ref_p_value = path.join(ref_dir, ymap.p_value_file)
 ref_biog = path.join(ref_dir, ymap.biog_file)
 
-# Create object to allow function calls
-#TODO: Remove the class from ymap.py - because it is pointless
-c = ymap.YGtPM()
-
 
 class Timer:
     def __enter__(self):
@@ -107,7 +103,7 @@ class DataDownloadTest(unittest.TestCase):
     
     def test_iD(self):
         # This test may fail because yeastID.txt is downloaded and data may have changed from that in test_files folder.
-#         c.iD()
+#         ymap.iD()
 #         self.assertTrue(path.isfile('yeastID.txt'))
 #         self.assertTrue(cmp('yeastID.txt', path.join(ref_dir, 'yeastID.txt')))
         pass
@@ -149,7 +145,7 @@ class UniprotRawProcessingTest(unittest.TestCase):
         rmtree(self.test_dir)
     
     def test_ab(self):
-        c.ab(self.uniprot_file, self.bact)
+        ymap.ab(self.uniprot_file, self.bact)
         
         self.assertTrue(path.isfile(self.bact))
         if generate_ref_files:
@@ -157,7 +153,7 @@ class UniprotRawProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.bact, ref_bact))
         
     def test_clean(self):
-        c.clean(self.uniprot_file, self.ptms)
+        ymap.clean(self.uniprot_file, self.ptms)
         
         self.assertTrue(path.isfile(self.ptms))
         if generate_ref_files:
@@ -165,7 +161,7 @@ class UniprotRawProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.ptms, ref_ptms))
     
     def test_dclean(self):
-        c.dclean(self.uniprot_file, self.domains)
+        ymap.dclean(self.uniprot_file, self.domains)
         
         self.assertTrue(path.isfile(self.domains))
         if generate_ref_files:
@@ -173,7 +169,7 @@ class UniprotRawProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.domains, ref_domains))
     
     def test_nucleotide(self):
-        c.nucleotide(self.uniprot_file, self.nucleotide)
+        ymap.nucleotide(self.uniprot_file, self.nucleotide)
         
         self.assertTrue(path.isfile(self.nucleotide))
         if generate_ref_files:
@@ -181,7 +177,7 @@ class UniprotRawProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.nucleotide, ref_nucleotide))
     
     def test_pdb_c(self):
-        c.pdb_c(self.uniprot_file, self.pdb)
+        ymap.pdb_c(self.uniprot_file, self.pdb)
         
         self.assertTrue(path.isfile(self.pdb))
         if generate_ref_files:
@@ -211,7 +207,7 @@ class GffProcessingTest(unittest.TestCase):
         rmtree(self.test_dir)
         
     def test_frmt(self):
-        c.frmt(self.gff, self.frmt)
+        ymap.frmt(self.gff, self.frmt)
         
         self.assertTrue(path.isfile(self.frmt))
         if generate_ref_files:
@@ -250,7 +246,7 @@ class YeastIDProcessingTest(unittest.TestCase):
         rmtree(self.test_dir)
     
     def test_id_map(self):
-        c.id_map(self.yeastID, self.frmt, self.d_id_map)
+        ymap.id_map(self.yeastID, self.frmt, self.d_id_map)
         
         self.assertTrue(path.isfile(self.d_id_map))
         if generate_ref_files:
@@ -258,7 +254,7 @@ class YeastIDProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.d_id_map, ref_d_id_map))
     
     def test_id(self):
-        c.id(self.yeastID, self.bact, self.sites_id)
+        ymap.id(self.yeastID, self.bact, self.sites_id)
         
         self.assertTrue(path.isfile(self.sites_id))
         if generate_ref_files:
@@ -266,7 +262,7 @@ class YeastIDProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.sites_id, ref_sites_id))
     
     def test_pmap(self):
-        c.pmap(self.yeastID, self.ptms, self.ptm_id)
+        ymap.pmap(self.yeastID, self.ptms, self.ptm_id)
         
         self.assertTrue(path.isfile(self.ptm_id))
         if generate_ref_files:
@@ -274,7 +270,7 @@ class YeastIDProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.ptm_id, ref_ptm_id))
     
     def test_d_map(self):
-        c.d_map(self.yeastID, self.domains, self.domain_id)
+        ymap.d_map(self.yeastID, self.domains, self.domain_id)
         
         self.assertTrue(path.isfile(self.domain_id))
         if generate_ref_files:
@@ -282,7 +278,7 @@ class YeastIDProcessingTest(unittest.TestCase):
         self.assertTrue(cmp(self.domain_id, ref_domain_id))
     
     def test_n_map(self):
-        c.n_map(self.yeastID, self.nucleotide, self.nucleotide_id)
+        ymap.n_map(self.yeastID, self.nucleotide, self.nucleotide_id)
         
         self.assertTrue(path.isfile(self.nucleotide_id))
         if generate_ref_files:
@@ -328,7 +324,7 @@ class UniprotMappingTest(unittest.TestCase):
         rmtree(self.test_dir)    
         
     def test_mu_map(self):
-        c.mu_map(self.yeastID, self.mutation_prot, self.mapped_mutation_pos)
+        ymap.mu_map(self.yeastID, self.mutation_prot, self.mapped_mutation_pos)
         
         self.assertTrue(path.isfile(self.mapped_mutation_pos))
         if generate_ref_files:
@@ -339,7 +335,7 @@ class UniprotMappingTest(unittest.TestCase):
         # Setup temporary file (Note: generated by mu_map so shouldn't go in setup?)
         self.mapped_mutation_pos = copy(ref_mapped_mutation_pos, ymap.mapped_mutation_pos_file)
         
-        c.pdb(self.pdb, self.mapped_mutation_pos, self.mapped_struct, self.summary)
+        ymap.pdb(self.pdb, self.mapped_mutation_pos, self.mapped_struct, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_struct))
         if generate_ref_files:
@@ -347,7 +343,7 @@ class UniprotMappingTest(unittest.TestCase):
         self.assertTrue(cmp(self.mapped_struct, ref_mapped_struct))
 
     def test_mmap(self):
-        c.mmap(self.mutation_prot, self.sites_id, self.mapped_sites, self.summary)
+        ymap.mmap(self.mutation_prot, self.sites_id, self.mapped_sites, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_sites))
         if generate_ref_files:
@@ -355,7 +351,7 @@ class UniprotMappingTest(unittest.TestCase):
         self.assertTrue(cmp(self.mapped_sites, ref_mapped_sites))
     
     def test_ptm_map(self):
-        c.ptm_map(self.mutation_prot, self.ptm_id, self.mapped_ptms, self.summary)
+        ymap.ptm_map(self.mutation_prot, self.ptm_id, self.mapped_ptms, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_ptms))
         if generate_ref_files:
@@ -363,7 +359,7 @@ class UniprotMappingTest(unittest.TestCase):
         self.assertTrue(cmp(self.mapped_ptms, ref_mapped_ptms))
     
     def test_dmap(self):
-        c.dmap(self.mutation_prot, self.domain_id, self.mapped_domains, self.summary)
+        ymap.dmap(self.mutation_prot, self.domain_id, self.mapped_domains, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_domains))
         if generate_ref_files:
@@ -371,7 +367,7 @@ class UniprotMappingTest(unittest.TestCase):
         self.assertTrue(cmp(self.mapped_domains, ref_mapped_domains))
     
     def test_nucleotide_map(self):
-        c.nucleotide_map(self.mutation_prot, self.nucleotide_id, self.mapped_nucleotide, self.summary)
+        ymap.nucleotide_map(self.mutation_prot, self.nucleotide_id, self.mapped_nucleotide, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_nucleotide))
         if generate_ref_files:
@@ -384,11 +380,11 @@ class UniprotMappingTest(unittest.TestCase):
         # Setup temporary file (Note: generated by mu_map so shouldn't go in setup?)
         self.mapped_mutation_pos = copy(ref_mapped_mutation_pos, ymap.mapped_mutation_pos_file)
         
-        c.pdb(self.pdb, self.mapped_mutation_pos, self.mapped_struct, self.summary)
-        c.mmap(self.mutation_prot, self.sites_id, self.mapped_sites, self.summary)
-        c.ptm_map(self.mutation_prot, self.ptm_id, self.mapped_ptms, self.summary)
-        c.dmap(self.mutation_prot, self.domain_id, self.mapped_domains, self.summary)
-        c.nucleotide_map(self.mutation_prot, self.nucleotide_id, self.mapped_nucleotide, self.summary)
+        ymap.pdb(self.pdb, self.mapped_mutation_pos, self.mapped_struct, self.summary)
+        ymap.mmap(self.mutation_prot, self.sites_id, self.mapped_sites, self.summary)
+        ymap.ptm_map(self.mutation_prot, self.ptm_id, self.mapped_ptms, self.summary)
+        ymap.dmap(self.mutation_prot, self.domain_id, self.mapped_domains, self.summary)
+        ymap.nucleotide_map(self.mutation_prot, self.nucleotide_id, self.mapped_nucleotide, self.summary)
         
         self.assertTrue(path.isfile(self.summary))
         if generate_ref_files:
@@ -439,7 +435,7 @@ class FunctionalMappingTest(unittest.TestCase):
         
     # intf()    
     def test_interface(self):
-        # For each 3DID_<site>_interfaceRes_sc.txt file
+        # For each 3DID_<site>_interfaceRes_symap.txt file
         ymap.interface(self.yeastID, self.interface_acet, self.mutation_prot, self.mapped_interface_acet, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interface_acet))
@@ -465,7 +461,7 @@ class FunctionalMappingTest(unittest.TestCase):
     
     # pi()
     def test_ppi(self):
-        # For each SC_<site>_interactions_sc.txt
+        # For each SC_<site>_interactions_symap.txt
         ymap.ppi(self.yeastID, self.interact_acet, self.mutation_prot, self.mapped_interact_acet, self.summary)
         
         self.assertTrue(path.isfile(self.mapped_interact_acet))
@@ -626,7 +622,7 @@ class FinalAnalysisTest(unittest.TestCase):
     def test_enrich(self):
         self.final_report = copy(ref_final_report, ymap.final_report_file)
         
-        c.enrich(self.final_report)
+        ymap.enrich(self.final_report)
         
         self.assertTrue(path.isfile(self.p_value))
         if generate_ref_files:
@@ -636,7 +632,7 @@ class FinalAnalysisTest(unittest.TestCase):
     def test_preWeb(self):
         self.final_report = copy(ref_final_report, ymap.final_report_file)
         
-        c.preWeb(self.uniprot_biogrid, self.biog)
+        ymap.preWeb(self.uniprot_biogrid, self.biog)
         
         self.assertTrue(path.isfile(self.biog))
         if generate_ref_files:
