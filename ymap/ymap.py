@@ -277,13 +277,12 @@ def make_ptms_file(uniprot_input, ptms_output):
 
 
 def iD(yeastID_output):
+    """Download up-to-date UniProt data file using the following query settings: Species: Saccharomyces cerevisiae, ...""" #TODO: Update documentation with query settings
+    #TODO: Make the uniprot URL cleaner/more understandable. See http://www.uniprot.org/help/api_queries
+    uniprot = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=tab&columns=id,genes(OLN),%2Cgenes(PREFERRED)')
+    with open(yeastID_output,'wb') as output_file:
+        output_file.write(uniprot.read())
 
-    """ This method retrieves the different ID types for maping """
-    rsponse = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=tab&columns=id,genes(OLN),%2Cgenes(PREFERRED)')
-    page1 = rsponse.read()
-    file_1 =open(yeastID_output,'wb')  
-    file_1.write(page1)
-    file_1.close()
     
 # TODO: there seems to be a serious bit of optimization possible here. The second input file should be opened once
 def pmap(yeastID_input, ptms_input, ptm_id_output):          
