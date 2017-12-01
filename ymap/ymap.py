@@ -261,7 +261,7 @@ def pTMdata(uniprot_output):
     fil.write(page)
     fil.close()
 
-def clean(uniprot_input, ptms_output):
+def make_ptms_file(uniprot_input, ptms_output):
     """ cleans file uniprot_mod_raw.txt into a tab separated PTMs.txt
     """
 
@@ -358,7 +358,7 @@ def ptm_map(mut_prot_input, ptm_id_input, mapped_ptms_output, summary_output):
                                     summary.write(line1[0]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'PTMs'+'\t'+'UniProt'+'\n')
 
 
-def dclean(uniprot_input, domains_output):  
+def make_domains_file(uniprot_input, domains_output):  
 
     """domain data needed to be filters from UniProt file, before mapping domains"""
 
@@ -504,7 +504,7 @@ def enrich(mapped_mut_input):
                            
 
 
-def ab(uniprot_input, bact_output): 
+def make_bact_file(uniprot_input, bact_output): 
 
     """Prepares raw Uniprot data for yeast active and binding sites mutation analysis"""
 
@@ -564,7 +564,7 @@ def mmap(mut_prot_input, sites_id_input, mapped_sites_output, summary_output):
                                     summary.write(a[2]+'\t'+a[0]+'\t'+m[1]+'\t'+ a[3]+'\t'+'Active/Binding site'+'\t'+'UniProt'+'\n')
 
 
-def nucleotide(uniprot_input, nucleotide_output):
+def make_nucleotide_file(uniprot_input, nucleotide_output):
 
     """ prepares the UniProt data for the nucleotide motifs mapping to mutations """
 
@@ -674,7 +674,7 @@ def bweb(biog_input):
         webbrowser.open(url + f[1])
 
 
-def pdb_c(uniprot_input, pdb_output):
+def make_pdb_file(uniprot_input, pdb_output):
 
     """ Structure data filtration from UniProt"""
 
@@ -1210,7 +1210,7 @@ def data():
     except IOError:
         pass
     try:
-        clean(uniprot_file_path, ptms_file_path)
+        make_ptms_file(uniprot_file_path, ptms_file_path)
     except IOError:
         pass
     try:
@@ -1222,7 +1222,7 @@ def data():
     except IOError:
         pass
     try:
-        dclean(uniprot_file_path, domains_file_path)
+        make_domains_file(uniprot_file_path, domains_file_path)
     except IOError:
         pass
     try:
@@ -1230,7 +1230,7 @@ def data():
     except IOError:
         pass
     try:
-        ab(uniprot_file_path, bact_file_path)
+        make_bact_file(uniprot_file_path, bact_file_path)
     except IOError:
             pass
     try:
@@ -1242,7 +1242,7 @@ def data():
     except IOError:
             pass
     try:
-        pdb_c(uniprot_file_path, pdb_file_path)
+        make_pdb_file(uniprot_file_path, pdb_file_path)
     except IOError:
         pass
     try:
@@ -1258,7 +1258,7 @@ def data():
     except IOError:
         pass
     try:
-        nucleotide(uniprot_file_path, nucleotide_file_path)
+        make_nucleotide_file(uniprot_file_path, nucleotide_file_path)
     except IOError:
         pass
     try:

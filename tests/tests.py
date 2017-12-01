@@ -144,40 +144,40 @@ class UniprotRawProcessingTest(unittest.TestCase):
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
     
-    def test_ab(self):
-        ymap.ab(self.uniprot_file, self.bact)
+    def test_make_bact_file(self):
+        ymap.make_bact_file(self.uniprot_file, self.bact)
         
         self.assertTrue(path.isfile(self.bact))
         if generate_ref_files:
             copy(self.bact, ref_dir)
         self.assertTrue(cmp(self.bact, ref_bact))
         
-    def test_clean(self):
-        ymap.clean(self.uniprot_file, self.ptms)
+    def test_make_ptms_file(self):
+        ymap.make_ptms_file(self.uniprot_file, self.ptms)
         
         self.assertTrue(path.isfile(self.ptms))
         if generate_ref_files:
             copy(self.ptms, ref_dir)
         self.assertTrue(cmp(self.ptms, ref_ptms))
     
-    def test_dclean(self):
-        ymap.dclean(self.uniprot_file, self.domains)
+    def test_make_domains_file(self):
+        ymap.make_domains_file(self.uniprot_file, self.domains)
         
         self.assertTrue(path.isfile(self.domains))
         if generate_ref_files:
             copy(self.domains, ref_dir)
         self.assertTrue(cmp(self.domains, ref_domains))
     
-    def test_nucleotide(self):
-        ymap.nucleotide(self.uniprot_file, self.nucleotide)
+    def test_make_nucleotide_file(self):
+        ymap.make_nucleotide_file(self.uniprot_file, self.nucleotide)
         
         self.assertTrue(path.isfile(self.nucleotide))
         if generate_ref_files:
             copy(self.nucleotide, ref_dir)
         self.assertTrue(cmp(self.nucleotide, ref_nucleotide))
     
-    def test_pdb_c(self):
-        ymap.pdb_c(self.uniprot_file, self.pdb)
+    def test_make_pdb_file(self):
+        ymap.make_pdb_file(self.uniprot_file, self.pdb)
         
         self.assertTrue(path.isfile(self.pdb))
         if generate_ref_files:
