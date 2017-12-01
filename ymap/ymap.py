@@ -210,13 +210,10 @@ def mutation_file(mut_gene_input, gff_input, d_id_input, mut_prot_output):
 
 
 def gff(gff_output):
-    """ The genomic coordinates downloaded in gff formate for further processing to calculate mutated codons, if not
-          available, see next method"""
-    rsponse = urlopen("http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff")
-    page = rsponse.read()
-    file = open(gff_output,'wb')  
-    file.write(page)
-    file.close()
+    """Downloads the current General Feature Format (GFF) file for the Saccharomyces cerevisiae genome"""
+    yeast_gff = urlopen('http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff')
+    with open(gff_output,'wb') as output_file:
+        output_file.write(yeast_gff.read())
     
 
 def frmt(gff_input, frmt_output):
