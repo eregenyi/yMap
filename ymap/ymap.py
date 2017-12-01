@@ -64,6 +64,7 @@ except ImportError:
     from urllib2 import urlopen
 import pkg_resources
 from pkg_resources import resource_stream
+import re
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ Mutation type (Synon | Non-Synon | Stop codon) module (see exmple data) \\\\\\\\\\\\\\\\\\\\\
@@ -217,20 +218,22 @@ def gff(gff_output):
     
 
 def frmt(gff_input, frmt_output):
-    """This method format the gff file into a tsv one, with protein id, start and end with strand orientation"""
-    with open(frmt_output,'w') as file4:
-        with open(gff_input, 'r') as gff:
-            for line in gff:
-                if not line.startswith('##') and not line.startswith('#'):
-                    word = line.split()
-                    if len(word)!=1 and word[2]=='gene':
-                        result = word[3]+'\t'+word[4]+'\t'+word[6]+'\t'+word[8]
-                        result = result.split()
-                        result = result[3].split(';')
-                        results = result[0].split('=')
-                        result2 = results[1]+'\t'+word[3]+'\t'+word[4]+'\t'+word[6]
-                        with open(frmt_output,'a') as file4:
-                            file4.write(result2+'\n')
+    """Reformat a General Feature Format (GFF) file into a tab-delimited file (tsv) with columns gene id, start and end with strand orientation."""
+    id_regex = re.compile(r'ID=(.*?);')
+    lines = []
+    with open(gff_input, 'r') as gff:
+        for line in gff:
+            if line.startswith('###'):
+                break
+            elif line.startswith(('##', '#')):
+                continue
+            chr, source, feature, start, end, score, strand, frame, attribute = line.split()
+            if feature == 'gene':
+                gene_id = id_regex.match(attribute).group(1)
+                new_line = '\t'.join([gene_id, start, end, strand]) + '\n'
+                lines.append(new_line)
+    with open(frmt_output,'w') as parsed_gff:
+        parsed_gff.writelines(lines)
 
 
 def id_map(yeastID_input, frmt_input, d_id_map_output):
