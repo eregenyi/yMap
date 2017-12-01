@@ -253,13 +253,11 @@ def id_map(yeastID_input, frmt_input, d_id_map_output):
 
 
 def pTMdata(uniprot_output):
-
-    """Downloads UpiProt data as a raw txt file (uniprot_mod_raw.txt)"""
-    rsponse = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=gff&columns=id,feature(MODIFIED%20RESIDUE)')
-    page = rsponse.read()
-    fil = open(uniprot_output,'wb')
-    fil.write(page)
-    fil.close()
+    """Download up-to-date UniProt data file using the following query settings: Species: Saccharomyces cerevisiae, ...""" #TODO: Update documentation with query settings
+    #TODO: Make the uniprot URL cleaner/more understandable. See http://www.uniprot.org/help/api_queries
+    uniprot = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=gff&columns=id,feature(MODIFIED%20RESIDUE)')
+    with open(uniprot_output,'wb') as output_file:
+        output_file.write(uniprot.read())
 
 def make_ptms_file(uniprot_input, ptms_output):
     """ cleans file uniprot_mod_raw.txt into a tab separated PTMs.txt
