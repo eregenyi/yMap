@@ -385,42 +385,23 @@ def make_domains_file(uniprot_input, domains_output):
             
 
 def d_map(yeastID_input, domains_input, domain_id_output):
-
-    """ maps the different proteins ids to domains"""
+    """Map UniProt IDs to protein names and domains and PROSITE references
     
-    with open(domain_id_output,'w') as id_domain:
-        with open(yeastID_input, 'r') as fl:
-            for f in fl:
-                f = f.split()
-                with open(domains_input,'r') as dp:
-                    for d in dp:
-                        d = d.split()
-                        if len(f) > 2 and f[0] == d[0]:
-                            if len(d) == 4:
-                                take = d[0]+'\t'+f[1]+'\t'+f[2]+'\t'+d[1]+'\t'+d[2]+'\t'+d[3]+'\n'
-                                if take > str(0):
-                                    with open(domain_id_output,'a') as id_domain:
-                                        id_domain.write(take)
-                            if len(d) == 5:
-                                take1 = d[0]+'\t'+f[1]+'\t'+f[2]+'\t'+d[1]+'\t'+d[2]+'\t'+d[3]+'\t'+d[4]+'\n'
-                                if take1 > str(0):
-                                    with open(domain_id_output,'a+') as id_domain:
-                                        id_domain.write(take1)
-                            if len(d) == 6:
-                                take2 = d[0]+'\t'+f[1]+'\t'+f[2]+'\t'+d[1]+'\t'+d[2]+'\t'+d[3]+'\t'+d[4]+'\t'+d[5]+'\n'
-                                if take2 > str(0):
-                                    with open(domain_id_output,'a+') as id_domain:
-                                        id_domain.write(take2)
-                            if len(d) == 7:
-                                take3 = d[0]+'\t'+f[1]+'\t'+f[2]+'\t'+d[1]+'\t'+d[2]+'\t'+d[3]+'\t'+d[4]+'\t'+d[5]+'\t'+d[6]+'\n'
-                                if take3 > str(0):
-                                    with open(domain_id_output,'a+') as id_domain:
-                                        id_domain.write(take3)
-                            if len(d) == 8:
-                                take4 = d[0]+'\t'+f[1]+'\t'+f[2]+'\t'+d[1]+'\t'+d[2]+'\t'+d[3]+'\t'+d[4]+'\t'+d[5]+'\t'+d[6]+'\t'+d[7]+'\n'
-                                if take4 > str(0):
-                                    with open(domain_id_output,'a+') as id_domain:
-                                        id_domain.write(take4)
+    Arguments:
+    yeastID_input -- dictionary, mapping UniProt ID to ordered locus and common (gene) names
+    domains_input -- file path, mapping UniProt ID to domains, their start and end positions in the polypeptide and PROSITE references 
+    domain_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and domain data 
+    """
+    lines = [] 
+    with open(domains_input, 'r') as domains:
+        for line in domains:
+            uniprot_id, start, end, domain, prosite_ref = line.rstrip('\n').split('\t')
+            for common_name, sgd_name in yeastID_input[uniprot_id]:
+                new_line = [uniprot_id, sgd_name, common_name, start, end, domain, prosite_ref]
+                new_line = '\t'.join(new_line) + '\n'
+                lines.append(new_line)
+    with open(domain_id_output, 'w') as domain_id:
+        domain_id.writelines(lines)
 
 
 def dmap(mut_prot_input, domain_id_input, mapped_domains_output, summary_output):
