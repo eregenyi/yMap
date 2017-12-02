@@ -346,37 +346,27 @@ def ptm_map(mut_prot_input, ptm_id_input, mapped_ptms_output, summary_output):
         summary.writelines(summary_lines)
 
 
-def make_domains_file(uniprot_input, domains_output):  
-
-    """domain data needed to be filters from UniProt file, before mapping domains"""
-
-    with open(domains_output, 'w') as domain:
-        with open(uniprot_input, 'r') as raw:
-            for a in raw:
-                if not a.startswith('##'):
-                    a = a.split('=')
-                    a1 = a[0].split()
-                    if a1[2] == 'Domain':
-                        if len(a) == 2:
-                            a2 = a[1].rstrip()
-                            take = a1[0]+'\t'+a1[3]+'\t'+a1[4]+'\t'+a2+'\n'
-                            if take > str(0):
-                                with open(domains_output, 'a') as domain:
-                                    domain.write(take)
-                                    continue
-                        if len(a) == 4:
-                            a3 = a[1].rstrip().split(';')
-                            a4 = a[3].rstrip().split('|')
-                        if len(a4) > 1:
-                            take2 = a1[0]+'\t'+a1[3]+'\t'+a1[4]+'\t'+a3[0]+'\t'+a4[1]+'\n'
-                            if take2 > str(0):
-                                with open(domains_output, 'a+') as domain:
-                                    domain.write(take2)
-                        if len(a4) == 1:
-                            take3 = a1[0]+'\t'+a1[3]+'\t'+a1[4]+'\t'+a4[0]+'\n'
-                            if take3 > str(0):
-                                with open(domains_output, 'a+') as domain:
-                                    domain.write(take3)
+#TODO Find out how important PROSITE references are? What are they used for?
+def make_domains_file(uniprot_input, domains_output): 
+    """Extract domain data from a downloaded UniProt file and write to tab-delimited (tsv) file."""
+    annotation_regex = re.compile(r'Note=(.*?)(;|$)') # Alternation needed for entries that only contain a "Note" in the attribute string (see below)
+    prosite_regex = re.compile(r'PROSITE(.*?)(\||$)') # Note: sometimes 'PROSITE:' and sometimes 'PROSITE-ProRule:' (Only last entry 'E9PAE3' apparently)
+    lines = []
+    with open(uniprot_input, 'r') as uniprot:
+        for line in uniprot:
+            if not line.startswith('##'): #TODO: Decide whether this implementation is better than "if line.startswith('##'): continue"
+                uniprot_id, source, feature, start, end, score, strand, frame, attribute = line.rstrip().split('\t')
+                if feature == 'Domain':
+                    domain = annotation_regex.match(attribute).group(1) #TODO: Check whether this is actually a domain name or if it is the common name of the protein
+                    prosite_ref = ''
+                    prosites_matched = prosite_regex.finditer(attribute) # Find all PROSITE references in the attribute column (sometimes there are more than one)
+                    for prosite_match in prosites_matched:
+                        prosite_ref += prosite_match.group() #TODO: Is this what we want or do we only want group(1) e.g. something like 'PRU00457'
+                    prosite_ref = prosite_ref.rstrip('|')
+                    new_line = '\t'.join([uniprot_id, start, end, domain, prosite_ref]) + '\n'
+                    lines.append(new_line)
+    with open(domains_output, 'w') as domains:
+        domains.writelines(lines)
             
 
 def d_map(yeastID_input, domains_input, domain_id_output):
