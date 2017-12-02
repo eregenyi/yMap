@@ -262,20 +262,26 @@ def frmt(gff_input, frmt_output):
         parsed_gff.writelines(lines)
 
 
+# IMPORTANT TO NOTE - UniProt IDs are not unique in the output file of this function. See P02994 for example.
+# This is because some UniProt IDs map to more than one locus. 
 def id_map(yeastID_input, frmt_input, d_id_map_output):
-    with open(d_id_map_output, 'w') as file2:
-        with open(yeastID_input, 'r') as file_id_name:
-            for line in file_id_name:
-                line=line.split()
-                with open(frmt_input, 'r') as fr:
-                    for f in fr:
-                        f=f.split()
-                        if len(line)>2:
-                            if line[1]==f[0]:
-                                result= line[0]+'\t'+line[1]+'\t'+line[2]+'\t'+f[1]+'\t'+f[2]+'\t'+f[3]
-                                if result > str(0):
-                                    with open(d_id_map_output, 'a') as file2:
-                                        file2.write(result+'\n')
+    """Map Uniprot IDs to gene names and genomic loci (start, end positions and strand orientation)."""
+    gene_names = {}
+    lines = []
+    for uniprot_id, names in yeastID_input.items():
+        for common_name, sgd_name in names:
+            gene_names[sgd_name] = [uniprot_id, sgd_name, common_name]
+    with open(frmt_input, 'r') as gff:
+        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
+        next(gff) # Skip the header
+        for line in gff:
+            sgd_name, start, end, strand = line.rstrip('\n').split('\t')
+            new_line = gene_names[sgd_name].copy()
+            new_line.extend([start, end, strand])
+            new_line = '\t'.join(new_line) + '\n'
+            lines.append(new_line)
+    with open(d_id_map_output, 'w') as protein_loci_mapped:
+        protein_loci_mapped.writelines(lines)
 
 
 def pTMdata(uniprot_output):
