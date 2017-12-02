@@ -311,29 +311,18 @@ def iD(yeastID_output):
 
     
 def pmap(yeastID_input, ptms_input, ptm_id_output):          
-    """Map UniProt IDs to protein names and post-translational modifications (PTMs)."""
-    gene_names = {}
-    lines = []
-    with open(yeastID_input, 'r') as proteins:
-        next(proteins) # skip the header
-        for line in proteins:
-            common_names = []
-            sgd_names = []
-            uniprot_id, sgd_name, common_name = line.rstrip('\n').split('\t')
-            if ';' in common_name: # Check for multiple common names for a given UniProt ID
-                common_names = common_name.split('; ')
-            if ';' in sgd_name: # Check for multiple locus names for a given UniProt ID
-                sgd_names = sgd_name.split('; ')
-            if common_names or sgd_names:
-                gene_names[uniprot_id] = list(zip(common_names, sgd_names)) # Create a list of tuples, each a (common name, sgd name) pair
-            else:        
-                gene_names[uniprot_id] = [(common_name, sgd_name)] #TODO: Possibly implement a separate function to return a protein/gene names dictionary i.e. gene_names. This will then be passed all functions that need to use the yeastID.txt file. Note: I do not implement check for missing values here (changing '' to 'NA'), but could be included? 
+    """Map UniProt IDs to protein names and post-translational modifications (PTMs).
+    
+    Arguments:
+    yeastID_input -- dictionary, mapping UniProt ID to ordered locus and common (gene) names
+    ptms_input -- file path, mapping UniProt ID to a PTM and its position in polypeptide
+    ptm_id_output -- file path, mapping UniProt ID, ordered locus name, common name, PTM position and PTM 
+    """
+    lines = [] 
     with open(ptms_input, 'r') as ptms:
         for line in ptms:
             uniprot_id, ptm_pos, modification = line.rstrip('\n').split('\t')
-            for common_name, sgd_name in gene_names[uniprot_id]:
-                if sgd_name == '': sgd_name = 'NA' # Substitute 'NA' for missing values
-                if common_name == '': common_name = 'NA'
+            for common_name, sgd_name in yeastID_input[uniprot_id]:
                 new_line = [uniprot_id, sgd_name, common_name, ptm_pos, modification]
                 new_line = '\t'.join(new_line) + '\n'
                 lines.append(new_line)
