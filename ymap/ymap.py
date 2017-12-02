@@ -210,6 +210,32 @@ def mutation_file(mut_gene_input, gff_input, d_id_input, mut_prot_output):
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+def parse_gene_names(yeastID_input):
+    """Parse the yeastID_input file (mapping UniProt IDs to gene names) into a dictionary."""
+    gene_names = {}
+    with open(yeastID_input, 'r') as proteins:
+        next(proteins) # skip the header
+        for line in proteins:
+            common_names = []
+            sgd_names = []
+            uniprot_id, sgd_name, common_name = line.rstrip('\n').split('\t')
+            if sgd_name == '': # Replace empty strings with a missing value string e.g. NA
+                sgd_name = 'NA'
+            if common_name == '':
+                common_name = 'NA'
+            if ';' in common_name: # Check for multiple common names for a given UniProt ID
+                common_names = common_name.split('; ')
+                common_names = ['NA' if name == '' else name for name in common_names] # Replace empty strings with a missing value string e.g. NA
+            if ';' in sgd_name: # Check for multiple locus names for a given UniProt ID
+                sgd_names = sgd_name.split('; ')
+                sgd_names = ['NA' if name == '' else name for name in sgd_names] # Replace empty strings with a missing value string e.g. NA
+            if common_names or sgd_names:
+                gene_names[uniprot_id] = list(zip(common_names, sgd_names)) # Create a list of tuples, each a (common name, sgd name) pair
+            else:        
+                gene_names[uniprot_id] = [(common_name, sgd_name)]
+    return gene_names
+
+
 def gff(gff_output):
     """Downloads the current General Feature Format (GFF) file for the Saccharomyces cerevisiae genome"""
     yeast_gff = urlopen('http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff')
