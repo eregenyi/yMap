@@ -307,22 +307,34 @@ def pmap(yeastID_input, ptms_input, ptm_id_output):
                                          
 
 def ptm_map(mut_prot_input, ptm_id_input, mapped_ptms_output, summary_output):
-
-    """ This method maps the overlap between mutated codons from previous method to the PTM sites"""
-    with open(mapped_ptms_output, 'w') as file5:
-        with open(mut_prot_input, 'r') as mutation_file:
-            for line in mutation_file:
-                line = line.split()
-                with open(ptm_id_input, 'r') as file_PTMs:
-                    for line1 in file_PTMs:
-                        line1 = line1.split()
-                        if line[0] == line1[2] and line[1] == line1[3]:
-                            take = line1[0]+'\t'+line1[1]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'UniProt'
-                            if take > str(0):
-                                with open(mapped_ptms_output, 'a') as file5:
-                                    file5.write(take+'\n')
-                                with open(summary_output, 'a') as summary:                                    
-                                    summary.write(line1[0]+'\t'+line[0]+'\t'+line[1]+'\t'+line1[4]+'\t'+'PTMs'+'\t'+'UniProt'+'\n')
+    """Map the positions of mutations in mutated proteins to post-translational modifications (PTMs)."""
+    mutated_proteins = {}
+    mapped_ptms_lines = []
+    summary_lines = []
+    with open(mut_prot_input, 'r') as mutations:
+        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
+        next(mutations) # Skip the header
+        for line in mutations:
+            common_name, mutation_pos = line.rstrip('\n').split('\t')
+            if common_name not in mutated_proteins:
+                mutated_proteins[common_name] = {mutation_pos} # Mutation positions put in set to remove duplicates
+            else:
+                mutated_proteins[common_name].add(mutation_pos) #TODO: Again refactor - write function to return a dictionary from the mutation file and and pass this dictionary to any functions that need it
+    with open(ptm_id_input, 'r') as ptms: #TODO: It might also be more efficient to first parse the ptm_id.txt file into a dictionary representation to be easily queried, instead of looping?
+        for line in ptms:
+            uniprot_id, sgd_name, common_name, ptm_pos, ptm = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mutated_proteins.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if mut_pos == ptm_pos:
+                            mapped_ptm_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm, 'UniProt']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm, 'PTMs', 'UniProt']) + '\n'
+                            mapped_ptms_lines.append(mapped_ptm_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_ptms_output, 'w') as mapped_ptms:
+        mapped_ptms.writelines(mapped_ptms_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
 
 
 def make_domains_file(uniprot_input, domains_output):  
