@@ -545,21 +545,20 @@ def mmap(mut_prot_input, sites_id_input, mapped_sites_output, summary_output):
 
 
 def make_nucleotide_file(uniprot_input, nucleotide_output):
-
-    """ prepares the UniProt data for the nucleotide motifs mapping to mutations """
-
-    with open(nucleotide_output, 'w') as t:
-        with open(uniprot_input, 'r') as file_raw:
-            for fi in file_raw:
-                if not fi.startswith('##'):
-                    f = fi.split()
-                    if f[2] == 'Nucleotide' and len(f) > 8:
-                        take = f[0]+'\t'+f[2]+'\t'+f[4]+'\t'+f[5]+'\t'+f[9]
-                        take1 = take.split()
-                        take1 = take1[4].split(';')
-                        if take > str(0):
-                            with open(nucleotide_output, 'a') as t:
-                                t.write(f[0]+'\t'+f[2]+'\t'+f[4]+'\t'+f[5]+'\t'+take1[0]+'\n')
+    """Extract nucleotide binding site data from a downloaded UniProt file and write to tab-delimited (tsv) file."""
+    annotation_regex = re.compile(r'Note=(.*?)(;|$)') # Alternation needed for entries that only contain a "Note" in the attribute string (see below)
+    lines = []
+    with open(uniprot_input, 'r') as uniprot:
+        for line in uniprot:
+            if not line.startswith('##'):
+                uniprot_id, source, feature, start, end, score, strand, frame, attribute = line.rstrip().split('\t')
+                if feature == 'Nucleotide binding':
+                    match = annotation_regex.match(attribute) # Only need to search for regex at the beginning of the string
+                    binding_nucleotide = match.group(1) if match else ''
+                    new_line = '\t'.join([uniprot_id, feature, start, end, binding_nucleotide]) + '\n'
+                    lines.append(new_line)
+    with open(nucleotide_output, 'w') as nucleotide:
+        nucleotide.writelines(lines)
 
 
 def n_map(yeastID_input, nucleotide_input, nucleotide_id_output): 
