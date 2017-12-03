@@ -610,16 +610,12 @@ def nucleotide_map(mut_prot_input, nucleotide_id_input, mapped_nucleotide_output
 
 
 def bioGrid(uniprot_biogrid_output):
-
-    """ Downloads BioGrid ids of yeast proteins from UniProt for further processing including mapping and web browsing
-    WARNING: requires powerful machines to work with as its expensive to open in machines with low memory
-    """
-    response = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=tab&columns=id,database(BioGrid)')
-    page = response.read()
-    file1 = open(uniprot_biogrid_output,'wb')
-    file1.write(page)
-    file1.close()
-
+    """Download a list of UniProt IDs and their associated BioGrid IDs."""
+    #TODO: Make the uniprot URL cleaner/more understandable. See http://www.uniprot.org/help/api_queries
+    uniprot = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=tab&columns=id,database(BioGrid)')
+    with open(uniprot_biogrid_output,'wb') as output_file:
+        output_file.write(uniprot.read())
+        
 
 def preWeb(uniprot_biogrid_input, mapped_mut_input): 
 
