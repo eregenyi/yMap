@@ -236,6 +236,21 @@ def parse_gene_names(yeastID_input):
     return gene_names
 
 
+def parse_mutations(mut_prot_input):
+    """Parse the mut_prot_input file (mapping mutated proteins to mutation positions) into a dictionary."""
+    mutated_proteins = {}
+    with open(mut_prot_input, 'r') as mutations:
+        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
+        next(mutations) # Skip the header
+        for line in mutations:
+            common_name, mutation_pos = line.rstrip('\n').split('\t')[:2] # Take index to work with mutation input file with >2 columns
+            if common_name not in mutated_proteins:
+                mutated_proteins[common_name] = {mutation_pos} # Mutation positions put into set to remove duplicates
+            else:
+                mutated_proteins[common_name].add(mutation_pos)
+    return mutated_proteins
+
+
 def gff(gff_output):
     """Downloads the current General Feature Format (GFF) file for the Saccharomyces cerevisiae genome"""
     yeast_gff = urlopen('http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff')
