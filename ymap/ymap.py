@@ -497,22 +497,23 @@ def make_bact_file(uniprot_input, bact_output):
                         
                          
 def id(yeastID_input, bact_input, sites_id_output): 
-
-    """ maps proteins ids to active and binding sites containing proteins"""
-
-    with open(sites_id_output, 'w') as file_id:
-        with open(bact_input, 'r') as a:
-            for a in a:
-                a = a.split()
-                with open(yeastID_input)as id:
-                    for i in id:
-                        i = i.split()
-                        if len(i) > 2:
-                            if a[0] == i[0]:
-                                take = i[2]+'\t'+i[1]+'\t'+i[0]+'\t'+a[1]+'\t'+a[2]
-                                if take > str(0):
-                                    with open(sites_id_output, 'a') as file_id:
-                                        file_id.write(take+'\n')
+    """Map UniProt IDs to protein names and binding sites and active sites.
+    
+    Arguments:
+    yeastID_input -- dictionary, mapping UniProt ID to ordered locus and common (gene) names
+    bact_input -- file path, mapping UniProt ID to binding sites and active site, their position in the polypeptide and their binding partner/activity
+    sites_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and binding/active site data
+    """
+    lines = [] 
+    with open(bact_input, 'r') as bact:
+        for line in bact:
+            uniprot_id, feature, position, binds_or_activity = line.rstrip('\n').split('\t')
+            for common_name, sgd_name in yeastID_input[uniprot_id]:
+                new_line = [uniprot_id, sgd_name, common_name, feature, position, binds_or_activity]
+                new_line = '\t'.join(new_line) + '\n'
+                lines.append(new_line)
+    with open(sites_id_output, 'w') as sites_id:
+        sites_id.writelines(lines)
 
 
 def mmap(mut_prot_input, sites_id_input, mapped_sites_output, summary_output):
