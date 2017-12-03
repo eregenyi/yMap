@@ -582,31 +582,31 @@ def n_map(yeastID_input, nucleotide_input, nucleotide_id_output):
 
 
 def nucleotide_map(mut_prot_input, nucleotide_id_input, mapped_nucleotide_output, summary_output):
-
-    """ maps mutations to protein-nucleotide binding motifs """
+    """Map the positions of mutations in mutated proteins to nucleotide binding sites.
     
-    with open(mapped_nucleotide_output, 'w') as mp:
-        with open(mut_prot_input, 'r') as f:
-            for line in f:
-                line1 = line.split()
-                with open(nucleotide_id_input, 'r') as f2:
-                    for line2 in f2:
-                        line2 = line2.split()
-                        if line1[0] == line2[2]:
-                            try:
-                                if line1[1] == 'Error:':
-                                    with open(mapped_nucleotide_output, 'a') as mp:
-                                        mp.write("input file contains error position for" + line1[0]+"protein"+'\n')
-                                        continue
-                                if int(line1[1]) >= int(line2[4]) and int(line1[1]) <= int(line2[5]):
-                                    take = line2[0]+'\t'+line1[0]+'\t'+line2[4]+'\t'+line1[1]+'\t'+line2[4]+'\t'+line2[6]+'\t'+'UniProt'
-                                    if take > str(0):
-                                        with open(mapped_nucleotide_output, 'a') as mp:
-                                            mp.write(take+'\n')
-                                        with open(summary_output, 'a+') as summary:                                            
-                                            summary.write(line2[0]+'\t'+line1[0]+'\t'+line1[1]+'\t'+line2[4]+'\t'+'Nucleotide-Binding'+'\t'+'UniProt'+'\n')
-                            except IndexError:
-                                pass
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    nucleotide_id_input -- file path, mapping UniProt ID, ordered locus name, common name, the start and end position of nucleotide binding sites and the binding nucleotide
+    mapped_nucleotide_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name, nucleotide binding site data
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_nucleotide_lines = []
+    summary_lines = []
+    with open(nucleotide_id_input, 'r') as sites:
+        for line in sites:
+            uniprot_id, sgd_name, common_name, feature, nuc_bind_start, nuc_bind_end, binding_nucleotide = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if int(nuc_bind_start) <= int(mut_pos) <= int(nuc_bind_end): # Check if the mutation coincides with the position of a binding/active site
+                            mapped_sites_line = '\t'.join([uniprot_id, sgd_name, common_name, feature, nuc_bind_start, mut_pos, nuc_bind_end, binding_nucleotide, 'UniProt']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, feature, nuc_bind_start, mut_pos, nuc_bind_end, binding_nucleotide, 'Nucleotide binding sites', 'UniProt']) + '\n'
+                            mapped_nucleotide_lines.append(mapped_sites_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_nucleotide_output, 'w') as mapped_nucleotides:
+        mapped_nucleotides.writelines(mapped_nucleotide_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
 
 
 def bioGrid(uniprot_biogrid_output):
