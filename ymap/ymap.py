@@ -56,8 +56,6 @@ except ImportError:
     import Orange3
 from orangecontrib.bio import go    
 from six.moves import range
-ontology = go.Ontology()
-annotations = go.Annotations("sgd", ontology=ontology)
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -997,6 +995,10 @@ def resc(output_dir):
 #This usage strategy is optional, and a user can use above written codes in any convenient way as
 #required by experiemental settings and data interpretation (see README for proper use)
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+# Create Ontology and Annotation objects for use in GO enrichment (see enrich() function)
+ontology = go.Ontology()
+annotations = go.Annotations('sgd')
 
 wd = os.getcwd() 
 
