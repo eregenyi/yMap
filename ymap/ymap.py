@@ -479,25 +479,21 @@ def enrich(mapped_mut_input):
                            
 
 
-def make_bact_file(uniprot_input, bact_output): 
-
-    """Prepares raw Uniprot data for yeast active and binding sites mutation analysis"""
-
-    with open(bact_output,'w') as file2:
-        with open(uniprot_input, 'r') as d:
-            for f in d:
-                if not f.startswith('##'):
-                    f = f.split()
-                    if f[2] == 'Active':
-                        take = f[0]+'\t'+f[2]+'\t'+f[4]
-                        if take > str(0):
-                            with open(bact_output,'a') as file2:
-                                file2.write(take+'\n')
-                    if f[2] == 'Binding':
-                        take2 = f[0]+'\t'+f[2]+'\t'+f[4]
-                        if take2 > str(0):
-                            with open(bact_output,'a+') as file2:
-                                file2.write(take2+'\n')
+def make_bact_file(uniprot_input, bact_output):
+    """Extract binding site and active site data from a downloaded UniProt file and write to tab-delimited (tsv) file."""
+    annotation_regex = re.compile(r'Note=(.*?)(;|$)') # Alternation needed for entries that only contain a "Note" in the attribute string (see below)
+    lines = []
+    with open(uniprot_input, 'r') as uniprot:
+        for line in uniprot:
+            if not line.startswith('##'):
+                uniprot_id, source, feature, start, end, score, strand, frame, attribute = line.rstrip().split('\t')
+                if feature in ('Binding site', 'Active site'):
+                    match = annotation_regex.match(attribute) # Only need to search for regex at the beginning of the string
+                    binds_or_activity = match.group(1) if match else ''
+                    new_line = '\t'.join([uniprot_id, feature, start, binds_or_activity]) + '\n'
+                    lines.append(new_line)
+    with open(bact_output, 'w') as bact:
+        bact.writelines(lines)
                         
                          
 def id(yeastID_input, bact_input, sites_id_output): 
