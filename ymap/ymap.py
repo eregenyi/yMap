@@ -449,25 +449,35 @@ def dmap(mut_prot_input, domain_id_input, mapped_domains_output, summary_output)
     with open(summary_output, 'a') as summary:
         summary.writelines(summary_lines)
 
+#TODO: The bottleneck in the program is the GO enrichment analysis. We have only a 9 genes in the test file 'mapped_domains.txt' and it takes 
+# between 14s and 20s to perform the enrichment and about the same time to load the ontology and annotations.
+# Perhaps we should have an option on the website where the user can select whether or not they want to perform GO enrichment.
 def enrich(mapped_mut_input):
-
-    """ This method performed enrichment analysis of mutated proteins and
-    return the p value of functional enrichment of mutated proteins functional regions/residues; 
-    see main text for how pvalue is calculated"""
-    k = []
+    """Perform Gene Ontology (GO) enrichment on a set of genes (obtained from the second column of an tab-delimited input file).
+    
+    Write the results of the enrichment to a file. If a GO term has been found to be overrepresented, then its ID, name, the 
+    significance of the enrichment (for further details on how p-value is calculated see ?????????????), a list of the genes 
+    in the gene set that are annotated with the enriched GO term, and a reference count (???????) are written as a line in 
+    the file.
+    """
+    lines = []
     p_value_output = os.path.join(os.path.dirname(mapped_mut_input), p_value_file)
-    with open(p_value_output,'w') as out:
-        with open(mapped_mut_input, 'r') as f:
-            k = [(line.split())[1] for line in f]
-            res = annotations.get_enriched_terms(k)
-            if len(res) == 0:
-                with open(p_value_output,'a') as out:
-                    out.write('No enrichment found')
-            else:
-                for go_id, (genes, pvalue, ref) in list(res.items()):
-                    if pvalue < 0.05 and len(genes) >= 2:
-                        with open(p_value_output,'a+') as out:
-                            out.write(ontology[go_id].name + '\t'+ '%.2E' %Decimal(pvalue) + '\t'+",".join(genes) +'\t'+ str(ref) +'\n')
+    with open(mapped_mut_input, 'r') as mapped_mutations:
+        sgd_gene_names = [line.split('\t')[1] for line in mapped_mutations]
+    enriched_go_terms = annotations.get_enriched_terms(sgd_gene_names)
+    if len(enriched_go_terms) == 0:
+        line = 'No enriched GO terms found.'
+    else:
+        for go_id, (genes, p_value, ref) in enriched_go_terms.items(): #TODO: Find out what the reference count is
+            if p_value < 0.05:
+                term = ontology[go_id]
+                formatted_p_value = '%.2E' % p_value
+                genes = ', '.join(genes)
+                line_elements = [term.id, term.name, formatted_p_value, genes, str(ref)]
+                line = '\t'.join(line_elements) + '\n'
+    lines.append(line)
+    with open(p_value_output, 'w') as out:
+        out.writelines(lines)
                            
 
 
