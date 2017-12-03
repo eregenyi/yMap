@@ -423,56 +423,31 @@ def d_map(yeastID_input, domains_input, domain_id_output):
 
 
 def dmap(mut_prot_input, domain_id_input, mapped_domains_output, summary_output):
-
-    """ maps mutations to the yeast domains"""
+    """Map the positions of mutations in mutated proteins to domains.
     
-    with open(mapped_domains_output, 'w') as mp:
-        with open(summary_output, 'a+') as summary:
-            with open(mut_prot_input, 'r') as f:
-                for line in f:
-                    line1=line.split()
-                    with open(domain_id_input, 'r') as f2:
-                        for line2 in f2:
-                            line2 = line2.split()
-                            if line1[0] == line2[2]:
-                                try:
-                                    if line1[1] == 'Error:':
-                                        with open(mapped_domains_output, 'a') as mp:
-                                            mp.write("input file contains error position for" +line1[0]+ "this protein"+'\n')
-                                            continue
-                                    if int(line1[1]) >= int(line2[3]) and int(line1[1]) <= int(line2[4]):
-                                        if len(line2) == 6:
-                                            take = line2[0]+'\t'+line1[0]+'\t'+line2[3]+'\t'+line1[1]+'\t'+line2[4]+'\t'+line2[5]+'\t'+'UniProt'+'\n'
-                                            if take > str(0):
-                                                with open(mapped_domains_output, 'a+') as mp:
-                                                    mp.write(take)
-                                                    summary.write(line2[0]+'\t'+line1[0]+'\t'+line1[1]+'\t'+line2[5]+'\t'+'domain'+'\t'+'UniProt'+'\n')
-                                        if  len(line2) == 7:
-                                            take1 = line2[0]+'\t'+line1[0]+'\t'+line2[3]+'\t'+line1[1]+'\t'+line2[4]+'\t'+line2[5]+'\t'+line2[6]+'UniProt'+'\n'
-                                            if take1 > str(0):
-                                                with open(mapped_domains_output, 'a+') as mp:
-                                                    mp.write(take1)
-                                                    summary.write(line2[0]+'\t'+line1[0]+'\t'+line1[1]+'\t'+line2[5]+'\t'+line2[6]+'domain'+'\t'+'UniProt'+'\n')
-                                        if  len(line2) == 8:
-                                            take2 = line2[0]+'\t'+line1[0]+'\t'+line2[3]+'\t'+line1[1]+'\t'+line2[4]+'\t'+line2[5]+'\t'+line2[6]+'\t'+line2[7]+'UniProt'+'\n'
-                                            if take2 > str(0):
-                                                with open(mapped_domains_output, 'a+') as mp:
-                                                    mp.write(take2)
-                                                    summary.write(line2[0]+'\t'+line1[0]+'\t'+line1[1]+'\t'+line2[5]+'\t'+line2[6]+'\t'+line2[7]+'domain'+'\t'+'UniProt'+'\n')
-                                        if  len(line2) == 9:
-                                            take3 = line2[0]+'\t'+line1[0]+'\t'+line2[3]+'\t'+line1[1]+'\t'+line2[4]+'\t'+line2[5]+'\t'+line2[6]+'\t'+line2[7]+'\t'+line2[8]+'UniProt'+'\n'
-                                            if take3 > str(0):
-                                                with open(mapped_domains_output, 'a+') as mp:
-                                                    mp.write(take3)
-                                                    summary.write(line2[0]+'\t'+line1[0]+'\t'+line1[1]+'\t'+line2[5]+'\t'+line2[6]+'\t'+line2[7]+'\t'+line2[8]+'domain'+'\t'+'UniProt'+'\n')
-                                        if  len(line2) == 10:
-                                            take4 = line2[0]+'\t'+line1[0]+'\t'+line2[3]+'\t'+line1[1]+'\t'+line2[4]+'\t'+line2[5]+'\t'+line2[6]+'\t'+line2[7]+'\t'+line2[8]+'\t'+line2[9]+'UniProt'+'\n'
-                                            if take4 > str(0):
-                                                with open(mapped_domains_output, 'a+') as mp:
-                                                    mp.write(take4)
-                                                    summary.write(line2[0]+'\t'+line1[0]+'\t'+line1[1]+'\t'+line2[5]+'\t'+line2[6]+'\t'+line2[7]+'\t'+line2[8]+'\t'+line2[9]+'domain'+'\t'+'UniProt'+'\n')
-                                except IndexError:
-                                    pass
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    domain_id_input -- file path, mapping UniProt ID, ordered locus name, common name, domain position (start and end) and domain name
+    mapped_domains_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name, domain position and domain name
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_domains_lines = []
+    summary_lines = []
+    with open(domain_id_input, 'r') as domains:
+        for line in domains:
+            uniprot_id, sgd_name, common_name, domain_start, domain_end, domain_name, prosite_ref = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if int(domain_start) <= int(mut_pos) <= int(domain_end): # Check if the mutation lies in a domain of the mutated protein
+                            mapped_domain_line = '\t'.join([uniprot_id, sgd_name, common_name, domain_start, mut_pos, domain_end, domain_name, prosite_ref, 'UniProt']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, domain_start, mut_pos, domain_end, domain_name, prosite_ref, 'Domains', 'UniProt']) + '\n'
+                            mapped_domains_lines.append(mapped_domain_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_domains_output, 'w') as mapped_domains:
+        mapped_domains.writelines(mapped_domains_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
 
 def enrich(mapped_mut_input):
 
