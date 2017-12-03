@@ -350,25 +350,22 @@ def pmap(yeastID_input, ptms_input, ptm_id_output):
     with open(ptm_id_output, 'w') as ptm_id:
         ptm_id.writelines(lines)
                                          
-
+#TODO: Still don't like this implementation, but it's ok, I guess
 def ptm_map(mut_prot_input, ptm_id_input, mapped_ptms_output, summary_output):
-    """Map the positions of mutations in mutated proteins to post-translational modifications (PTMs)."""
-    mutated_proteins = {}
+    """Map the positions of mutations in mutated proteins to post-translational modifications (PTMs).
+    
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    ptm_id_input -- file path, mapping UniProt ID, ordered locus name, common name, PTM position and PTM
+    mapped_ptms_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name, PTM position and PTM
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
     mapped_ptms_lines = []
     summary_lines = []
-    with open(mut_prot_input, 'r') as mutations:
-        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
-        next(mutations) # Skip the header
-        for line in mutations:
-            common_name, mutation_pos = line.rstrip('\n').split('\t')
-            if common_name not in mutated_proteins:
-                mutated_proteins[common_name] = {mutation_pos} # Mutation positions put in set to remove duplicates
-            else:
-                mutated_proteins[common_name].add(mutation_pos) #TODO: Again refactor - write function to return a dictionary from the mutation file and and pass this dictionary to any functions that need it
-    with open(ptm_id_input, 'r') as ptms: #TODO: It might also be more efficient to first parse the ptm_id.txt file into a dictionary representation to be easily queried, instead of looping?
+    with open(ptm_id_input, 'r') as ptms:
         for line in ptms:
             uniprot_id, sgd_name, common_name, ptm_pos, ptm = line.rstrip('\n').split('\t')
-            for mutated_protein, mutated_positions in mutated_proteins.items():
+            for mutated_protein, mutated_positions in mut_prot_input.items():
                 if mutated_protein == common_name:
                     for mut_pos in mutated_positions:
                         if mut_pos == ptm_pos:
