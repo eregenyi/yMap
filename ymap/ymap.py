@@ -562,22 +562,23 @@ def make_nucleotide_file(uniprot_input, nucleotide_output):
 
 
 def n_map(yeastID_input, nucleotide_input, nucleotide_id_output): 
-
-    """ maps different proteins ids to nucleotides data """
-
-    with open(nucleotide_id_output, 'w') as  id_domain:
-        with open(yeastID_input, 'r') as fl:
-            for fe in fl:
-                f = fe.split()
-                with open(nucleotide_input,'r') as dp:
-                    for d in dp:
-                        d=d.split()
-                        if len(f)>2:
-                            if f[0]==d[0]:
-                                take=d[0]+'\t'+f[1]+'\t'+f[2]+'\t'+d[1]+'\t'+d[2]+'\t'+d[3]+'\t'+d[4]
-                                if take > str(0):
-                                    with open(nucleotide_id_output, 'a') as  id_domain:
-                                        id_domain.write(take+'\n')
+    """Map UniProt IDs to protein names and nucleotide binding sites.
+    
+    Arguments:
+    yeastID_input -- dictionary, mapping UniProt ID to ordered locus and common (gene) names
+    nucleotide_input -- file path, mapping UniProt ID to nucleotide binding sites, their position (start and end) in the polypeptide and their binding nucleotide
+    nucleotide_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and nucleotide binding site data
+    """
+    lines = [] 
+    with open(nucleotide_input, 'r') as nucleotide:
+        for line in nucleotide:
+            uniprot_id, feature, start, end, binding_nucleotide = line.rstrip('\n').split('\t')
+            for common_name, sgd_name in yeastID_input[uniprot_id]:
+                new_line = [uniprot_id, sgd_name, common_name, feature, start, end, binding_nucleotide]
+                new_line = '\t'.join(new_line) + '\n'
+                lines.append(new_line)
+    with open(nucleotide_id_output, 'w') as nucleotide_id:
+        nucleotide_id.writelines(lines)
 
 
 def nucleotide_map(mut_prot_input, nucleotide_id_input, mapped_nucleotide_output, summary_output):
