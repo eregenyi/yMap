@@ -517,23 +517,31 @@ def id(yeastID_input, bact_input, sites_id_output):
 
 
 def mmap(mut_prot_input, sites_id_input, mapped_sites_output, summary_output):
-
-    """ maps mutations to proteins ab (active and binding sites) """ 
-
-    with open(mapped_sites_output, 'w') as out: 
-        with open(sites_id_input, 'r') as s:
-            for a in s:
-                a = a.split()
-                with open(mut_prot_input, 'r') as mu:
-                    for m in mu:
-                        m = m.split()
-                        if a[0] == m[0] and a[4] == m[1]:
-                            take = a[2]+'\t'+ a[3]+'\t'+m[1]+'\t'+'UniProt'
-                            if take > str(0):
-                                with open(mapped_sites_output, 'a') as out: 
-                                    out.write(take+'\n')
-                                with open(summary_output, 'a+') as summary:                                    
-                                    summary.write(a[2]+'\t'+a[0]+'\t'+m[1]+'\t'+ a[3]+'\t'+'Active/Binding site'+'\t'+'UniProt'+'\n')
+    """Map the positions of mutations in mutated proteins to binding sites and active sites.
+    
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    sites_id_input -- file path, mapping UniProt ID, ordered locus name, common name, binding/active site, their position and binding partner/activity 
+    mapped_sites_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name, binding/active site data
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_sites_lines = []
+    summary_lines = []
+    with open(sites_id_input, 'r') as sites:
+        for line in sites:
+            uniprot_id, sgd_name, common_name, feature, bact_pos, binds_or_activity = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if mut_pos == bact_pos: # Check if the mutation coincides with the position of a binding/active site
+                            mapped_sites_line = '\t'.join([uniprot_id, sgd_name, common_name, feature, mut_pos, binds_or_activity, 'UniProt']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, feature, mut_pos, binds_or_activity, 'Active/Binding sites', 'UniProt']) + '\n'
+                            mapped_sites_lines.append(mapped_sites_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_sites_output, 'w') as mapped_sites:
+        mapped_sites.writelines(mapped_sites_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
 
 
 def make_nucleotide_file(uniprot_input, nucleotide_output):
