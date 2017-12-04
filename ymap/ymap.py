@@ -1289,96 +1289,58 @@ mapped_within_prot_file_path = os.path.join(output_dir_path, mapped_within_prot_
 mapped_between_prot_file_path = os.path.join(output_dir_path, mapped_between_prot_file)
 
 
-def data(): 
-
-    """ this function will download and clean required data to run ymap methods smoothly """
-
-    start_time = time.time()
+def download(): #TODO: Directory as argument
+    """Download/Copy all required data into a specified directory."""
+    
+    start_time = time.clock()
     os.mkdir(data_dir_path)
     os.chdir(data_dir_path)
-    try:
-        resc(data_dir_path)
-    except IOError:
-        pass
-    try:
-        pTMdata(uniprot_file_path)
-    except IOError:
-        pass
-    try:
-        make_ptms_file(uniprot_file_path, ptms_file_path)
-    except IOError:
-        pass
-    try:
-        iD(yeastID_file_path)  # this method does not return anything, all the rest below also don't
-    except IOError:
-        pass
-    try:
-        pmap(yeastID_file_path, ptms_file_path, ptm_id_file_path)
-    except IOError:
-        pass
-    try:
-        make_domains_file(uniprot_file_path, domains_file_path)
-    except IOError:
-        pass
-    try:
-        d_map(yeastID_file_path, domains_file_path, domain_id_file_path)
-    except IOError:
-        pass
-    try:
-        make_bact_file(uniprot_file_path, bact_file_path)
-    except IOError:
-            pass
-    try:
-        id(yeastID_file_path, bact_file_path, sites_id_file_path)
-    except IOError:
-            pass
-    try:
-        bioGrid(uniprot_biogrid_file_path)
-    except IOError:
-            pass
-    try:
-        make_pdb_file(uniprot_file_path, pdb_file_path)
-    except IOError:
-        pass
-    try:
-        gff(gff_file_path)
-    except IOError:
-        pass
-    try:
-        frmt(gff_file_path, frmt_file_path)
-    except IOError:
-        pass
-    try:
-        id_map(yeastID_file_path, frmt_file_path, d_id_map_file_path)
-    except IOError:
-        pass
-    try:
-        make_nucleotide_file(uniprot_file_path, nucleotide_file_path)
-    except IOError:
-        pass
-    try:
-        n_map(yeastID_file_path, nucleotide_file_path, nucleotide_id_file_path)
-    except IOError:
-        pass
-    try:
-        z = zipfile.ZipFile(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+between_prot_zip_file, 'r')
-        z.extractall()
-    except IOError:
-        pass
-    try:
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+interface_acet_file, wd)
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+interface_phos_file, wd)
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+interface_ubiq_file, wd) 
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+interact_acet_file, wd)
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+interact_phos_file, wd)
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+interact_ubiq_file, wd)
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+within_prot_file, wd)
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+regulatory_hotspots_file, wd)
-        shutil.copy2(wd+'/'+'data'+'/'+'PTMcode+PTMfunc_data'+'/'+between_prot_file, wd)    
-    except IOError:
-        pass
+    
+    resc(data_dir_path) # Copy files packaged with ymap
+    pTMdata(uniprot_file_path) # Download UniProt file (yeast protein features)
+    gff(gff_file_path) # Download Genome File Format (GFF) file for yeast genome (incl. all genomic loci and chromosome sequences)
+    iD(yeastID_file_path) # Download yeastID file (mapping UniProt IDs to locus names and common gene/protein names)
+    bioGrid(uniprot_biogrid_file_path) # Download UniProt BioGrid file (mapping UniProt IDs to BioGrid IDs)
+    
     os.chdir(wd)
-    return "All required data downloaded in %s seconds" % (time.time() - start_time)
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
+
+def data():
+    """Process data files into intermediate files, including only relevant data and """
+
+    start_time = time.clock()
+    os.mkdir(data_dir_path)
+    os.chdir(data_dir_path)
+
+    frmt(gff_file_path, frmt_file_path)
+    
+    #TODO: We could just loop over the Uniprot file once and write all the files in the same function...
+    make_ptms_file(uniprot_file_path, ptms_file_path)
+    make_domains_file(uniprot_file_path, domains_file_path)
+    make_bact_file(uniprot_file_path, bact_file_path)
+    make_pdb_file(uniprot_file_path, pdb_file_path)
+    make_nucleotide_file(uniprot_file_path, nucleotide_file_path)
+    
+    # Create dictionary for yeastID_input
+    gene_names = parse_gene_names(yeastID_file_path)
+    gene_names_by_locus = parse_names_by_locus(gene_names)
+    
+    # To each line of each intermediate file, prepend set of identifiers not included in file
+    # Identifiers: UniProt ID, locus name, common gene/protein name
+    id_map(gene_names_by_locus, frmt_file_path, d_id_map_file_path)
+    pmap(gene_names, ptms_file_path, ptm_id_file_path)
+    d_map(gene_names, domains_file_path, domain_id_file_path)
+    id(gene_names, bact_file_path, sites_id_file_path)
+    n_map(gene_names, nucleotide_file_path, nucleotide_id_file_path)
+
+    os.chdir(wd)
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
