@@ -297,19 +297,20 @@ def frmt(gff_input, frmt_output):
 
 # IMPORTANT TO NOTE - UniProt IDs are not unique in the output file of this function. See P02994 for example.
 # This is because some UniProt IDs map to more than one locus. 
-def id_map(yeastID_input, frmt_input, d_id_map_output):
-    """Map Uniprot IDs to gene names and genomic loci (start, end positions and strand orientation)."""
-    gene_names = {}
+def id_map(gene_names_by_locus, frmt_input, d_id_map_output):
+    """Map UniProt IDs to gene names and genomic loci (start, end positions and strand orientation).
+    
+    gene_names_by_locus -- dictionary, key = locus_name, value = list of gene names
+    frmt_input -- file path, mapping gene (locus) name to start and end positions of locus (on a chromosome) and strand orientation)
+    d_id_map_output -- file path, mapping UniProt IDs to gene names and genomic locus data
+    """
     lines = []
-    for uniprot_id, names in yeastID_input.items():
-        for common_name, sgd_name in names:
-            gene_names[sgd_name] = [uniprot_id, sgd_name, common_name]
     with open(frmt_input, 'r') as gff:
         #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
         next(gff) # Skip the header
         for line in gff:
             sgd_name, start, end, strand = line.rstrip('\n').split('\t')
-            new_line = gene_names[sgd_name].copy()
+            new_line = gene_names_by_locus[sgd_name].copy() #TODO: Is this still necessary? Are dictionaries passed in by value?
             new_line.extend([start, end, strand])
             new_line = '\t'.join(new_line) + '\n'
             lines.append(new_line)
