@@ -744,33 +744,59 @@ def pdb(mut_prot_input, struct_id_input, mapped_struct_output, summary_output):
 #PTM types, present at interface  and/or ppi.
 
 
-def interface(yeastID_input, interface_sites_input, mut_prot_input, mapped_interface_output, summary_output):
-
-    """PTM present at the interface of two proteins and known to play role in interaction (Beltrao et al. Cell 2012)"""
+def interface_map(gene_names_by_locus, interface_sites_input, interface_id_output):
+    """Map UniProt IDs to protein names and PTMs at an interface that are known to affect interactions.
     
-    with open(mapped_interface_output, 'w') as out:
-        with open(interface_sites_input, 'r') as f:
-            for l in f:
-                line = l.split()
-                if len(line) > 5:
-                    take = line[1]+'\t'+line[2]+'\t'+line[3]+'\t'+line[5]
-                    take = take.split()
-                    with open(mut_prot_input) as mu:
-                        for m in mu:
-                            m = m.split()
-                            if m[0] == take[1] and m[1] == take[2]:
-                                take2 = take[0]+'\t'+take[1]+'\t'+take[2]+'\t'+take[3]+'\t'+'PTMfunc'
-                                fi = take2.split()
-                                with open(yeastID_input) as id:
-                                    for di in id:
-                                        di = di.split()
-                                        if len(di) > 2 and di[2] == fi[1]:
-                                            with open(summary_output, 'a+') as summary:
-                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'Interface'+'\t'+'PTMfunc'+'\n')
-                                            if take2 > str(0):
-                                                with open(mapped_interface_output, 'a') as out:
-                                                    out.write(take2+'\n')
-                                                
+    See Beltrao et al. Cell 2012 for further details.
+    
+    Arguments:
+    gene_names_by_locus -- dictionary, key = locus_name, value = list of gene names
+    interface_sites_input -- file path, mapping locus name to PTMs, their position in a protein interface, the modified residue and the PFAM domain.
+    struct_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and interface data
+    """
+    lines = []
+    with open(interface_sites_input, 'r') as interface_sites:
+        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
+        next(interface_sites) # Skip the header
+        for line in interface_sites:
+            line = line.rstrip('\n')
+            if line == '': #TODO: Need to skip blank lines in the file too. Better way?
+                continue
+            id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain = line.split('\t')
+            new_line = gene_names_by_locus[sgd_name].copy()
+            new_line.extend([ptm_pos, ptm_residue, pfam_domain])
+            new_line = '\t'.join(new_line) + '\n'
+            lines.append(new_line)
+    with open(interface_id_output, 'w') as interface:
+        interface.writelines(lines)
+
+
+def interface(mut_prot_input, interface_id_input, mapped_interface_output, summary_output):
+    """Map the positions of mutations in mutated proteins to PTMs at an interface.
+    
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    interface_id_input -- file path, mapping UniProt ID, ordered locus name, common name, PTM position, residue and PFAM domain name
+    mapped_interface_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name and interface data
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_interface_lines = []
+    summary_lines = []
+    with open(interface_id_input, 'r') as sites:
+        for line in sites:
+            uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if int(ptm_pos) == int(mut_pos): # Check if the mutation coincides with the position of a binding/active site
+                            mapped_interface_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain, 'PTMfunc']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain, 'Interfaces', 'PTMfunc']) + '\n'
+                            mapped_interface_lines.append(mapped_interface_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_interface_output, 'w') as mapped_interfaces:
+        mapped_interfaces.writelines(mapped_interface_lines)
+    with open(summary_output, 'a') as summary: #TODO: As different interface_id_inputs are supplied for acetylation, phosphorylation and ubiquitination, the PTM type should be recorded in the summary, but it is not (How to implement?).
+        summary.writelines(summary_lines)             
          
 
 def ppi(yeastID_input, ppi_input, mut_prot_input, mapped_ppi_output, summary_output):
