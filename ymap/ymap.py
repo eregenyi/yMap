@@ -691,32 +691,32 @@ def mu_map(yeastID_input, struct_input, struct_id_output):
         struct_id.writelines(lines)
 
 
-def pdb(pdb_input, mut_pos_input, mapped_struct_output, summary_output):
-
-    """ This code maps mutations to the proteins structural regions"""
-
-    with open(mapped_struct_output, 'w') as s:
-        with open(pdb_input, 'r') as raw:
-            for i in raw:
-                i = i.split()
-                with open(mut_pos_input) as mu: 
-                    for m in mu:
-                        m = m.split()
-                        if i[0] == m[0]:
-                            try:
-                                if m[3] == 'Error:':
-                                    with open(mapped_struct_output, 'a') as s:
-                                        s.write("input file contains error position for" +m[2]+ "protein"+'\n')
-                                        continue
-                                if int(i[2]) <= int(m[3]) and int(i[3]) >= int(m[3]):
-                                    take = m[0]+'\t'+m[1]+'\t'+m[2]+'\t'+i[1]+'\t'+i[2]+'\t'+m[3]+'\t'+i[3]+'\t'+i[4]+'\t'+'UniProt'
-                                    if take > str(0):
-                                        with open(mapped_struct_output, 'a+') as s:
-                                            s.write(take+'\n')
-                                        with open(summary_output, 'a+') as summary:
-                                            summary.write(m[0]+'\t'+m[2]+'\t'+m[3]+'\t'+i[4]+'\t'+i[1]+'\t'+'UniProt'+'\n')
-                            except IndexError:
-                                pass
+def pdb(mut_prot_input, struct_id_input, mapped_struct_output, summary_output):
+    """Map the positions of mutations in mutated proteins to structural elements (helices, beta strands, turns).
+    
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    struct_id_input -- file path, mapping UniProt ID, ordered locus name, common name, PDB ID, and the start and end position of each structural element
+    mapped_struct_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name, nucleotide binding site data
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_struct_lines = []
+    summary_lines = []
+    with open(struct_id_input, 'r') as sites:
+        for line in sites:
+            uniprot_id, sgd_name, common_name, feature, struct_start, struct_end, pdb_id = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if int(struct_start) <= int(mut_pos) <= int(struct_end): # Check if the mutation coincides with the position of a binding/active site
+                            mapped_sites_line = '\t'.join([uniprot_id, sgd_name, common_name, feature, struct_start, mut_pos, struct_end, pdb_id, 'UniProt']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, feature, struct_start, mut_pos, struct_end, pdb_id, 'Structural elements', 'UniProt']) + '\n'
+                            mapped_struct_lines.append(mapped_sites_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_struct_output, 'w') as mapped_nucleotides:
+        mapped_nucleotides.writelines(mapped_struct_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
 
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
