@@ -655,28 +655,20 @@ def bweb(biog_input):
 
 
 def make_pdb_file(uniprot_input, pdb_output):
-
-    """ Structure data filtration from UniProt"""
-
-    with open(pdb_output, 'w') as stru:
-        with open(uniprot_input, 'r') as raw:
-            for r in raw:
-                if not r.startswith('##'):
-                    line = r.split()
-                    if line[2] == 'Beta' and len(line[9]) > 1:
-                        take = line[9].split('|')
-                        take3 = line[0]+'\t'+line[2]+'\t'+line[4]+'\t'+line[5]+'\t'+take[1]
-                        if take3 > str(0):
-                            with open(pdb_output, 'a') as stru:
-                                stru.write(take3+'\n')
-                                continue
-                    if len(line) > 7 and line[2] == 'Helix' or line[2]=='Turn':
-                        if len(line[8])>1:
-                            tak = line[8].split('|')
-                            tak3 = line[0]+'\t'+line[2]+'\t'+line[3]+'\t'+line[4]+'\t'+take[1]
-                            if tak3 > str(0):
-                                with open(pdb_output, 'a+') as stru:
-                                    stru.write(tak3+'\n')
+    """Extract structural data from a downloaded UniProt file and write to tab-delimited (tsv) file."""
+    annotation_regex = re.compile(r'PDB:(.*?)(;|$)') # Alternation needed for entries that only contain a "Note" in the attribute string (see below)
+    lines = []
+    with open(uniprot_input, 'r') as uniprot:
+        for line in uniprot:
+            if not line.startswith('##'):
+                uniprot_id, source, feature, start, end, score, strand, frame, attribute = line.rstrip().split('\t')
+                if feature in ('Helix', 'Beta strand', 'Turn'):
+                    match = annotation_regex.search(attribute) # Need to search for regex everywhere in string
+                    pdb_id = match.group(1) if match else ''
+                    new_line = '\t'.join([uniprot_id, feature, start, end, pdb_id]) + '\n'
+                    lines.append(new_line)
+    with open(pdb_output, 'w') as pdb:
+        pdb.writelines(lines)
 
 
 def mu_map(yeastID_input, mut_prot_input, mapped_mutation_pos_output):
