@@ -969,34 +969,65 @@ def betweenPro(mut_prot_input, between_prot_id_input, mapped_between_prot_output
         summary.writelines(summary_lines)
 
 
-# TODO: yeastID.txt is openen each line of mutation, suggestion to open it once store the di[0] and d1[2] in a
-# dictionary di[2] as keys list of di[0]'s as  values, for a given fi[1] you can then retreive all corresponging di[0]'s
-# don't open hotspot again and again it is already
-# there are many other cases where something similar hapens
-def hotspot(yeastID_input, regulatory_hotspots_input, mut_prot_input, mapped_hotspot_output, summary_output):
+#TODO: Try to understand what the data for this function is???
+def hotspot_map(gene_names_by_locus, hotspot_input, hotspot_id_output): #TODO: Clarify docstring!
+    """Map UniProt IDs to protein names and PTM hotspots.
+    
+    PTM-containing motifs in close proximity are named hotspots?? 
+    See Beltrao et al. Cell 2012 for further details.
+    
+    Arguments:
+    gene_names_by_locus -- dictionary, key = locus_name, value = list of gene names
+    hotspot_input -- file path, mapping locus name to hotspot data, including PTM position, modified residue, PFAM domain, PDB ID
+    hotspot_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and hotspot data
+    """
+    lines = []
+    with open(hotspot_input, 'r') as hotspots:
+        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
+        next(hotspots) # Skip the header
+        for line in hotspots:
+            line = line.rstrip('\n')
+            if line == '': # Need to skip blank lines in the file too. Better way?
+                continue
+            id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain, pdb_id = line.split('\t')
+            new_line = gene_names_by_locus[sgd_name].copy()
+            new_line.extend([ptm_pos, ptm_residue, pfam_domain, pdb_id])
+            new_line = '\t'.join(new_line) + '\n'
+            lines.append(new_line)
+    with open(hotspot_id_output, 'w') as hotspot_id:
+        hotspot_id.writelines(lines)
 
-    """ PTMs containing motifs in a close proximity are named hotspots (Beltrao et al. Cell 2012)"""
-
-    with open(mapped_hotspot_output, 'w') as hotspot:
-        with open(regulatory_hotspots_input, 'r') as f:
-            for l in f:
-                line = l.split()
-                with open(mut_prot_input, 'r') as mu:
-                    for m in mu:
-                        m = m.split()
-                        if len(line) > 6:
-                            if m[0] == line[2] and m[1] == line[3]:
-                                take = line[1]+'\t'+line[2]+'\t'+line[3]+'\t'+line[5]+'\t'+line[6]+'\t'+'PTMfunc'
-                                fi = take.split()
-                                with open(yeastID_input) as id:
-                                    for di in id:
-                                        di = di.split()
-                                        if len(di) > 2 and di[2] == fi[1]:
-                                            with open(summary_output, 'a+') as summary:
-                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+fi[3]+'\t'+'HotSpot'+'\t'+'PTMFunc'+'\n')
-                                            if take > str(0):
-                                                with open(mapped_hotspot_output, 'a') as hotspot:
-                                                    hotspot.write(take+'\n')
+# hotspot_map(names_by_locus, 'hotspot.txt', 'hotspot_id.txt')
+ 
+def hotspot(mut_prot_input, hotspot_id_input, mapped_hotspot_output, summary_output): #TODO: Clarify docstring!
+    """Map the positions of mutations in mutated proteins to PTM hotspots.
+    
+    PTM-containing motifs in close proximity are named hotspots?? 
+    See Beltrao et al. Cell 2012 for further details.
+    
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    hotspot_id_input -- file path, mapping UniProt ID, ordered locus name, common name and hotspot data, including PTM position, residue, PFAM domain and PDB ID
+    mapped_hospot_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name and hotspot data 
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_ptms_lines = []
+    summary_lines = []
+    with open(hotspot_id_input, 'r') as ptms:
+        for line in ptms:
+            uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain, pdb_id = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if int(ptm_pos) == int(mut_pos): # Check if the mutation coincides with the position of a binding/active site
+                            mapped_ptm_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain, pdb_id, 'PTMfunc']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, pfam_domain, pdb_id, 'Hotspots', 'PTMfunc']) + '\n'
+                            mapped_ptms_lines.append(mapped_ptm_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_hotspot_output, 'w') as mapped_ptms:
+        mapped_ptms.writelines(mapped_ptms_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
                           
 
 def sum_file_map(summary_input, final_report_output):  
