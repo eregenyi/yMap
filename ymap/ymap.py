@@ -232,6 +232,18 @@ def parse_gene_names(yeastID_input):
                 gene_names[uniprot_id] = [(common_name, sgd_name)]
     return gene_names
 
+# Assumes unique sgd_name (locus name)
+def parse_names_by_locus(gene_names):
+    """Parse the gene_names into a dictionary (key = locus_name, value = list of gene names).
+    
+    Arguments:
+    gene_names -- dictionary, key = UniProt ID; value = list of (sgd_name, common_name) pairs
+    """
+    gene_names_by_locus = {}
+    for uniprot_id, names in gene_names.items():
+        for common_name, sgd_name in names:
+            gene_names_by_locus[sgd_name] = [uniprot_id, sgd_name, common_name]
+    return gene_names_by_locus
 
 def parse_mutations(mut_prot_input):
     """Parse the mut_prot_input file (mapping mutated proteins to mutation positions) into a dictionary."""
