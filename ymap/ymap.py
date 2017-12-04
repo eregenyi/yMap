@@ -671,23 +671,24 @@ def make_pdb_file(uniprot_input, pdb_output):
         pdb.writelines(lines)
 
 
-def mu_map(yeastID_input, mut_prot_input, mapped_mutation_pos_output):
-
-    """ mutations proteins mapped to the yeastID file"""
-
-    with open(mapped_mutation_pos_output, 'w') as f:
-        with open(mut_prot_input) as mutation_file:
-            for a in mutation_file:
-                a = a.split()
-                with open(yeastID_input) as id:
-                    for i in id:
-                        i = i.split()
-                        if len(i) > 2:
-                            if a[0] == i[2]:
-                                take = i[0]+'\t'+i[1]+'\t'+i[2]+'\t'+a[1]
-                                if take > str(0):
-                                    with open(mapped_mutation_pos_output, 'a') as f:
-                                        f.write(take+'\n')
+def mu_map(yeastID_input, struct_input, struct_id_output):
+    """Map UniProt IDs to protein names and structural elements (helices, beta strands, turns).
+    
+    Arguments:
+    yeastID_input -- dictionary, mapping UniProt ID to ordered locus and common (gene) names
+    struct_input -- file path, mapping UniProt ID to PDB ID, structural elements (helices, beta strands, turns) and their position (start and end) in the polypeptide
+    struct_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and structural data
+    """
+    lines = [] 
+    with open(struct_input, 'r') as struct:
+        for line in struct:
+            uniprot_id, feature, start, end, pdb_id = line.rstrip('\n').split('\t')
+            for common_name, sgd_name in yeastID_input[uniprot_id]:
+                new_line = [uniprot_id, sgd_name, common_name, feature, start, end, pdb_id]
+                new_line = '\t'.join(new_line) + '\n'
+                lines.append(new_line)
+    with open(struct_id_output, 'w') as struct_id:
+        struct_id.writelines(lines)
 
 
 def pdb(pdb_input, mut_pos_input, mapped_struct_output, summary_output):
