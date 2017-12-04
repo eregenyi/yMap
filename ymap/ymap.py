@@ -48,7 +48,6 @@ import shutil
 import time
 import urllib
 from decimal import Decimal # ADDED
-from collections import OrderedDict
 import webbrowser
 try:
     import Orange
@@ -647,14 +646,12 @@ def preWeb(uniprot_biogrid_input, mapped_mut_input):
 
 
 def bweb(biog_input): 
-
-    """ opens the BioGrid db in browser with as many tabs as mutated proteins""" 
-
+    """For each BioGrid ID in biog_input, open the corresponding BioGrid database entry in web browser (one tab per entry).""" 
     url = 'http://thebiogrid.org/'
-    fl = open(biog_input, 'r')
-    for f in OrderedDict.fromkeys(fl):
-        f = f.split()
-        webbrowser.open(url + f[1])
+    biog = open(biog_input, 'r')
+    for line in biog:
+        biog_id = line.split('\t')[1] # Assumes BioGrid ID is in second column of input file
+        webbrowser.open(url + biog_id)
 
 
 def make_pdb_file(uniprot_input, pdb_output):
