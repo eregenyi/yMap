@@ -856,45 +856,60 @@ def ppi(mut_prot_input, ppi_id_input, mapped_ppi_output, summary_output):
         summary.writelines(summary_lines)
                     
     
-def withinPro(yeastID_input, within_prot_input, mut_prot_input, mapped_within_prot_output, summary_output):
+#TODO: Try to understand what the data for this function is???
+def withinPro_map(gene_names_by_locus, within_prot_input, within_prot_id_output): #TODO: Clarify docstring!
+    """Map UniProt IDs to protein names and pairwise combinations of PTMs known/predicted to affect protein-protein interactions (PPIs)????
+    
+    See Minguez et al. "PTMcode v2: a resource for functional associations of post-translational modifications within and between proteins." Nucleic Acids Res. 2015 Jan 28; 43 for further details.
+    
+    Arguments:
+    gene_names_by_locus -- dictionary, key = locus_name, value = list of gene names
+    within_prot_input -- file path, mapping locus name to protein-protein interaction (PPI) data
+    within_prot_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and PPI data
+    """
+    lines = []
+    with open(within_prot_input, 'r') as ppi_sites:
+        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
+        next(ppi_sites) # Skip the header
+        for line in ppi_sites:
+            line = line.rstrip('\n').split('\t') # assume no blank lines
+            sgd_name, common_name, ptm_pos_1, ptm_residue_1, ptm_pos_2, ptm_residue_2 = line[-6:]
+            ptm_1 = line[2]
+            ptm_2 = line[6]
+            new_line = gene_names_by_locus[sgd_name].copy()
+            new_line.extend([ptm_1, ptm_pos_1, ptm_residue_1, ptm_2, ptm_pos_2, ptm_residue_2])
+            new_line = '\t'.join(new_line) + '\n'
+            lines.append(new_line)
+    with open(within_prot_id_output, 'w') as within_prot_id:
+        within_prot_id.writelines(lines)
 
-    """ PTMs (predicted) involved in the crosstalk within a given protein at baker's years (Minguez el 2012)"""
-
-    with open(mapped_within_prot_output, 'w') as file1:
-        with open(within_prot_input, 'r') as f:
-            for l in f:
-                line = l.split()
-                if len(line)>19:
-                    take = line[15]+'\t'+line[16]+'\t'+line[3]+'\t'+line[17]+'\t'+line[7]+'\t'+line[19]
-                    take = take.split()
-                    with open(mut_prot_input, 'r') as mu:
-                        for m in mu:
-                            m = m.split()
-                            if m[0] == take[1] and m[1]==take[3]:
-                                take2 = take[0]+'\t'+take[1]+'\t'+take[2]+'\t'+take[3]+'\t'+'PTMcode'
-                                fi=take2.split()
-                                with open(yeastID_input) as id:
-                                    for di in id:
-                                        di=di.split()
-                                        if len(di) > 2 and di[2] == fi[1]:
-                                            with open(summary_output, 'a+') as summary:
-                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[3]+'\t'+fi[2]+'\t'+'WithinProtein'+'\t'+'PTMcode'+'\n')
-                                            if take2 > str(0):
-                                                with open(mapped_within_prot_output, 'a') as file1:
-                                                    file1.write(take2+'\n')
-                                                    continue
-                            if m[0] == take[1] and m[1] == take[5]:
-                                take3 = take[0]+'\t'+take[1]+'\t'+take[4]+'\t'+take[5]+'\t'+'PTMcode'
-                                fi = take3.split()
-                                with open(yeastID_input) as id:
-                                    for di in id:
-                                        di=di.split()
-                                        if len(di) > 2 and di[2] == fi[1]:
-                                            with open(summary_output, 'a+') as summary:
-                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[3]+'\t'+fi[2]+'\t'+'WithinProtein'+'\t'+'PTMcode'+'\n')
-                                            if take3 > str(0):
-                                                with open(mapped_within_prot_output, 'a+') as file1:
-                                                    file1.write(take3+'\n')
+ 
+def withinPro(mut_prot_input, within_prot_id_input, mapped_within_prot_output, summary_output): #TODO: Clarify docstring!
+    """Map the positions of mutations in mutated proteins to pairwise combinations of PTMs known/predicted to affect protein-protein interactions (PPIs)????
+     
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    ppi_id_input -- file path, mapping UniProt ID, ordered locus name, common name, PTM position, residue and interacting protein partner
+    mapped_interface_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name and PPI data 
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_ptms_lines = []
+    summary_lines = []
+    with open(within_prot_id_input, 'r') as ptms:
+        for line in ptms:
+            uniprot_id, sgd_name, common_name, ptm_1, ptm_pos_1, ptm_residue_1, ptm_2, ptm_pos_2, ptm_residue_2 = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if int(ptm_pos_1) == int(mut_pos): # Check if the mutation coincides with the position of a binding/active site
+                            mapped_ptm_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_1, ptm_pos_1, ptm_residue_1, ptm_2, ptm_pos_2, ptm_residue_2, 'PTMcode']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_1, ptm_pos_1, ptm_residue_1, ptm_2, ptm_pos_2, ptm_residue_2, 'Within protein PTMs', 'PTMcode']) + '\n'
+                            mapped_ptms_lines.append(mapped_ptm_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_within_prot_output, 'w') as mapped_ptms:
+        mapped_ptms.writelines(mapped_ptms_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
                          
 
 def betweenPro(yeastID_input, between_prot_input, mut_prot_input, mapped_between_prot_output, summary_output):
