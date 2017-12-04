@@ -1030,14 +1030,13 @@ def hotspot(mut_prot_input, hotspot_id_input, mapped_hotspot_output, summary_out
         summary.writelines(summary_lines)
                           
 
+#TODO: Remove this function!
 def sum_file_map(summary_input, final_report_output):  
-
-    """ reports all the results in a 'final-report' file """
-
-    with open(final_report_output, 'w') as x:
-        with open(summary_input) as fil1:
-            for fi in OrderedDict.fromkeys(fil1):
-                x.write(fi)
+    """Generate a final report file."""
+    with open(final_report_output, 'w') as final_report:
+        with open(summary_input, 'r') as summary:
+            for line in summary:
+                final_report.write(line)
 
 
 def resc(output_dir):
