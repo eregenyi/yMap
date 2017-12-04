@@ -624,28 +624,26 @@ def bioGrid(uniprot_biogrid_output):
     uniprot = urlopen('http://www.uniprot.org/uniprot/?query=yeast&fil=organism%3A%22Saccharomyces%20cerevisiae%20(strain%20ATCC%20204508%20%2F%20S288c)%20(Baker%27s%20yeast)%20%5B559292%5D%22&sort=score&format=tab&columns=id,database(BioGrid)')
     with open(uniprot_biogrid_output,'wb') as output_file:
         output_file.write(uniprot.read())
+
         
-
-def preWeb(uniprot_biogrid_input, mapped_mut_input): 
-
-    """ maps mutations to BioGrid ids """ 
+def preWeb(uniprot_biogrid_input, mapped_mut_input):
+    """Map mutations to BioGrid IDs and write to file.
+    
+    Arguments:
+    uniprot_biogrid_input -- dictionary, mapping UniProt IDs to BioGrid IDs
+    mapped_mut_input -- file path, mutations mapped to features
+    """
     biog_output = os.path.join(os.path.dirname(mapped_mut_input), biog_file) 
-    with open(biog_output, 'w') as out:
-        with open(uniprot_biogrid_input, 'r') as fl:
-            for f in fl:
-                f = f.rstrip().split()
-                if len(f) > 1:
-                    i = f[1].split(';')
-                    take = f[0]+'\t'+i[0]
-                    take = take.split()
-                    with open(mapped_mut_input, 'r') as pro:
-                        for p in pro:
-                            p = p.split()
-                            if take[0] == p[0]:
-                                take2 = take[0]+'\t'+take[1]+'\t'+'UniProt'
-                                if take2 > str(0):
-                                    with open(biog_output, 'a') as out:
-                                        out.write(take2+'\n')
+    lines = []
+    with open(mapped_mut_input, 'r') as mapped_mutations:
+        for line in mapped_mutations:
+            uniprot_id = line.split('\t')[0] # Assumes first column is UniProt ID
+            for biogrid_id in uniprot_biogrid_input[uniprot_id]:
+                line = [uniprot_id, biogrid_id, 'UniProt'] #TODO: Is it necessary to include UniProt at the end of each line?
+                line = '\t'.join(line) + '\n'
+                lines.append(line)
+    with open(biog_output, 'w') as biog:
+        biog.writelines(lines)
 
 
 def bweb(biog_input): 
