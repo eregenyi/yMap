@@ -248,6 +248,15 @@ def parse_mutations(mut_prot_input):
                 mutated_proteins[common_name].add(mutation_pos)
     return mutated_proteins
 
+def parse_biogrid(uniprot_biogrid_input): 
+    """Return dictionary mapping UniProt IDs to BioGrid IDs.""" 
+    uniprot_biogrid_map = {}
+    with open(uniprot_biogrid_input, 'r') as uniprot_biogrid:
+        for line in uniprot_biogrid:
+            uniprot_id, biogrid_ids = line.rstrip(';\n').split('\t')
+            biogrid_ids = biogrid_ids.split(';')
+            uniprot_biogrid_map[uniprot_id] = biogrid_ids
+    return uniprot_biogrid_map
 
 def gff(gff_output):
     """Downloads the current General Feature Format (GFF) file for the Saccharomyces cerevisiae genome"""
