@@ -799,43 +799,61 @@ def interface(mut_prot_input, interface_id_input, mapped_interface_output, summa
         summary.writelines(summary_lines)             
          
 
-def ppi(yeastID_input, ppi_input, mut_prot_input, mapped_ppi_output, summary_output):
+#TODO: Check whether the PTM in ppi_sites_input file is present on the leftmost protein. I suppose it is but it would be good to confirm...
+def ppi_map(gene_names_by_locus, ppi_sites_input, ppi_id_output):
+    """Map UniProt IDs to protein names and PTMs known to affect protein-protein interactions (PPIs).
+    
+    See Beltrao et al. Cell 2012 for further details.
+    
+    Arguments:
+    gene_names_by_locus -- dictionary, key = locus_name, value = list of gene names
+    ppi_sites_input -- file path, mapping locus name to protein-protein interaction (PPI) data, including the interacting partner (name and locus name), position of PTM, residue affected, and method by which interaction was determined
+    ppi_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and PPI data
+    """
+    lines = []
+    with open(ppi_sites_input, 'r') as ppi_sites:
+        #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
+        next(ppi_sites) # Skip the header
+        for line in ppi_sites:
+            line = line.rstrip('\n')
+            if line == '': # Need to skip blank lines in the file too. Better way?
+                continue
+            id, common_name, sgd_name, ptm_pos, ptm_residue, partner_sgd_name, partner_common_name, method = line.split('\t')
+            new_line = gene_names_by_locus[sgd_name].copy()
+            partner_uniprot_id = gene_names_by_locus[partner_sgd_name][0]
+            new_line.extend([ptm_pos, ptm_residue, partner_uniprot_id, partner_sgd_name, partner_common_name, method])
+            new_line = '\t'.join(new_line) + '\n'
+            lines.append(new_line)
+    with open(ppi_id_output, 'w') as ppi:
+        ppi.writelines(lines)
 
-    """ PTM present at the interface of two proteins and known to play role in interaction (PTMfunc; Beltrao et al. Cell 2012)"""
-
-    with open(mapped_ppi_output, 'w') as out:
-        with open(ppi_input, 'r') as f:
-            for ls in f:
-                line = ls.split()
-                with open(mut_prot_input) as mu:
-                    for m in mu:
-                        m = m.split()
-                        if len(line) > 7:
-                            if m[0] == line[1] and m[1] == line[3]:
-                                take = line[1]+'\t'+line[2]+'\t'+line[3]+'\t'+'PTMfunc'
-                                fi = take.split()
-                                with open(yeastID_input) as i:
-                                    for di in i:
-                                        di = di.split()
-                                        if len(di) > 2 and di[2] == fi[0]:
-                                            with open(summary_output, 'a+') as summary:
-                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+'\t'+'PPI'+'\t'+'PTMfunc'+'\n')
-                                            if take > str(0):
-                                                with open(mapped_ppi_output, 'a') as out:
-                                                    out.write(take+'\n')
-                                                    continue
-                            if m[0] == line[6] and m[1] == line[3]:
-                                take2 = line[6]+'\t'+line[2]+'\t'+line[3]+'\t'+'PTMfunc'
-                                fi = take2.split()
-                                with open(yeastID_input) as i:
-                                    for di in i:
-                                        di=di.split()
-                                        if len(di) > 2 and di[2] == fi[0]:
-                                            with open(summary_output, 'a+') as summary:
-                                                summary.write(di[0]+'\t'+di[2]+'\t'+fi[2]+'\t'+'\t'+'PPI'+'\t'+'PTMfunc'+'\n')
-                                            if take2 > str(0):
-                                                with open(mapped_ppi_output, 'a+') as out:
-                                                    out.write(take2+'\n')
+ 
+def ppi(mut_prot_input, ppi_id_input, mapped_ppi_output, summary_output):
+    """Map the positions of mutations in mutated proteins to PTMs known to affect protein protein interactions (PPIs).
+    
+    Arguments:
+    mut_prot_input -- dictionary, mapping mutated proteins (common names) to mutated positions in each protein
+    ppi_id_input -- file path, mapping UniProt ID, ordered locus name, common name, PTM position, residue and interacting protein partner
+    mapped_interface_output -- file path, mapping each mutation in mut_prot_input to UniProt ID, ordered locus name, common name and PPI data 
+    summary_output -- file path, recording a summary of all features to which mutations have been mapped
+    """
+    mapped_ppi_lines = []
+    summary_lines = []
+    with open(ppi_id_input, 'r') as sites:
+        for line in sites:
+            uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, partner_uniprot_id, partner_sgd_name, partner_common_name, method = line.rstrip('\n').split('\t')
+            for mutated_protein, mutated_positions in mut_prot_input.items():
+                if mutated_protein == common_name:
+                    for mut_pos in mutated_positions:
+                        if int(ptm_pos) == int(mut_pos): # Check if the mutation coincides with the position of a binding/active site
+                            mapped_ppi_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, partner_uniprot_id, partner_sgd_name, partner_common_name, method, 'PTMfunc']) + '\n'
+                            summary_line = '\t'.join([uniprot_id, sgd_name, common_name, ptm_pos, ptm_residue, partner_uniprot_id, partner_sgd_name, partner_common_name, method, 'Interactions', 'PTMfunc']) + '\n'
+                            mapped_ppi_lines.append(mapped_ppi_line)
+                            summary_lines.append(summary_line)
+    with open(mapped_ppi_output, 'w') as mapped_ppi:
+        mapped_ppi.writelines(mapped_ppi_lines)
+    with open(summary_output, 'a') as summary:
+        summary.writelines(summary_lines)
                     
     
 def withinPro(yeastID_input, within_prot_input, mut_prot_input, mapped_within_prot_output, summary_output):
