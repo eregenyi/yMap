@@ -1304,6 +1304,7 @@ def data():
     d_map(gene_names, domains_file_path, domain_id_file_path)
     id(gene_names, bact_file_path, sites_id_file_path)
     n_map(gene_names, nucleotide_file_path, nucleotide_id_file_path)
+    mu_map(gene_names, pdb_file_path, pdb_id_file_path)
 
     os.chdir(wd)
     end_time = time.clock()
@@ -1335,334 +1336,309 @@ def mutation_types_file():
 
 
 def ptm():
+    """Map mutations to PTMs.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
 
-    """ PTMs mapping to mutations """
-
-    start_time = time.time()
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            a = ptm_map(mutation_prot_file_path, ptm_id_file_path, mapped_ptms_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:    
-            p = enrich(mapped_ptms_file_path)
-        except IOError:
-            pass
-        try:
-            preWeb(uniprot_biogrid_file_path, mapped_ptms_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(ptms_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_ptms_file, ptms_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ptms_dir_path)
-            shutil.move(output_dir_path+"/"+biog_file, ptms_dir_path)
-        except IOError:
-            pass
-    return "PTMs mapped in %s seconds" % (time.time() - start_time)
+        ptm_map(mutation_prot_file_path, ptm_id_file_path, mapped_ptms_file_path, summary_file_path)
+        enrich(mapped_ptms_file_path)
+        preWeb(uniprot_biogrid_file_path, mapped_ptms_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ptms_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_ptms_file, ptms_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ptms_dir_path)
+        shutil.move(output_dir_path+"/"+biog_file, ptms_dir_path)
+    
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 
 def domain():
+    """Map mutations to domains.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
 
-    """ protein domain mapping """
-
-    start_time = time.time()
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            dom = dmap(mutation_prot_file_path, domain_id_file_path, mapped_domains_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-           p = enrich(mapped_domains_file_path)  
-        except IOError:
-            pass
-        try:
-            preWeb(uniprot_biogrid_file_path, mapped_domains_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(domains_dir_path)
-        except IOError:
-            pass
-        try:
-            shutil.move(output_dir_path+"/"+mapped_domains_file, domains_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, domains_dir_path)
-            shutil.move(output_dir_path+"/"+biog_file, domains_dir_path)
-        except IOError:
-            pass
-    return "Domains mapped in %s seconds" % (time.time() - start_time)
+        dmap(mutation_prot_file_path, domain_id_file_path, mapped_domains_file_path, summary_file_path)
+        enrich(mapped_domains_file_path)  
+        preWeb(uniprot_biogrid_file_path, mapped_domains_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(domains_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_domains_file, domains_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, domains_dir_path)
+        shutil.move(output_dir_path+"/"+biog_file, domains_dir_path)
+    
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
+
     
 
 def nucleo():
+    """Map mutations to nucleotide binding sites.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
 
-    """ DNA-protein binding motif mapping """
-
-    start_time = time.time()
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            nucleotide_map(mutation_prot_file_path, nucleotide_id_file_path, mapped_nucleotide_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-           p = enrich(mapped_nucleotide_file_path)  
-        except IOError:
-            pass
-        try:
-            preWeb(uniprot_biogrid_file_path, mapped_nucleotide_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(nuc_bind_dir_path)
-        except IOError:
-            pass
-        try:
-            shutil.move(output_dir_path+"/"+mapped_nucleotide_file, nuc_bind_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, nuc_bind_dir_path)
-            shutil.move(output_dir_path+"/"+biog_file, nuc_bind_dir_path)
-        except IOError:
-            pass
-    return "Nucleotide_binding domains mapped in %s seconds" % (time.time() - start_time)
+        nucleotide_map(mutation_prot_file_path, nucleotide_id_file_path, mapped_nucleotide_file_path, summary_file_path)
+        enrich(mapped_nucleotide_file_path)  
+        preWeb(uniprot_biogrid_file_path, mapped_nucleotide_file_path)
+    
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(nuc_bind_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_nucleotide_file, nuc_bind_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, nuc_bind_dir_path)
+        shutil.move(output_dir_path+"/"+biog_file, nuc_bind_dir_path)
+    
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 
 def ab():
+    """Map mutations to active/binding sites.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
 
-    """ active and binding site mapping """
-
-    start_time = time.time()
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-            raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            mm = mmap(mutation_prot_file_path, sites_id_file_path, mapped_sites_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_sites_file_path)
-        except IOError:
-            pass
-        try:
-            preWeb(uniprot_biogrid_file_path, mapped_sites_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(ab_sites_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_sites_file, ab_sites_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ab_sites_dir_path)
-            shutil.move(output_dir_path+"/"+biog_file, ab_sites_dir_path)
-        except IOError:
-            pass
-    return "Active-Binding proteins sites mapped in %s seconds" % (time.time() - start_time)
+        mmap(mutation_prot_file_path, sites_id_file_path, mapped_sites_file_path, summary_file_path)
+        enrich(mapped_sites_file_path)
+        preWeb(uniprot_biogrid_file_path, mapped_sites_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ab_sites_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_sites_file, ab_sites_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ab_sites_dir_path)
+        shutil.move(output_dir_path+"/"+biog_file, ab_sites_dir_path)
+    
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 
 def struc_map():
+    """Map mutations to active/binding sites.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
 
-    """ structural regions mapping """
-
-    start_time = time.time()
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            mu_map(yeastID_file_path, mutation_prot_file_path, mapped_mutation_pos_file_path)
-        except IOError:
-            pass
-        try:
-            pd = pdb(pdb_file_path, mapped_mutation_pos_file_path, mapped_struct_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_struct_file_path)
-        except IOError:
-            pass
-        try:
-            preWeb(uniprot_biogrid_file_path, mapped_struct_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(pdb_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_struct_file, pdb_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, pdb_dir_path)
-            shutil.move(output_dir_path+"/"+biog_file, pdb_dir_path)
-        except IOError:
-            pass
-        return "Mutations are mapped to structural features in %s seconds" % (time.time() - start_time)
+        pdb(pdb_file_path, mapped_mutation_pos_file_path, mapped_struct_file_path, summary_file_path)
+        enrich(mapped_struct_file_path)
+        preWeb(uniprot_biogrid_file_path, mapped_struct_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(pdb_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_struct_file, pdb_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, pdb_dir_path)
+        shutil.move(output_dir_path+"/"+biog_file, pdb_dir_path)
+        
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 def intf():
-
-    """ east = effective data which shows PTMs present at interface, ppi and 
-        domain (hotspot) this analaysis could lead to an effective way to interpret
-        user's mutational data on Yeast proteins from PTMfunc (also 3DID db) and PTMcode 2.0"""
+    """Map mutations to PTMs (acetylation, phosphorylation, ubiquitination) at the inferfaces of mutated proteins.
     
-    start_time = time.time()
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
+
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            interface(yeastID_file_path, interface_acet_file_path, mutation_prot_file_path, mapped_interface_acet_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_interface_acet_file_path)
-        except IOError:
-            pass 
-        try:
-            os.mkdir(interface_dir_path)
-            os.mkdir(interface_acet_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_interface_acet_file, interface_acet_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, interface_acet_dir_path)
-        except IOError:
-            pass
-        try:
-            interface(yeastID_file_path, interface_phos_file_path, mutation_prot_file_path, mapped_interface_phos_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_interface_phos_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(interface_phos_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_interface_phos_file, interface_phos_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, interface_phos_dir_path)
-        except IOError:
-            pass
-        try:   
-            interface(yeastID_file_path, interface_ubiq_file_path, mutation_prot_file_path, mapped_interface_ubiq_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_interface_ubiq_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(interface_ubiq_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_interface_ubiq_file, interface_ubiq_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, interface_ubiq_dir_path)
-        except IOError:
-            pass
-        return "run time is %s seconds" % (time.time() - start_time)
+        # Map to acetylations
+        interface(yeastID_file_path, interface_acet_file_path, mutation_prot_file_path, mapped_interface_acet_file_path, summary_file_path)
+        enrich(mapped_interface_acet_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(interface_dir_path)
+        os.mkdir(interface_acet_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_interface_acet_file, interface_acet_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, interface_acet_dir_path)
+
+        # Map to phosphoylations
+        interface(yeastID_file_path, interface_phos_file_path, mutation_prot_file_path, mapped_interface_phos_file_path, summary_file_path)
+        enrich(mapped_interface_phos_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(interface_phos_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_interface_phos_file, interface_phos_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, interface_phos_dir_path)
+
+        # Map to ubiquitinations
+        interface(yeastID_file_path, interface_ubiq_file_path, mutation_prot_file_path, mapped_interface_ubiq_file_path, summary_file_path)
+        enrich(mapped_interface_ubiq_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(interface_ubiq_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_interface_ubiq_file, interface_ubiq_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, interface_ubiq_dir_path)
+
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 def pi():
-    start_time = time.time()
-    if not os.path.exists(mutation_prot_file_path):
-            raise StopIteration('because of missing mutation file')
-    else:
-        try:
-            ppi(yeastID_file_path, interact_acet_file_path, mutation_prot_file_path, mapped_interact_acet_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            enrich(mapped_interact_acet_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(ppi_dir_path)
-            os.mkdir(ppi_acet_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_interact_acet_file, ppi_acet_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ppi_acet_dir_path)
-        except IOError:
-            pass
-        try:
-            ppi(yeastID_file_path, interact_phos_file_path, mutation_prot_file_path, mapped_interact_phos_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_interact_phos_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(ppi_phos_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_interact_phos_file, ppi_phos_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ppi_phos_dir_path)
-        except IOError:
-            pass
+    """Map mutations to PTMs known to affect protein-protein interactions (PPIs).
     
-        try:
-            ppi(yeastID_file_path, interact_ubiq_file_path, mutation_prot_file_path, mapped_interact_ubiq_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            enrich(mapped_interact_ubiq_file_path)
-        except IOError:
-            pass 
-        try:
-            os.mkdir(ppi_ubiq_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_interact_ubiq_file, ppi_ubiq_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ppi_ubiq_dir_path)
-        except IOError:
-            pass
-        return "run time is %s seconds" % (time.time() - start_time)
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
+
+    start_time = time.clock()
+    
+    if not os.path.exists(mutation_prot_file_path):
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
+    else:
+        # Map to acetylations
+        ppi(yeastID_file_path, interact_acet_file_path, mutation_prot_file_path, mapped_interact_acet_file_path, summary_file_path)
+        enrich(mapped_interact_acet_file_path)
+        
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ppi_dir_path)
+        os.mkdir(ppi_acet_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_interact_acet_file, ppi_acet_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ppi_acet_dir_path)
+
+        # Map to phosphorylations
+        ppi(yeastID_file_path, interact_phos_file_path, mutation_prot_file_path, mapped_interact_phos_file_path, summary_file_path)
+        enrich(mapped_interact_phos_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ppi_phos_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_interact_phos_file, ppi_phos_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ppi_phos_dir_path)
+
+        # Map to ubiquitinations
+        ppi(yeastID_file_path, interact_ubiq_file_path, mutation_prot_file_path, mapped_interact_ubiq_file_path, summary_file_path)
+        enrich(mapped_interact_ubiq_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ppi_ubiq_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_interact_ubiq_file, ppi_ubiq_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ppi_ubiq_dir_path)
+        
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 def withP():
-    start_time = time.time()
+    """Map mutations to PTMs within interacting proteins. See PTMcode2 for further details.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
+
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-            raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            withinPro(yeastID_file_path, within_prot_file_path, mutation_prot_file_path, mapped_within_prot_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_within_prot_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(ptm_within_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_within_prot_file, ptm_within_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ptm_within_dir_path)
-        except IOError:
-            pass
-        return "run time is %s seconds" % (time.time() - start_time)
+        withinPro(yeastID_file_path, within_prot_file_path, mutation_prot_file_path, mapped_within_prot_file_path, summary_file_path)
+        enrich(mapped_within_prot_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ptm_within_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_within_prot_file, ptm_within_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ptm_within_dir_path)
+
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 def betweenP():
-    start_time = time.time()
-    if not os.path.exists(mutation_prot_file_path):
-            raise StopIteration('because of missing mutation file')
-    else:
-        try:
-            betweenPro(yeastID_file_path, between_prot_file_path, mutation_prot_file_path, mapped_between_prot_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_between_prot_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(ptm_between_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_between_prot_file, ptm_between_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ptm_between_dir_path)
-        except IOError:
-            pass
-        return "run time is %s seconds" % (time.time() - start_time)
+    """Map mutations to PTMs between interacting proteins. See PTMcode2 for further details.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
 
+    start_time = time.clock()
+    
+    if not os.path.exists(mutation_prot_file_path):
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
+    else:
+        betweenPro(yeastID_file_path, between_prot_file_path, mutation_prot_file_path, mapped_between_prot_file_path, summary_file_path)
+        enrich(mapped_between_prot_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ptm_between_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_between_prot_file, ptm_between_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ptm_between_dir_path)
+
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 def hotS():
-    start_time = time.time()
-    if not os.path.exists(mutation_prot_file_path):
-            raise StopIteration('because of missing mutation file')
-    else:
-        try:
-            hotspot(yeastID_file_path, regulatory_hotspots_file_path, mutation_prot_file_path, mapped_hotspot_file_path, summary_file_path)
-        except IOError:
-            pass
-        try:
-            p = enrich(mapped_hotspot_file_path)
-        except IOError:
-            pass
-        try:
-            os.mkdir(ptm_hotspot_dir_path)
-            shutil.move(output_dir_path+"/"+mapped_hotspot_file, ptm_hotspot_dir_path)
-            shutil.move(output_dir_path+"/"+p_value_file, ptm_hotspot_dir_path)
-        except IOError:
-            pass
-        return "run time is %s seconds" % (time.time() - start_time)
+    """Map mutations to PTMs in PTM hotspots. See PTMfunc for further details.
+    
+    Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
+    Move files to respective output folders.
+    """
 
+    start_time = time.clock()
+    
+    if not os.path.exists(mutation_prot_file_path):
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
+    else:
+        hotspot(yeastID_file_path, regulatory_hotspots_file_path, mutation_prot_file_path, mapped_hotspot_file_path, summary_file_path)
+        enrich(mapped_hotspot_file_path)
+
+        #TODO: Remove this part when we know files are moved into the right place without it
+        os.mkdir(ptm_hotspot_dir_path)
+        shutil.move(output_dir_path+"/"+mapped_hotspot_file, ptm_hotspot_dir_path)
+        shutil.move(output_dir_path+"/"+p_value_file, ptm_hotspot_dir_path)
+
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ Following two codes with perform all the codes on all the data /////////////////////////////////////
