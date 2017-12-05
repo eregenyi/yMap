@@ -1038,71 +1038,40 @@ def sum_file_map(summary_input, final_report_output):
             for line in summary:
                 final_report.write(line)
 
-
+#TODO: Do we need some other strategy for when ymap is run directly from source code i.e. not installed?
+#TODO: The package data paths are still hard-coded (not in variables yet). We could specify the output dir as argument, 
+# but since we chdir in the download() function, it seems redundant - unless we chdir in each function called in download instead...
 def resc(output_dir):
-    """
-    documentation needed....
-    """
-
-    try:
-        r = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_aceksites_interfaceRes_sc.txt").read().decode()
-        with open(interface_acet_file_path,'w') as h:
-            h.write(r+'\n')
-    except IOError:
-        pass
-    try:
-        ri = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_phosphosites_interfaceRes_sc.txt").read().decode()
-        with open(interface_phos_file_path,'w') as hi:
-            hi.write(ri+'\n')
-    except IOError:
-        pass
-    try:
-        riu = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_ubisites_interfaceRessc_sc.txt").read().decode()
-        with open(interface_ubiq_file_path,'w') as hiu:
-            hiu.write(riu+'\n')
-    except IOError:
-        pass
-    try:
-        rac = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_acet_interactions.txt").read().decode()
-        with open(interact_acet_file_path,'w') as hia:
-            hia.write(rac+'\n')
-    except IOError:
-        pass
-    try:
-        t = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_btw_proteins.txt.zip").read()
-        with open(between_prot_zip_file_path,'wb') as ht:
-            ht.write(t)
-    except IOError:
-        pass
-    try:
-        zipfile.ZipFile(between_prot_zip_file_path, 'r').extractall()
-    except IOError:
-        pass
-    try:
-        rps = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_psites_interactions_sc.txt").read().decode()
-        with open(interact_phos_file_path,'w') as hip:
-            hip.write(rps+'\n')
-    except IOError:
-        pass
-    try:
-        rui = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_ubi_interactions_sc.txt").read().decode()
-        with open(interact_ubiq_file_path,'w') as hui:
-            hui.write(rui+'\n')
-    except IOError:
-        pass
-    try:
-        rin = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_within_proteins.txt").read().decode()
-        with open(within_prot_file_path,'w') as hin:
-            hin.write(rin+'\n')
-    except IOError:
-        pass
-    try:
-        rsc = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/schotspot_updated.txt").read().decode()
-        with open(regulatory_hotspots_file_path,'w') as his:
-            his.write(rsc+'\n')
-    except IOError:
-        pass
-    return 
+    """Copy pre-downloaded data files (PTMfunc and PTMcode database files) from the ymap package."""
+    interface_acet = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_aceksites_interfaceRes_sc.txt").read().decode()
+    with open(interface_acet_file_path, 'w') as f:
+        f.write(interface_acet + '\n')
+    interface_phos = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_phosphosites_interfaceRes_sc.txt").read().decode()
+    with open(interface_phos_file_path, 'w') as f:
+        f.write(interface_phos + '\n')
+    interface_ubiq = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_ubisites_interfaceRessc_sc.txt").read().decode()
+    with open(interface_ubiq_file_path, 'w') as f:
+        f.write(interface_ubiq + '\n')
+    ppi_acet = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_acet_interactions.txt").read().decode()
+    with open(interact_acet_file_path, 'w') as f:
+        f.write(ppi_acet + '\n')
+    ppi_phos = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_psites_interactions_sc.txt").read().decode()
+    with open(interact_phos_file_path, 'w') as f:
+        f.write(ppi_phos + '\n')
+    ppi_ubiq = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_ubi_interactions_sc.txt").read().decode()
+    with open(interact_ubiq_file_path, 'w') as f:
+        f.write(ppi_ubiq + '\n')
+    within_prot = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_within_proteins.txt").read().decode()
+    with open(within_prot_file_path, 'w') as f:
+        f.write(within_prot + '\n')
+    #TODO: Could we not extract the zip and move the extracted file? Instead of copying the zip then extracting
+    between_prot = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_btw_proteins.txt.zip").read()
+    with open(between_prot_zip_file_path, 'wb') as f:
+        f.write(between_prot)
+    zipfile.ZipFile(between_prot_zip_file_path, 'r').extractall()
+    hotspots = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/schotspot_updated.txt").read().decode()
+    with open(regulatory_hotspots_file_path, 'w') as his:
+        his.write(hotspots + '\n')
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////
