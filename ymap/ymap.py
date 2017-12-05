@@ -1313,23 +1313,6 @@ def data():
     return duration
 
 
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#//////////////////////////////// Following two codes are used for return the mutations at proteins level \\\\\\\\\\\\\\\\\\
-#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-def mutation_types_file(): 
-
-    """ mutation type and amino acid change calculation where ref. and mutant base known """
-
-    start_time = time.time()
-    try:
-        mutation_file(mutation_gene_file_path, gff_file_path, d_id_map_file_path, mutation_prot_file_path)
-    except IOError:
-        pass
-    return "Mutations with mutations types are available to map on functional entities"
-
-
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #////////////////////////////////// Following series of codes will return three files - mapped mutations, pvalue and biog.txt - for each type of data types \\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -1646,60 +1629,27 @@ def hotS():
 
 
 def uniprot_data(): 
-
-    """ to perform all functions on UniProt(like ptm, domain and ab () functions) all together """ 
-
-    try:
+    """Call all functions that work with UniProt data."""
+    if not os.path.exists(mutation_prot_file_path):
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
+    else:
         ptm()
-    except IOError:
-        pass
-    try:
         domain()
-    except IOError:
-        pass
-    try:
         ab()
-    except IOError:
-        pass
-    try:
         struc_map()
-    except IOError:
-        pass
-    try:
         nucleo()
-    except IOError:
-        pass
-    return "The Uniprot data is resolved into functional for interpretation"
 
 
 def functional_data():
-
-    """ to perform all functions on UniProt(like ptm, domain and ab () functions) all together """
-
+    """Call all functions that work with PTMfunc and PTMcode data.""" 
     if not os.path.exists(mutation_prot_file_path):
-            raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        try:
-            intf()
-        except IOError:
-            pass
-        try:
-            pi()
-        except IOError:
-            pass
-        try:
-            withP()
-        except IOError:
-            pass
-        try:
-            betweenP()
-        except IOError:
-            pass
-        try:
-            hotS()
-        except IOError:
-            pass
-        return "The data from PTMcode and PTMfunc on PTMs functional biasedness is resolved into functional for interpretation"
+        intf()
+        pi()
+        withP()
+        betweenP()
+        hotS()
 
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1708,172 +1658,121 @@ def functional_data():
 
 
 def ymap_genes():
+    """Call all functions to analyse DNA-level mutation input file.
+    
+    Convert the mutation input file at DNA-level to a mutations file at protein level.
+    Call all the functions that map mutations from the protein-level mutation file to features.
+    """
+    start_time = time.clock()
+    
+    if not os.path.exists(mutation_gene_file_path):
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
+    if not os.path.exists(output_dir_path):
+        os.mkdir(output_dir_path)
+        os.chdir(output_dir_path)
+    else:
+        os.chdir(output_dir_path)
+        
+    mutation_file()
+    uniprot_data()
+    functional_data()
+    sum_file_map(summary_file_path, final_report_file_path)
+    
+    y = (time.time() - start_time)
+    os.makedirs('yMap-results'+str(y))
+    
+    enrich(final_report_file_path)
+    preWeb(uniprot_biogrid_file_path, final_report_file_path)
 
-    """ returns all the results of all the codes of yMap; starting from genetics coordinates of proteins """
-
-    start_time = time.time()
-    if not os.path.exists(mutation_prot_file_path):
-        if not os.path.exists(output_dir_path):
-            os.mkdir(output_dir_path)
-            os.chdir(output_dir_path)
-        else:
-            os.chdir(output_dir_path)
-        try:
-            mutation_types_file()
-        except IOError:
-            pass
-        try:
-            uniprot_data()
-        except IOError:
-            pass
-        try:
-            functional_data()
-        except IOError:
-            pass
-        try:
-            sum_file_map(summary_file_path, final_report_file_path)
-        except IOError:
-            pass
-        try:
-            y = (time.time() - start_time)
-            os.makedirs('yMap-results'+str(y))
-        except IOError:
-            pass
-        try:    
-            p = enrich(final_report_file_path)
-        except IOError:
-            pass
-        try:
-            preWeb(uniprot_biogrid_file_path, final_report_file_path)
-        except IOError:
-            pass
-        try:
-            shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move('Nucleotide_binding',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'A-B-sites', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PDB', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'Interface', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PPI', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(mutation_prot_file_path, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(mutation_gene_file_path, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
-            os.remove(mapped_mutation_pos_file_path)          
-            os.remove(summary_file_path)
-        except IOError: 
-            pass
-        os.chdir(wd)
-        return "All functional data from genomic coordinates is ready in about %s seconds" % (time.time() - start_time)
+    shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move('Nucleotide_binding',output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'A-B-sites', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PDB', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'Interface', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PPI', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(mutation_prot_file_path, output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(mutation_gene_file_path, output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
+    os.remove(mapped_mutation_pos_file_path)          
+    os.remove(summary_file_path)
+    
+    os.chdir(wd)
+        
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
 
 def ymap_proteins():
-
     """ returns all the results of all the codes of yMap; starting from proteins level mutation positions """
-
-    start_time = time.time()
+    start_time = time.clock()
+    
     if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('because of missing mutation file')
+        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
         os.makedirs(output_dir_path, exist_ok = True)
         os.chdir(output_dir_path)
-        try:
-            uniprot_data()
-        except IOError:
-            pass
-        try:
-            functional_data()
-        except IOError:
-            pass
-        try:
-            sum_file_map(summary_file_path, final_report_file_path)
-        except IOError:
-            pass
-        try:
-            y = (time.time() - start_time)
-            os.makedirs('yMap-results'+str(y))
-        except IOError:
-            pass
-        try:    
-            p = enrich(final_report_file_path)
-        except IOError:
-            pass
-        try:
-            preWeb(uniprot_biogrid_file_path, final_report_file_path)
-        except IOError:
-            pass
-        try:
-            shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move('Nucleotide_binding',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'A-B-sites', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PDB', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'Interface', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PPI', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(mutation_prot_file_path, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
-            shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
-            os.remove(mapped_mutation_pos_file_path)
-            os.remove(summary_file_path)
-        except IOError: 
-            pass
-        os.chdir(wd)
-        return "All functional data from proteins mutation-positions is ready in about %s seconds" % (time.time() - start_time)
+    
+    uniprot_data()
+    functional_data()
+    sum_file_map(summary_file_path, final_report_file_path)
+    
+    y = (time.time() - start_time)
+    os.makedirs('yMap-results'+str(y))
+    
+    enrich(final_report_file_path)
+    preWeb(uniprot_biogrid_file_path, final_report_file_path)
+    shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move('Nucleotide_binding',output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'A-B-sites', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PDB', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'Interface', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PPI', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PTMs_within_Proteins', output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PTMs_between_Proteins',output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+'PTMs_hotSpots',output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(mutation_prot_file_path, output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
+    shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
+    os.remove(mapped_mutation_pos_file_path)
+    os.remove(summary_file_path)
+    
+    os.chdir(wd)
+    
+    end_time = time.clock()
+    duration = end_time - start_time
+    
+    return duration
 
-
-def web(): 
-    """ NOTE: to use the following function change to dir to respective folder to run web based analysis """   
-    os.chdir(input('specify biog.txt path:'))   # specify biog.txt path:/yMap-results78.50792193412781
-    bweb(biog_file)
-    return "Web is ready for networks exploration of mutated proteins"
-
-def path():
-    "Path to the BioGrid ids path for visualisation"
-    try:
-        os.chdir(raw_input("paste here path to biog.txt file:"))
-    except IOError:
-        pass
-    return "you need to provide path/to/biog.txt"
 
 if __name__ == "__main__":
     import argparse
-    
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-d', '--ydata', help='downloads required data to run yMap successfully')
-    parser.add_argument('-g', '--ygenes', help='performs the yMap on genes level mutation positions')
-    parser.add_argument('-p', '--yproteins', help='performs the yMap on proteins level mutation positions')
-    parser.add_argument('-w', '--yweb', help='generates BioGrid web pages for interactome visualisation; '
+    parser.add_argument('-d', '--ydata', help = 'download data up-to-date data files to use with ygenes or yproteins')
+    parser.add_argument('-g', '--ygenes', help = 'map DNA-level mutation positions to protein annotations')
+    parser.add_argument('-p', '--yproteins', help = 'map protein-level mutation positions to protein annotations')
+    parser.add_argument('-w', '--yweb', help = 'open web page corresponding to a BioGrid ID in given file for interactome visualisation; '
                                              'paste the path to biog.txt file')
-
     args = parser.parse_args()
+    
     if args.ydata:
-        try:
-            data()
-        except IOError:
-            pass
+        data()
     elif args.ygenes:
-        try:
-            ymap_genes()
-        except IOError:
-            pass
+        ymap_genes()
     elif args.yproteins:
-        try:
-            ymap_proteins()
-        except IOError:
-            pass
+        ymap_proteins()
     elif args.yweb:
-        try:
-            web()
-        except IOError:
-            pass
+        if os.path.exists(args.yweb):    
+            bweb(args.yweb)
     else:
-        print ("to run a function seek help")
+        print("to run a function seek help")
