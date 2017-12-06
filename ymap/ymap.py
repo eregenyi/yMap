@@ -27,42 +27,23 @@
 # see README file 
 #
 
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-try:
-    from builtins import next
-    from builtins import str
-    from builtins import range
-    from builtins import object
-    from builtins import bytes
-except ImportError:
-    pass
-import os
-import sys
-import math
-import zipfile
-from itertools import groupby
-import shutil
-import time
-import urllib
-from decimal import Decimal # ADDED
-import webbrowser
-try:
-    import Orange
-except ImportError:
-    import Orange3
-from orangecontrib.bio import go    
+from __future__ import print_function, absolute_import, division, unicode_literals
 from six.moves import range
+from pkg_resources import resource_stream
+from collections import defaultdict
+from orangecontrib.bio import go    
 try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
-import pkg_resources
-from pkg_resources import resource_stream
+
+import os
+import zipfile
+import shutil
+import time
+import webbrowser
 import re
-from collections import defaultdict
+
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ Mutation type (Synon | Non-Synon | Stop codon) module (see exmple data) \\\\\\\\\\\\\\\\\\\\\
