@@ -62,6 +62,7 @@ except ImportError:
 import pkg_resources
 from pkg_resources import resource_stream
 import re
+from collections import defaultdict
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ Mutation type (Synon | Non-Synon | Stop codon) module (see exmple data) \\\\\\\\\\\\\\\\\\\\\
@@ -88,7 +89,7 @@ genetic_code = {
 
 
 def translate_dna(dna):
-    """ calculate the start position for the final codon """
+    """Return the protein sequence encoded by the given cDNA sequence."""
     last_codon_start = len(dna) - 2 
     protein = "" 
     # process the dna sequence in three base chunks
@@ -100,7 +101,7 @@ def translate_dna(dna):
 
 
 def revcomp(dna, reverse=True, complement=True):
-    """ reverse complement of a protein in negative strand"""
+    """Return the reverse complement of a given DNA sequence."""
     bases = 'ATGCTACG'
     complement_dict = {bases[i]:bases[i+4] for i in range(4)}
     if reverse:
@@ -113,93 +114,114 @@ def revcomp(dna, reverse=True, complement=True):
     return ''.join(result_as_list)
 
 
-def mutation_file(mut_gene_input, gff_input, d_id_input, mut_prot_output):
-        """ defines the mutation types; either Non-Synonmous or Stop Codon"""
-        with open(mut_prot_output, 'wb') as t:   
-            with open(mut_gene_input, 'r') as mut: 
-                for m in mut:
-                    m = m.rstrip().split()
-                    with open(d_id_input, 'r') as id:    
-                        for i in id:
-                            i = i.rstrip().split()
-                            if not m[0].startswith('c'.upper()):
-                                if len(m) != 5  or not m[0].startswith('c'.lower()):
-                                    raise StopIteration('Please correct the format of input mutation file')
-                                else:
-                                    if m[4] == i[2]:
-                                        take = m[4]+'\t'+m[0]+'\t'+i[3]+'\t'+m[1]+'\t'+i[4]+'\t'+m[2]+'\t'+m[3]+'\t'+i[5]
-                                        take1= take.rstrip().split()       
-                                        with open(gff_input, 'r') as orf:     
-                                            linee = orf.readlines()[23078:]
-                                            up = (x[1] for x in groupby(linee, lambda line: line[0] == ">")) 
-                                            for head in up:
-                                                head = next(head)[1:].strip()
-                                                seq = "".join(s.strip() for s in next(up))
-                                                if head == take1[1] and take1[0] == i[2] and take1[7] == '-':   
-                                                    cod = 1 + (int(take1[4])-int(take1[3]))                       
-                                                    cc = math.ceil(int(cod)/float(3))
-                                                    c = str(cc).split('.')                         
-                                                    cn = int(c[0])-1    
-                                                    sli_n = seq[int(take1[2]):int(take1[4])]                  
-                                                    rev_sli_n = revcomp(sli_n, reverse=True, complement=True)  
-                                                    sli_m_n = sli_n[:int(-cod)]+take1[6]+sli_n[int(-cod)+1:] 
-                                                    rev_sli_m_n = revcomp(sli_m_n, reverse=True, complement=True)   
-                                                    wild_type_rev_n = translate_dna(rev_sli_n)                
-                                                    mut_type_n = translate_dna(rev_sli_m_n)
-                                                    try:
-                                                        if wild_type_rev_n[cn] != mut_type_n[cn] and mut_type_n[cn] == '_':
-                                                            pic = take1[0]+'\t'+str(c[0])+'\t'+wild_type_rev_n[cn]+'\t'+mut_type_n[cn]+'\t'+'Stop' +'\t'+take1[1]+'\t'+take1[3]
-                                                            if pic > str(0): 
-                                                                t = open(mut_prot_output, 'a')
-                                                                t.write(pic+'\n')
-                                                    except IndexError as e:
-                                                        pic1 =  take1[0]+ '\t'+ 'Error:'+'\t'+ str(e)
-                                                        t = open(mut_prot_output, 'a+')
-                                                        t.write(pic1+'\n')
-                                                        continue
-                                                    try:
-                                                        if wild_type_rev_n[cn] != mut_type_n[cn] and mut_type_n[cn] != '_':
-                                                            pic = take1[0]+'\t'+str(c[0])+'\t'+wild_type_rev_n[cn]+'\t'+mut_type_n[cn]+'\t'+'Non-Synonymous' +'\t'+take1[1]+'\t'+take1[3]                                                                                                                    
-                                                            if pic > str(0):
-                                                                t = open(mut_prot_output, 'a+')
-                                                                t.write(pic+'\n')
-                                                    except IndexError as e:
-                                                        pic1 =  take1[0]+ '\t'+ 'Error:'+'\t'+ str(e)
-                                                        t = open(mut_prot_output, 'a+')
-                                                        t.write(pic1+'\n')
-                                                        continue
-                                                if head == take1[1] and take1[0]==i[2] and take1[7] == '+':
-                                                    code = int(take1[3])-int(take1[2])
-                                                    code1 = 1 + (int(take1[3])-int(take1[2])) 
-                                                    cce = math.ceil(int(code1)/float(3)) 
-                                                    ce = str(cce).split('.') 
-                                                    cp = int(ce[0])-1                  
-                                                    pos = int(take1[2]) - 1                               
-                                                    sli_p = seq[int(pos):int(take1[4])]                   
-                                                    sli_m_p = sli_p[:int(code)]+take1[6]+sli_p[int(code)+1:]  
-                                                    wild_type_p = translate_dna(sli_p)                    
-                                                    mut_type_p = translate_dna(sli_m_p)
-                                                    try:                   
-                                                        if wild_type_p[cp] != mut_type_p[cp] and mut_type_p[cp] != '_': 
-                                                            pick = take1[0]+'\t'+str(ce[0])+'\t'+wild_type_p[cp]+'\t'+mut_type_p[cp]+'\t'+'Non-Synonymous'+'\t'+take1[1]+'\t'+take1[3]
-                                                            if pick > str(0):
-                                                                with open(mut_prot_output, 'a+') as t:
-                                                                    t.write(pick+'\n')
-                                                    except IndexError as e:
-                                                        pic1 =  take1[0]+ '\t'+ 'Error:'+'\t'+ str(e)
-                                                        t = open(mut_prot_output, 'a+')
-                                                        t.write(pic1+'\n')
-                                                        continue
-                                                    try:
-                                                        if wild_type_p[cp] != mut_type_p[cp] and mut_type_p[cp]=='_':
-                                                            pick = take1[0]+'\t'+str(ce[0])+'\t'+wild_type_p[cp]+'\t'+mut_type_p[cp]+'\t'+'Stop' +'\t'+take1[1]+'\t'+take1[3]
-                                                            if pick > str(0):
-                                                                with open(mut_prot_output, 'a+') as t:
-                                                                    t.write(pick+'\n')
-                                                    except IndexError as e:
-                                                        pic1 =  take1[0]+ '\t'+ 'Error:'+'\t'+ str(e)
-                                                        t = open(mut_prot_output, 'a+')
-                                                        t.write(pic1+'\n')
+def parse_gene_mutations(mut_gene_input):
+    """Parse input DNA/gene-level mutation file into a dictionary of mutations.
+    
+    Returns the dictionary. Key = mutated gene name. Value = set of tuples, each containing data
+    about a mutation: chromosome, position, reference nucleotide (as per reference genome) and 
+    alternative nucleotide.
+    
+    Arguments:
+    mut_gene_input -- file path, mapping mutated genes (common names) to point mutations on specified chromosomes.
+    """
+    parsed_mutations = defaultdict(set) # Implement values as sets to remove duplicates
+    with open(mut_gene_input, 'r') as mutations:
+        next(mutations) # Skip the header
+        for line in mutations:
+            chromosome, position, ref_nt, alt_nt, common_name  = line.rstrip('\n').split('\t')
+            parsed_mutations[common_name].add((chromosome, position, ref_nt, alt_nt))
+    return parsed_mutations 
+
+
+def parse_genome(gff_input):
+    """Parse General Feature Format (GFF) file for yeast genome into a dictionary.
+    
+    Returns the dictionary. Key = chromosome id e.g. chrI. Value = sequence of chromosome
+    (from reference genome).
+    
+    Arguments:
+    gff_input -- file path, General Feature Format (GFF) file for yeast genome.
+    """
+    chr_seq = re.compile(r'>(chr[IVX]{1,4})')
+    with open(gff_input, 'r') as gff:
+        for line in gff:
+            if line.startswith('##FASTA'):
+                break
+        fasta = gff.read()
+        fasta = fasta.replace('\n','')
+        fasta = chr_seq.split(fasta)
+        chromosomes = fasta[1::2]
+        sequences = fasta[2::2]
+    return dict(zip(chromosomes,sequences))
+
+
+def parse_gene_loci(d_id_input):
+    """Parse a file that maps UniProt IDs and gene identifiers to chromosome loci (start, end, strand orientation) into a dictionary.
+    
+    Returns the dictionary. Key = gene name. Value = list of start position, end position, strand orientation and chromosome on which the gene is located.
+    
+    Arguments:
+    d_id_input -- file path, mapping UniProt IDs and gene identifiers to chromosome loci (start, end, strand orientation)
+    """
+    gene_map = {}
+    with open(d_id_input, 'r') as gene_locations:
+        for line in gene_locations:
+            uniprot_id, sgd_name, common_name, start, end, strand, chromosome = line.rstrip('\n').split('\t')
+            gene_map[common_name] = [start, end, strand, chromosome] # Assumes unique common gene/protein name!
+    return gene_map
+
+def mutation_file(mut_gene_input, gff_input, d_id_input, mut_prot_output, errors_output):
+    """Converts a file of mutations at DNA/gene-level to mutations at the protein-level.
+    
+    Arguments:
+    mut_gene_input -- file path, mapping mutated genes (common names) to point mutations on specified chromosomes
+    gff_input -- file path, General Feature Format (GFF) file for yeast genome
+    d_id_input -- file path, mapping UniProt IDs and gene identifiers to chromosome loci (start, end, strand orientation)
+    mut_prot_output -- file path, mapping mutated proteins (common names) to non-synonymous or stop mutations 
+    errors_output -- file path, listing any errors that were raised during data processing
+    """
+    lines = []
+    error_lines = []
+    mutations = parse_gene_mutations(mut_gene_input)
+    chromosome_seqs = parse_genome(gff_input)
+    gene_map = parse_gene_loci(d_id_input)
+    for gene, uniq_mutations in mutations.items():
+        if gene == 'INTERGENIC': 
+            continue
+        for uniq_mutation in uniq_mutations:
+            chr, position, ref_nt, alt_nt = uniq_mutation
+            try:
+                start, end, strand, chromosome = gene_map[gene] #TODO: Implement check for strand sense before translating - that's what the reverse complement is for
+            except KeyError:
+                line = '\t'.join(['UNKNOWN GENE NAME', gene]) + '\n' #TODO: Add troubleshooting reference
+                error_lines.append(line)
+                continue
+            start = int(start)
+            end = int(end)
+            position = int(position)
+            relative_mut_pos = position - start
+            mutated_aa_pos = relative_mut_pos // 3  # Note we are rounding down not up, because with the python indices, we would have to minus 1 anyway
+            gene_seq = chromosome_seqs[chromosome][start - 1 : end] # Adjust indices since chromosome sequence positions start from 1, not 0 AND last second in slice is exclusive
+            if strand == '-':
+                gene_seq = revcomp(gene_seq)
+            protein_normal = translate_dna(gene_seq)
+#             assert gene_seq[relative_mut_pos - 1] == ref_nt #TODO: No need to check reference nucleotide in input file.
+            mutated_gene_seq = gene_seq[:relative_mut_pos - 1] + alt_nt + gene_seq[relative_mut_pos:] # Because strings are immutable
+            protein_mutant = translate_dna(mutated_gene_seq)
+            normal_aa = protein_normal[mutated_aa_pos]
+            mutated_aa = protein_mutant[mutated_aa_pos]
+            if normal_aa == mutated_aa:
+                line = '\t'.join([gene, str(mutated_aa_pos + 1), normal_aa, mutated_aa, 'Synonymous', chromosome, str(position)]) + '\n' # Need to add 1 back onto mutated_aa_pos to reflect real position...
+                continue #TODO: Currently, we don't record synonymous mutations
+            elif normal_aa != '_' and mutated_aa == '_':
+                line = '\t'.join([gene, str(mutated_aa_pos + 1), normal_aa, mutated_aa, 'Stop', chromosome, str(position)]) + '\n' # Need to add 1 back onto mutated_aa_pos to reflect real position... 
+            else:
+                line = '\t'.join([gene, str(mutated_aa_pos + 1), normal_aa, mutated_aa, 'Non-Synonymous', chromosome, str(position)]) + '\n' # Need to add 1 back onto mutated_aa_pos to reflect real position...
+            lines.append(line)
+    with open(mut_prot_output, 'w') as protein_mutations:
+        protein_mutations.writelines(lines)
+    with open(errors_output, 'a') as errors:
+        errors.writelines(error_lines)
 
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
