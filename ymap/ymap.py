@@ -1154,6 +1154,7 @@ mapped_between_prot_file = 'ptm_between_proteins.txt'
 p_value_file = 'pvalue.txt'
 biog_file = 'biog.txt'
 final_report_file = 'final_report.txt'
+errors_file = 'errors.txt'
 
 # Setup directory tree paths 
 # Data, input, output directories
@@ -1242,6 +1243,7 @@ uniprot_biogrid_file_path = os.path.join(data_dir_path, uniprot_biogrid_file)
 # Paths to output files
 summary_file_path = os.path.join(output_dir_path, summary_file)
 final_report_file_path = os.path.join(output_dir_path, final_report_file)
+errors_file_path = os.path.join(output_dir_path, errors_file)
 
 mapped_sites_file_path = os.path.join(output_dir_path, mapped_sites_file)
 mapped_ptms_file_path = os.path.join(output_dir_path, mapped_ptms_file)
