@@ -286,10 +286,10 @@ def frmt(gff_input, frmt_output):
                 break
             elif line.startswith(('##', '#')):
                 continue
-            chr, source, feature, start, end, score, strand, frame, attribute = line.split()
+            chromosome, source, feature, start, end, score, strand, frame, attribute = line.split()
             if feature == 'gene':
                 gene_id = id_regex.match(attribute).group(1)
-                new_line = '\t'.join([gene_id, start, end, strand]) + '\n'
+                new_line = '\t'.join([gene_id, start, end, strand, chromosome]) + '\n'
                 lines.append(new_line)
     with open(frmt_output,'w') as parsed_gff:
         parsed_gff.writelines(lines)
@@ -309,9 +309,9 @@ def id_map(gene_names_by_locus, frmt_input, d_id_map_output):
         #TODO: Write a check for a header - perhaps specify parameter header=T, like some R functions (give user flexibility) 
         next(gff) # Skip the header
         for line in gff:
-            sgd_name, start, end, strand = line.rstrip('\n').split('\t')
+            sgd_name, start, end, strand, chromosome = line.rstrip('\n').split('\t')
             new_line = gene_names_by_locus[sgd_name].copy() #TODO: Is this still necessary? Are dictionaries passed in by value?
-            new_line.extend([start, end, strand])
+            new_line.extend([start, end, strand, chromosome])
             new_line = '\t'.join(new_line) + '\n'
             lines.append(new_line)
     with open(d_id_map_output, 'w') as protein_loci_mapped:
