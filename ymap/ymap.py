@@ -29,7 +29,7 @@
 
 from __future__ import print_function, absolute_import, division, unicode_literals
 from six.moves import range
-from pkg_resources import resource_stream
+from pkg_resources import resource_filename, Requirement
 from collections import defaultdict
 from orangecontrib.bio import go    
 try:
@@ -1045,37 +1045,34 @@ def sum_file_map(summary_input, final_report_output):
 #TODO: The package data paths are still hard-coded (not in variables yet). We could specify the output dir as argument, 
 # but since we chdir in the download() function, it seems redundant - unless we chdir in each function called in download instead...
 def resc(output_dir):
-    """Copy pre-downloaded data files (PTMfunc and PTMcode database files) from the ymap package."""
-    interface_acet = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_aceksites_interfaceRes_sc.txt").read().decode()
-    with open(interface_acet_file_path, 'w') as f:
-        f.write(interface_acet)
-    interface_phos = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_phosphosites_interfaceRes_sc.txt").read().decode()
-    with open(interface_phos_file_path, 'w') as f:
-        f.write(interface_phos)
-    interface_ubiq = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_ubisites_interfaceRessc_sc.txt").read().decode()
-    with open(interface_ubiq_file_path, 'w') as f:
-        f.write(interface_ubiq)
-    ppi_acet = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_acet_interactions.txt").read().decode()
-    with open(interact_acet_file_path, 'w') as f:
-        f.write(ppi_acet)
-    ppi_phos = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_psites_interactions_sc.txt").read().decode()
-    with open(interact_phos_file_path, 'w') as f:
-        f.write(ppi_phos)
-    ppi_ubiq = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_ubi_interactions_sc.txt").read().decode()
-    with open(interact_ubiq_file_path, 'w') as f:
-        f.write(ppi_ubiq)
-    within_prot = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_within_proteins.txt").read().decode()
-    with open(within_prot_file_path, 'w') as f:
-        f.write(within_prot)
-    #TODO: Could we not extract the zip and move the extracted file? Instead of copying the zip then extracting
-    between_prot = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_btw_proteins.txt.zip").read()
-    with open(between_prot_zip_file_path, 'wb') as f:
-        f.write(between_prot)
-    zipfile.ZipFile(between_prot_zip_file_path, 'r').extractall()
-    hotspots = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/schotspot_updated.txt").read().decode()
-    with open(regulatory_hotspots_file_path, 'w') as f:
-        f.write(hotspots)
-
+    """Copy pre-downloaded data files (PTMfunc and PTMcode database files) from the ymap package to output dir."""
+    ymap_pkg = Requirement.parse('ymap') 
+    #TODO: Above is a weird fix that lets you access installed ymap package resources even when 
+    # ymap.py is run from some arbitrary directory (provided ymap package is in sys.path)... I think
+    # It may not be necessary for deployment, because installed ymap should only ever be run from 
+    # the installed package folder. But if user wants to run from source code (as per readme), we
+    # still have to cope with getting the PTMcode and PTMfunc data to the user. This was handled
+    # by ymap.py before I changed parts, but I feel like it could be handled in a more tidy way
+    # using this function and a check to see if ymap has been installed.
+    # Or just replace ptm_data_dir line with 'ptm_data_dir = resource_filename('ymap', 'data/PTMcode+PTMfunc_data')
+    # which will work with both source code and installed version provided the data directory is
+    # in the same folder as ymap.py
+    pkg_data_dir = 'ymap/data/PTMcode+PTMfunc_data'
+    ptm_data_dir = resource_filename(ymap_pkg, pkg_data_dir)
+    ptm_data_files = os.listdir(ptm_data_dir)
+    for file in ptm_data_files:
+        file_path = os.path.join(ptm_data_dir, file)
+        shutil.copy2(file_path, output_dir)
+    
+def extractZips(dir, extract_to_dir):
+    """Recursively search given dir for zip files and extract them to extract_to_dir."""
+    for dir_path, dir_names, file_names in os.walk(dir):
+        for file_name in file_names:
+            file = os.path.join(dir_path, file_name)
+            if zipfile.is_zipfile(file):
+                with zipfile.ZipFile(file, 'r') as z:
+                    z.extractall(extract_to_dir)
+    
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #                               USEAGE       (Optional) 
@@ -1293,6 +1290,7 @@ def download(): #TODO: Directory as argument
     os.chdir(data_dir_path)
     
     resc(data_dir_path) # Copy files packaged with ymap
+    extractZips(data_dir_path, data_dir_path)
     pTMdata(uniprot_file_path) # Download UniProt file (yeast protein features)
     gff(gff_file_path) # Download Genome File Format (GFF) file for yeast genome (incl. all genomic loci and chromosome sequences)
     iD(yeastID_file_path) # Download yeastID file (mapping UniProt IDs to locus names and common gene/protein names)
