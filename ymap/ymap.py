@@ -1105,7 +1105,7 @@ interact_acet_file = 'SC_acet_interactions.txt'
 interact_phos_file = 'SC_psites_interactions_sc.txt'
 interact_ubiq_file = 'SC_ubi_interactions_sc.txt'
 within_prot_file = 'sc_within_proteins.txt'
-between_prot_zip_file = 'sc_btw_proteins.txt.zip'
+between_prot_zip_file = 'sc_btw_proteins.zip'
 between_prot_file = 'sc_btw_proteins.txt'
 
 uniprot_biogrid_file = 'uniprot_bioGrid.txt'
