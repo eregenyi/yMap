@@ -489,6 +489,7 @@ def enrich(mapped_mut_input):
     enriched_go_terms = annotations.get_enriched_terms(sgd_gene_names)
     if len(enriched_go_terms) == 0:
         line = 'No enriched GO terms found.'
+        lines.append(line)
     else:
         for go_id, (genes, p_value, ref) in enriched_go_terms.items(): #TODO: Find out what the reference count is
             if p_value < 0.05:
@@ -497,7 +498,10 @@ def enrich(mapped_mut_input):
                 genes = ', '.join(genes)
                 line_elements = [term.id, term.name, formatted_p_value, genes, str(ref)]
                 line = '\t'.join(line_elements) + '\n'
-    lines.append(line)
+                lines.append(line)
+        if len(lines) == 0:
+            line = 'No significantly enriched GO terms found.'
+            lines.append(line)
     with open(p_value_output, 'w') as out:
         out.writelines(lines)
                            
