@@ -1048,33 +1048,33 @@ def resc(output_dir):
     """Copy pre-downloaded data files (PTMfunc and PTMcode database files) from the ymap package."""
     interface_acet = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_aceksites_interfaceRes_sc.txt").read().decode()
     with open(interface_acet_file_path, 'w') as f:
-        f.write(interface_acet + '\n')
+        f.write(interface_acet)
     interface_phos = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_phosphosites_interfaceRes_sc.txt").read().decode()
     with open(interface_phos_file_path, 'w') as f:
-        f.write(interface_phos + '\n')
+        f.write(interface_phos)
     interface_ubiq = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/3DID_ubisites_interfaceRessc_sc.txt").read().decode()
     with open(interface_ubiq_file_path, 'w') as f:
-        f.write(interface_ubiq + '\n')
+        f.write(interface_ubiq)
     ppi_acet = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_acet_interactions.txt").read().decode()
     with open(interact_acet_file_path, 'w') as f:
-        f.write(ppi_acet + '\n')
+        f.write(ppi_acet)
     ppi_phos = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_psites_interactions_sc.txt").read().decode()
     with open(interact_phos_file_path, 'w') as f:
-        f.write(ppi_phos + '\n')
+        f.write(ppi_phos)
     ppi_ubiq = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/SC_ubi_interactions_sc.txt").read().decode()
     with open(interact_ubiq_file_path, 'w') as f:
-        f.write(ppi_ubiq + '\n')
+        f.write(ppi_ubiq)
     within_prot = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_within_proteins.txt").read().decode()
     with open(within_prot_file_path, 'w') as f:
-        f.write(within_prot + '\n')
+        f.write(within_prot)
     #TODO: Could we not extract the zip and move the extracted file? Instead of copying the zip then extracting
     between_prot = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/sc_btw_proteins.txt.zip").read()
     with open(between_prot_zip_file_path, 'wb') as f:
         f.write(between_prot)
     zipfile.ZipFile(between_prot_zip_file_path, 'r').extractall()
     hotspots = resource_stream("ymap", "/data/PTMcode+PTMfunc_data/schotspot_updated.txt").read().decode()
-    with open(regulatory_hotspots_file_path, 'w') as his:
-        his.write(hotspots + '\n')
+    with open(regulatory_hotspots_file_path, 'w') as f:
+        f.write(hotspots)
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1095,25 +1095,11 @@ wd = os.getcwd()
 mutation_prot_file = 'mutation.txt'
 mutation_gene_file = 'mutated_proteins.txt'
 
-# Intermediate processing files
-uniprot_file = 'uniprot_mod_raw.txt' # downloaded
-bact_file = 'bact.txt'
-ptms_file = 'PTMs.txt'
-domains_file = 'domains.txt'
-nucleotide_file = 'nucleotide.txt'
-pdb_file = 'pdb.txt'
+# Downloaded files from UniProt and SGD (Saccharomyces Genome Database) and copied PTMfunc and PTMcode data files
+uniprot_file = 'uniprot_mod_raw.txt'
+gff_file = 'gff.txt'
+yeastID_file = 'yeastID.txt'
 
-gff_file = 'gff.txt' # downloaded
-frmt_file = 'frmt.txt'
-
-yeastID_file = 'yeastID.txt' # downloaded
-d_id_map_file = 'd_id_map.txt' # Links Uniprot ID to Gene ID, ORF start, ORF stop, strand orientation 
-sites_id_file = 'sites_id.txt'
-ptm_id_file = 'PTM_id_file.txt'
-domain_id_file = 'id_domain.txt'
-nucleotide_id_file = 'id_nucleotide.txt' # Nucleotide binding sites
-
-# Downloaded and copied PTMfunc and PTMcode data files
 interface_acet_file = '3DID_aceksites_interfaceRes_sc.txt'
 interface_phos_file = '3DID_phosphosites_interfaceRes_sc.txt'
 interface_ubiq_file = '3DID_ubisites_interfaceRessc_sc.txt'
@@ -1125,7 +1111,33 @@ within_prot_file = 'sc_within_proteins.txt'
 between_prot_zip_file = 'sc_btw_proteins.txt.zip'
 between_prot_file = 'sc_btw_proteins.txt'
 
-uniprot_biogrid_file = 'uniprot_bioGrid.txt' # downloaded
+uniprot_biogrid_file = 'uniprot_bioGrid.txt'
+
+# Intermediate processing files
+bact_file = 'bact.txt'
+ptms_file = 'PTMs.txt'
+domains_file = 'domains.txt'
+nucleotide_file = 'nucleotide.txt'
+pdb_file = 'pdb.txt'
+
+frmt_file = 'frmt.txt'
+
+d_id_map_file = 'd_id_map.txt' # Links Uniprot ID to Gene ID, ORF start, ORF stop, strand orientation 
+sites_id_file = 'sites_id.txt'
+ptm_id_file = 'PTM_id_file.txt'
+domain_id_file = 'id_domain.txt'
+nucleotide_id_file = 'id_nucleotide.txt' # Nucleotide binding sites
+struct_id_file = 'id_struct.txt' # Link UniProt ID to PDB IDs
+
+interface_acet_id_file = 'interface_acet_id.txt'
+interface_phos_id_file = 'interface_phos_id.txt'
+interface_ubiq_id_file = 'interface_ubiq_id.txt'
+regulatory_hotspots_id_file = 'regulatory_hotspots_id.txt'
+interact_acet_id_file = 'interact_acet_id.txt'
+interact_phos_id_file = 'interact_phos_id.txt'
+interact_ubiq_id_file = 'interact_ubiq_id.txt'
+within_prot_id_file = 'within_prot_id.txt'
+between_prot_id_file = 'between_prot_id.txt'
 
 # Output files
 summary_file = 'summary.txt'
@@ -1134,7 +1146,6 @@ mapped_sites_file = 'ab_mutation_file.txt'
 mapped_ptms_file = 'mapped_ptms.txt'
 mapped_domains_file = 'domains_mapped.txt'
 mapped_nucleotide_file = 'nucleotide_map.txt'
-mapped_mutation_pos_file = 'mutation_id.txt'
 mapped_struct_file = 'stru_mutation.txt' # Structural regions of protein e.g. beta sheet, alpha helix, turn 
 
 general_mapped_interface_file = 'interface_mutation.txt' # This variable refers to the name of the file written by ymap.interface().
@@ -1208,25 +1219,11 @@ def makeDirTree(dirs):
 mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file)
 mutation_gene_file_path = os.path.join(input_dir_path, mutation_gene_file)
 
-# Intermediate processing files
+# Downloaded files from UniProt and SGD (Saccharomyces Genome Database) and copied PTMfunc and PTMcode data files
 uniprot_file_path = os.path.join(data_dir_path, uniprot_file)
-bact_file_path = os.path.join(data_dir_path, bact_file)
-ptms_file_path = os.path.join(data_dir_path, ptms_file)
-domains_file_path = os.path.join(data_dir_path, domains_file)
-nucleotide_file_path = os.path.join(data_dir_path, nucleotide_file)
-pdb_file_path = os.path.join(data_dir_path, pdb_file)
-
 gff_file_path = os.path.join(data_dir_path, gff_file)
-frmt_file_path = os.path.join(data_dir_path, frmt_file)
-
 yeastID_file_path = os.path.join(data_dir_path, yeastID_file)
-d_id_map_file_path = os.path.join(data_dir_path, d_id_map_file) 
-sites_id_file_path = os.path.join(data_dir_path, sites_id_file)
-ptm_id_file_path = os.path.join(data_dir_path, ptm_id_file)
-domain_id_file_path = os.path.join(data_dir_path, domain_id_file)
-nucleotide_id_file_path = os.path.join(data_dir_path, nucleotide_id_file)
 
-# Downloaded and copied PTMfunc and PTMcode data files
 interface_acet_file_path = os.path.join(data_dir_path, interface_acet_file)
 interface_phos_file_path = os.path.join(data_dir_path, interface_phos_file)
 interface_ubiq_file_path = os.path.join(data_dir_path, interface_ubiq_file)
@@ -1240,6 +1237,32 @@ between_prot_file_path = os.path.join(data_dir_path, between_prot_file)
 
 uniprot_biogrid_file_path = os.path.join(data_dir_path, uniprot_biogrid_file)
 
+# Intermediate processing files
+bact_file_path = os.path.join(data_dir_path, bact_file)
+ptms_file_path = os.path.join(data_dir_path, ptms_file)
+domains_file_path = os.path.join(data_dir_path, domains_file)
+nucleotide_file_path = os.path.join(data_dir_path, nucleotide_file)
+pdb_file_path = os.path.join(data_dir_path, pdb_file)
+
+frmt_file_path = os.path.join(data_dir_path, frmt_file)
+
+d_id_map_file_path = os.path.join(data_dir_path, d_id_map_file) 
+sites_id_file_path = os.path.join(data_dir_path, sites_id_file)
+ptm_id_file_path = os.path.join(data_dir_path, ptm_id_file)
+domain_id_file_path = os.path.join(data_dir_path, domain_id_file)
+nucleotide_id_file_path = os.path.join(data_dir_path, nucleotide_id_file)
+struct_id_file_path = os.path.join(data_dir_path, struct_id_file)
+
+interface_acet_id_file_path = os.path.join(data_dir_path, interface_acet_id_file)
+interface_phos_id_file_path = os.path.join(data_dir_path, interface_phos_id_file)
+interface_ubiq_id_file_path = os.path.join(data_dir_path, interface_ubiq_id_file)
+regulatory_hotspots_id_file_path = os.path.join(data_dir_path, regulatory_hotspots_id_file)
+interact_acet_id_file_path = os.path.join(data_dir_path, interact_acet_id_file)
+interact_phos_id_file_path = os.path.join(data_dir_path, interact_phos_id_file)
+interact_ubiq_id_file_path = os.path.join(data_dir_path, interact_ubiq_id_file)
+within_prot_id_file_path = os.path.join(data_dir_path, within_prot_id_file)
+between_prot_id_file_path = os.path.join(data_dir_path, between_prot_id_file)
+
 # Paths to output files
 summary_file_path = os.path.join(output_dir_path, summary_file)
 final_report_file_path = os.path.join(output_dir_path, final_report_file)
@@ -1249,7 +1272,6 @@ mapped_sites_file_path = os.path.join(output_dir_path, mapped_sites_file)
 mapped_ptms_file_path = os.path.join(output_dir_path, mapped_ptms_file)
 mapped_domains_file_path = os.path.join(output_dir_path, mapped_domains_file)
 mapped_nucleotide_file_path = os.path.join(output_dir_path, mapped_nucleotide_file)
-mapped_mutation_pos_file_path = os.path.join(output_dir_path, mapped_mutation_pos_file)
 mapped_struct_file_path = os.path.join(output_dir_path, mapped_struct_file)
 
 mapped_interface_acet_file_path = os.path.join(output_dir_path, mapped_interface_acet_file)
@@ -1267,7 +1289,7 @@ def download(): #TODO: Directory as argument
     """Download/Copy all required data into a specified directory."""
     
     start_time = time.clock()
-    os.mkdir(data_dir_path)
+    os.makedirs(data_dir_path, exist_ok=True)
     os.chdir(data_dir_path)
     
     resc(data_dir_path) # Copy files packaged with ymap
@@ -1286,7 +1308,7 @@ def data():
     """Process data files into intermediate files, including only relevant data and """
 
     start_time = time.clock()
-    os.mkdir(data_dir_path)
+    os.makedirs(data_dir_path, exist_ok=True)
     os.chdir(data_dir_path)
 
     frmt(gff_file_path, frmt_file_path)
@@ -1309,7 +1331,17 @@ def data():
     d_map(gene_names, domains_file_path, domain_id_file_path)
     id(gene_names, bact_file_path, sites_id_file_path)
     n_map(gene_names, nucleotide_file_path, nucleotide_id_file_path)
-    mu_map(gene_names, pdb_file_path, pdb_id_file_path)
+    mu_map(gene_names, pdb_file_path, struct_id_file_path)
+    
+    interface_map(gene_names_by_locus, interface_acet_file_path, interface_acet_id_file_path)
+    interface_map(gene_names_by_locus, interface_phos_file_path, interface_phos_id_file_path)
+    interface_map(gene_names_by_locus, interface_ubiq_file_path, interface_ubiq_id_file_path)
+    ppi_map(gene_names_by_locus, interact_acet_file_path, interact_acet_id_file_path)
+    ppi_map(gene_names_by_locus, interact_phos_file_path, interact_phos_id_file_path)
+    ppi_map(gene_names_by_locus, interact_ubiq_file_path, interact_ubiq_id_file_path)
+    withinPro_map(gene_names_by_locus, within_prot_file_path, within_prot_id_file_path)
+    betweenPro_map(gene_names_by_locus, between_prot_file_path, between_prot_id_file_path)
+    hotspot_map(gene_names_by_locus, regulatory_hotspots_file_path, regulatory_hotspots_id_file_path)
 
     os.chdir(wd)
     end_time = time.clock()
@@ -1323,7 +1355,7 @@ def data():
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-def ptm():
+def ptm(mutations, biogrid_IDs):
     """Map mutations to PTMs.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1332,18 +1364,15 @@ def ptm():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        ptm_map(mutation_prot_file_path, ptm_id_file_path, mapped_ptms_file_path, summary_file_path)
-        enrich(mapped_ptms_file_path)
-        preWeb(uniprot_biogrid_file_path, mapped_ptms_file_path)
+    ptm_map(mutations, ptm_id_file_path, mapped_ptms_file_path, summary_file_path)
+    enrich(mapped_ptms_file_path)
+    preWeb(biogrid_IDs, mapped_ptms_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ptms_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_ptms_file, ptms_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ptms_dir_path)
-        shutil.move(output_dir_path+"/"+biog_file, ptms_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ptms_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_ptms_file, ptms_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ptms_dir_path)
+    shutil.move(output_dir_path+"/"+biog_file, ptms_dir_path)
     
     end_time = time.clock()
     duration = end_time - start_time
@@ -1351,7 +1380,7 @@ def ptm():
     return duration
 
 
-def domain():
+def domain(mutations, biogrid_IDs):
     """Map mutations to domains.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1360,18 +1389,15 @@ def domain():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        dmap(mutation_prot_file_path, domain_id_file_path, mapped_domains_file_path, summary_file_path)
-        enrich(mapped_domains_file_path)  
-        preWeb(uniprot_biogrid_file_path, mapped_domains_file_path)
+    dmap(mutations, domain_id_file_path, mapped_domains_file_path, summary_file_path)
+    enrich(mapped_domains_file_path)  
+    preWeb(biogrid_IDs, mapped_domains_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(domains_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_domains_file, domains_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, domains_dir_path)
-        shutil.move(output_dir_path+"/"+biog_file, domains_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(domains_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_domains_file, domains_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, domains_dir_path)
+    shutil.move(output_dir_path+"/"+biog_file, domains_dir_path)
     
     end_time = time.clock()
     duration = end_time - start_time
@@ -1380,7 +1406,7 @@ def domain():
 
     
 
-def nucleo():
+def nucleo(mutations, biogrid_IDs):
     """Map mutations to nucleotide binding sites.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1389,18 +1415,15 @@ def nucleo():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        nucleotide_map(mutation_prot_file_path, nucleotide_id_file_path, mapped_nucleotide_file_path, summary_file_path)
-        enrich(mapped_nucleotide_file_path)  
-        preWeb(uniprot_biogrid_file_path, mapped_nucleotide_file_path)
-    
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(nuc_bind_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_nucleotide_file, nuc_bind_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, nuc_bind_dir_path)
-        shutil.move(output_dir_path+"/"+biog_file, nuc_bind_dir_path)
+    nucleotide_map(mutations, nucleotide_id_file_path, mapped_nucleotide_file_path, summary_file_path)
+    enrich(mapped_nucleotide_file_path)  
+    preWeb(biogrid_IDs, mapped_nucleotide_file_path)
+
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(nuc_bind_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_nucleotide_file, nuc_bind_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, nuc_bind_dir_path)
+    shutil.move(output_dir_path+"/"+biog_file, nuc_bind_dir_path)
     
     end_time = time.clock()
     duration = end_time - start_time
@@ -1408,7 +1431,7 @@ def nucleo():
     return duration
 
 
-def ab():
+def ab(mutations, biogrid_IDs):
     """Map mutations to active/binding sites.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1417,18 +1440,15 @@ def ab():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        mmap(mutation_prot_file_path, sites_id_file_path, mapped_sites_file_path, summary_file_path)
-        enrich(mapped_sites_file_path)
-        preWeb(uniprot_biogrid_file_path, mapped_sites_file_path)
+    mmap(mutations, sites_id_file_path, mapped_sites_file_path, summary_file_path)
+    enrich(mapped_sites_file_path)
+    preWeb(biogrid_IDs, mapped_sites_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ab_sites_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_sites_file, ab_sites_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ab_sites_dir_path)
-        shutil.move(output_dir_path+"/"+biog_file, ab_sites_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ab_sites_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_sites_file, ab_sites_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ab_sites_dir_path)
+    shutil.move(output_dir_path+"/"+biog_file, ab_sites_dir_path)
     
     end_time = time.clock()
     duration = end_time - start_time
@@ -1436,7 +1456,7 @@ def ab():
     return duration
 
 
-def struc_map():
+def struc_map(mutations, biogrid_IDs):
     """Map mutations to active/binding sites.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1445,25 +1465,22 @@ def struc_map():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        pdb(pdb_file_path, mapped_mutation_pos_file_path, mapped_struct_file_path, summary_file_path)
-        enrich(mapped_struct_file_path)
-        preWeb(uniprot_biogrid_file_path, mapped_struct_file_path)
+    pdb(mutations, struct_id_file_path, mapped_struct_file_path, summary_file_path)
+    enrich(mapped_struct_file_path)
+    preWeb(biogrid_IDs, mapped_struct_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(pdb_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_struct_file, pdb_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, pdb_dir_path)
-        shutil.move(output_dir_path+"/"+biog_file, pdb_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(pdb_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_struct_file, pdb_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, pdb_dir_path)
+    shutil.move(output_dir_path+"/"+biog_file, pdb_dir_path)
         
     end_time = time.clock()
     duration = end_time - start_time
     
     return duration
 
-def intf():
+def intf(mutations, biogrid_IDs):
     """Map mutations to PTMs (acetylation, phosphorylation, ubiquitination) at the inferfaces of mutated proteins.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1472,43 +1489,40 @@ def intf():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        # Map to acetylations
-        interface(yeastID_file_path, interface_acet_file_path, mutation_prot_file_path, mapped_interface_acet_file_path, summary_file_path)
-        enrich(mapped_interface_acet_file_path)
+    # Map to acetylations
+    interface(mutations, interface_acet_id_file_path, mapped_interface_acet_file_path, summary_file_path)
+    enrich(mapped_interface_acet_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(interface_dir_path)
-        os.mkdir(interface_acet_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_interface_acet_file, interface_acet_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, interface_acet_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(interface_dir_path, exist_ok=True)
+    os.makedirs(interface_acet_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_interface_acet_file, interface_acet_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, interface_acet_dir_path)
 
-        # Map to phosphoylations
-        interface(yeastID_file_path, interface_phos_file_path, mutation_prot_file_path, mapped_interface_phos_file_path, summary_file_path)
-        enrich(mapped_interface_phos_file_path)
+    # Map to phosphoylations
+    interface(mutations, interface_phos_id_file_path, mapped_interface_phos_file_path, summary_file_path)
+    enrich(mapped_interface_phos_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(interface_phos_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_interface_phos_file, interface_phos_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, interface_phos_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(interface_phos_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_interface_phos_file, interface_phos_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, interface_phos_dir_path)
 
-        # Map to ubiquitinations
-        interface(yeastID_file_path, interface_ubiq_file_path, mutation_prot_file_path, mapped_interface_ubiq_file_path, summary_file_path)
-        enrich(mapped_interface_ubiq_file_path)
+    # Map to ubiquitinations
+    interface(mutations, interface_ubiq_id_file_path, mapped_interface_ubiq_file_path, summary_file_path)
+    enrich(mapped_interface_ubiq_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(interface_ubiq_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_interface_ubiq_file, interface_ubiq_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, interface_ubiq_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(interface_ubiq_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_interface_ubiq_file, interface_ubiq_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, interface_ubiq_dir_path)
 
     end_time = time.clock()
     duration = end_time - start_time
     
     return duration
 
-def pi():
+def pi(mutations, biogrid_IDs):
     """Map mutations to PTMs known to affect protein-protein interactions (PPIs).
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1517,43 +1531,40 @@ def pi():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        # Map to acetylations
-        ppi(yeastID_file_path, interact_acet_file_path, mutation_prot_file_path, mapped_interact_acet_file_path, summary_file_path)
-        enrich(mapped_interact_acet_file_path)
-        
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ppi_dir_path)
-        os.mkdir(ppi_acet_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_interact_acet_file, ppi_acet_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ppi_acet_dir_path)
+    # Map to acetylations
+    ppi(mutations, interact_acet_id_file_path, mapped_interact_acet_file_path, summary_file_path)
+    enrich(mapped_interact_acet_file_path)
+    
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ppi_dir_path, exist_ok=True)
+    os.makedirs(ppi_acet_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_interact_acet_file, ppi_acet_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ppi_acet_dir_path)
 
-        # Map to phosphorylations
-        ppi(yeastID_file_path, interact_phos_file_path, mutation_prot_file_path, mapped_interact_phos_file_path, summary_file_path)
-        enrich(mapped_interact_phos_file_path)
+    # Map to phosphorylations
+    ppi(mutations, interact_phos_id_file_path, mapped_interact_phos_file_path, summary_file_path)
+    enrich(mapped_interact_phos_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ppi_phos_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_interact_phos_file, ppi_phos_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ppi_phos_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ppi_phos_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_interact_phos_file, ppi_phos_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ppi_phos_dir_path)
 
-        # Map to ubiquitinations
-        ppi(yeastID_file_path, interact_ubiq_file_path, mutation_prot_file_path, mapped_interact_ubiq_file_path, summary_file_path)
-        enrich(mapped_interact_ubiq_file_path)
+    # Map to ubiquitinations
+    ppi(mutations, interact_ubiq_id_file_path, mapped_interact_ubiq_file_path, summary_file_path)
+    enrich(mapped_interact_ubiq_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ppi_ubiq_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_interact_ubiq_file, ppi_ubiq_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ppi_ubiq_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ppi_ubiq_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_interact_ubiq_file, ppi_ubiq_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ppi_ubiq_dir_path)
         
     end_time = time.clock()
     duration = end_time - start_time
     
     return duration
 
-def withP():
+def withP(mutations, biogrid_IDs):
     """Map mutations to PTMs within interacting proteins. See PTMcode2 for further details.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1562,23 +1573,20 @@ def withP():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        withinPro(yeastID_file_path, within_prot_file_path, mutation_prot_file_path, mapped_within_prot_file_path, summary_file_path)
-        enrich(mapped_within_prot_file_path)
+    withinPro(mutations, within_prot_id_file_path, mapped_within_prot_file_path, summary_file_path)
+    enrich(mapped_within_prot_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ptm_within_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_within_prot_file, ptm_within_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ptm_within_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ptm_within_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_within_prot_file, ptm_within_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ptm_within_dir_path)
 
     end_time = time.clock()
     duration = end_time - start_time
     
     return duration
 
-def betweenP():
+def betweenP(mutations, biogrid_IDs):
     """Map mutations to PTMs between interacting proteins. See PTMcode2 for further details.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1587,23 +1595,20 @@ def betweenP():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        betweenPro(yeastID_file_path, between_prot_file_path, mutation_prot_file_path, mapped_between_prot_file_path, summary_file_path)
-        enrich(mapped_between_prot_file_path)
+    betweenPro(mutations, between_prot_id_file_path, mapped_between_prot_file_path, summary_file_path)
+    enrich(mapped_between_prot_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ptm_between_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_between_prot_file, ptm_between_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ptm_between_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ptm_between_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_between_prot_file, ptm_between_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ptm_between_dir_path)
 
     end_time = time.clock()
     duration = end_time - start_time
     
     return duration
 
-def hotS():
+def hotS(mutations, biogrid_IDs):
     """Map mutations to PTMs in PTM hotspots. See PTMfunc for further details.
     
     Perform mapping, GO enrichment on the genes/proteins containing mapped mutations, generate file of associated BioGrid IDs.
@@ -1612,16 +1617,13 @@ def hotS():
 
     start_time = time.clock()
     
-    if not os.path.exists(mutation_prot_file_path):
-        raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
-    else:
-        hotspot(yeastID_file_path, regulatory_hotspots_file_path, mutation_prot_file_path, mapped_hotspot_file_path, summary_file_path)
-        enrich(mapped_hotspot_file_path)
+    hotspot(mutations, regulatory_hotspots_id_file_path, mapped_hotspot_file_path, summary_file_path)
+    enrich(mapped_hotspot_file_path)
 
-        #TODO: Remove this part when we know files are moved into the right place without it
-        os.mkdir(ptm_hotspot_dir_path)
-        shutil.move(output_dir_path+"/"+mapped_hotspot_file, ptm_hotspot_dir_path)
-        shutil.move(output_dir_path+"/"+p_value_file, ptm_hotspot_dir_path)
+    #TODO: Remove this part when we know files are moved into the right place without it
+    os.makedirs(ptm_hotspot_dir_path, exist_ok=True)
+    shutil.move(output_dir_path+"/"+mapped_hotspot_file, ptm_hotspot_dir_path)
+    shutil.move(output_dir_path+"/"+p_value_file, ptm_hotspot_dir_path)
 
     end_time = time.clock()
     duration = end_time - start_time
@@ -1633,28 +1635,28 @@ def hotS():
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-def uniprot_data(): 
+def uniprot_data(mutations, biogrid_IDs): 
     """Call all functions that work with UniProt data."""
     if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        ptm()
-        domain()
-        ab()
-        struc_map()
-        nucleo()
+        ptm(mutations, biogrid_IDs)
+        domain(mutations, biogrid_IDs)
+        ab(mutations, biogrid_IDs)
+        struc_map(mutations, biogrid_IDs)
+        nucleo(mutations, biogrid_IDs)
 
 
-def functional_data():
+def functional_data(mutations, biogrid_IDs):
     """Call all functions that work with PTMfunc and PTMcode data.""" 
     if not os.path.exists(mutation_prot_file_path):
         raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     else:
-        intf()
-        pi()
-        withP()
-        betweenP()
-        hotS()
+        intf(mutations, biogrid_IDs)
+        pi(mutations, biogrid_IDs)
+        withP(mutations, biogrid_IDs)
+        betweenP(mutations, biogrid_IDs)
+        hotS(mutations, biogrid_IDs)
 
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1673,21 +1675,23 @@ def ymap_genes():
     if not os.path.exists(mutation_gene_file_path):
         raise StopIteration('Missing mutation file') #TODO: Should StopIteration raised here, or some other exception?
     if not os.path.exists(output_dir_path):
-        os.mkdir(output_dir_path)
+        os.makedirs(output_dir_path, exist_ok=True)
         os.chdir(output_dir_path)
     else:
         os.chdir(output_dir_path)
         
-    mutation_file()
-    uniprot_data()
-    functional_data()
+    mutation_file(mutation_gene_file_path, gff_file_path, d_id_map_file_path, mutation_prot_file_path, errors_file_path)
+    mutations = parse_mutations(mutation_prot_file_path)
+    biogrid_IDs = parse_biogrid(uniprot_biogrid_file_path)
+    uniprot_data(mutations, biogrid_IDs)
+    functional_data(mutations, biogrid_IDs)
     sum_file_map(summary_file_path, final_report_file_path)
     
     y = (time.time() - start_time)
     os.makedirs('yMap-results'+str(y))
     
     enrich(final_report_file_path)
-    preWeb(uniprot_biogrid_file_path, final_report_file_path)
+    preWeb(biogrid_IDs, final_report_file_path)
 
     shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
     shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
@@ -1704,7 +1708,6 @@ def ymap_genes():
     shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
     shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
     shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
-    os.remove(mapped_mutation_pos_file_path)          
     os.remove(summary_file_path)
     
     os.chdir(wd)
@@ -1725,15 +1728,18 @@ def ymap_proteins():
         os.makedirs(output_dir_path, exist_ok = True)
         os.chdir(output_dir_path)
     
-    uniprot_data()
-    functional_data()
+    mutations = parse_mutations(mutation_prot_file_path)
+    biogrid_IDs = parse_biogrid(uniprot_biogrid_file_path)
+    uniprot_data(mutations, biogrid_IDs)
+    functional_data(mutations, biogrid_IDs)
     sum_file_map(summary_file_path, final_report_file_path)
     
     y = (time.time() - start_time)
     os.makedirs('yMap-results'+str(y))
     
     enrich(final_report_file_path)
-    preWeb(uniprot_biogrid_file_path, final_report_file_path)
+    preWeb(biogrid_IDs, final_report_file_path)
+    
     shutil.move(output_dir_path+"/"+'PTMs', output_dir_path+"/"+'yMap-results'+str(y))
     shutil.move('Domains', output_dir_path+"/"+'yMap-results'+str(y))
     shutil.move('Nucleotide_binding',output_dir_path+"/"+'yMap-results'+str(y))
@@ -1748,7 +1754,6 @@ def ymap_proteins():
     shutil.move(output_dir_path+"/"+final_report_file, output_dir_path+"/"+'yMap-results'+str(y))
     shutil.move(output_dir_path+"/"+p_value_file, output_dir_path+"/"+'yMap-results'+str(y))
     shutil.move(output_dir_path+"/"+biog_file, output_dir_path+"/"+'yMap-results'+str(y))
-    os.remove(mapped_mutation_pos_file_path)
     os.remove(summary_file_path)
     
     os.chdir(wd)
@@ -1763,14 +1768,15 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-d', '--ydata', help = 'download data up-to-date data files to use with ygenes or yproteins')
-    parser.add_argument('-g', '--ygenes', help = 'map DNA-level mutation positions to protein annotations')
-    parser.add_argument('-p', '--yproteins', help = 'map protein-level mutation positions to protein annotations')
-    parser.add_argument('-w', '--yweb', help = 'open web page corresponding to a BioGrid ID in given file for interactome visualisation; '
+    parser.add_argument('-d', '--ydata', action='store_true', help='download data up-to-date data files to use with ygenes or yproteins')
+    parser.add_argument('-g', '--ygenes', action='store_true', help='map DNA-level mutation positions to protein annotations')
+    parser.add_argument('-p', '--yproteins', action='store_true', help='map protein-level mutation positions to protein annotations')
+    parser.add_argument('-w', '--yweb', help='open web page corresponding to a BioGrid ID in given file for interactome visualisation; '
                                              'paste the path to biog.txt file')
     args = parser.parse_args()
     
     if args.ydata:
+        download()
         data()
     elif args.ygenes:
         ymap_genes()
