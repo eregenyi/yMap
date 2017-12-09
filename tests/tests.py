@@ -114,6 +114,7 @@ class Timer:
         self.end = clock()
         self.interval = self.end - self.start
 
+timer = Timer()
 
 class DataDownloadTest(unittest.TestCase):
     '''Test ydata downloads.
@@ -132,8 +133,14 @@ class DataDownloadTest(unittest.TestCase):
         self.yeastID = path.join(self.test_dir, ymap.yeastID_file)
         self.gff = path.join(self.test_dir, ymap.gff_file)
         self.uniprot_biogrid = path.join(self.test_dir, ymap.uniprot_biogrid_file)
+        # Start timer
+        self.start_time = clock()
         
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
         
@@ -162,7 +169,7 @@ class DataDownloadTest(unittest.TestCase):
         self.assertTrue(cmp(self.uniprot, ref_uniprot))
     
     def test_bioGrid(self):
-        ymap.bioGrid(self.uniprot_biogrid)
+        ymap.bioGrid(self.uniprot_biogrid)        
         # Perform checks
         self.assertTrue(path.isfile(self.uniprot_biogrid))
         if generate_ref_files:
@@ -193,8 +200,14 @@ class UniprotRawProcessingTest(unittest.TestCase):
         self.domains = path.join(self.test_dir, ymap.domains_file)
         self.nucleotide = path.join(self.test_dir, ymap.nucleotide_file)
         self.pdb = path.join(self.test_dir, ymap.pdb_file)
+        # Start timer
+        self.start_time = clock()
         
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
     
@@ -250,8 +263,14 @@ class GffProcessingTest(unittest.TestCase):
         self.gff = copy(ref_gff, self.test_dir)
         # Setup temporary file paths
         self.frmt = path.join(self.test_dir, ymap.frmt_file)
+        # Start timer
+        self.start_time = clock()
     
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
         
@@ -310,10 +329,14 @@ class YeastIDProcessingTest(unittest.TestCase):
         self.domain_id = path.join(self.test_dir, ymap.domain_id_file)
         self.nucleotide_id = path.join(self.test_dir, ymap.nucleotide_id_file)
         self.struct_id = path.join(self.test_dir, ymap.struct_id_file)
-        # Try the Timer
-        self.timer = Timer()
+        # Start timer
+        self.start_time = clock()
         
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
     
@@ -499,8 +522,14 @@ class UniprotMappingTest(unittest.TestCase):
         self.mapped_domains = path.join(self.test_dir, ymap.mapped_domains_file)
         self.mapped_nucleotide = path.join(self.test_dir, ymap.mapped_nucleotide_file)
         self.mapped_struct = path.join(self.test_dir, ymap.mapped_struct_file)
+        # Start timer
+        self.start_time = clock()
                     
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
     
@@ -616,8 +645,14 @@ class FunctionalMappingTest(unittest.TestCase):
         self.mapped_hotspot = path.join(self.test_dir, ymap.mapped_hotspot_file)
         self.mapped_within_prot = path.join(self.test_dir, ymap.mapped_within_prot_file)
         self.mapped_between_prot = path.join(self.test_dir, ymap.mapped_between_prot_file)
+        # Start timer
+        self.start_time = clock()
                     
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
         
@@ -746,9 +781,15 @@ class GeneToProteinTest(unittest.TestCase):
             }
         # Setup temporary file paths
         self.mutation_prot = path.join(self.test_dir, ymap.mutation_prot_file)
-        self.errors = path.join(self.test_dir, ymap.errors_file)     
+        self.errors = path.join(self.test_dir, ymap.errors_file)
+        # Start timer
+        self.start_time = clock()
                     
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
         
@@ -810,8 +851,14 @@ class FinalAnalysisTest(unittest.TestCase):
         self.final_report = path.join(self.test_dir, ymap.final_report_file)
         self.p_value = path.join(self.test_dir, ymap.p_value_file)
         self.biog = path.join(self.test_dir, ymap.biog_file)
+        # Start timer
+        self.start_time = clock()
                     
     def tearDown(self):
+        # Get and print exectution time
+        interval = clock() - self.start_time
+        print('\n{0:70} {1:>10.3}s'.format(self.id(), interval))
+        # Remove temporary directory
         chdir(ref_dir) # navigate out of test directory before deleting
         rmtree(self.test_dir)
 
