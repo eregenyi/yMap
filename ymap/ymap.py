@@ -759,7 +759,7 @@ def interface_map(gene_names_by_locus, interface_sites_input, interface_id_outpu
     Arguments:
     gene_names_by_locus -- dictionary, key = locus_name, value = list of gene names
     interface_sites_input -- file path, mapping locus name to PTMs, their position in a protein interface, the modified residue and the PFAM domain.
-    struct_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and interface data
+    interface_id_output -- file path, mapping UniProt ID, ordered locus name, common name, and interface data
     """
     lines = []
     with open(interface_sites_input, 'r') as interface_sites:
@@ -966,8 +966,8 @@ def betweenPro(mut_prot_input, between_prot_id_input, mapped_between_prot_output
                 if mutated_protein == common_name_1:
                     for mut_pos in mutated_positions:
                         if int(ptm_pos_1) == int(mut_pos): # Check if the mutation coincides with the position of a binding/active site
-                            mapped_ptm_line = '\t'.join([uniprot_id_1, sgd_name_1, common_name_1, ptm_1, ptm_pos_1, ptm_residue_1, ptm_2, ptm_pos_2, ptm_residue_2, 'PTMcode']) + '\n'
-                            summary_line = '\t'.join([uniprot_id_1, sgd_name_1, common_name_1, ptm_1, ptm_pos_1, ptm_residue_1, ptm_2, ptm_pos_2, ptm_residue_2, 'Between protein PTMs', 'PTMcode']) + '\n'
+                            mapped_ptm_line = '\t'.join([uniprot_id_1, sgd_name_1, common_name_1, ptm_1, ptm_pos_1, ptm_residue_1, uniprot_id_2, sgd_name_2, common_name_2, ptm_2, ptm_pos_2, ptm_residue_2, 'PTMcode']) + '\n'
+                            summary_line = '\t'.join([uniprot_id_1, sgd_name_1, common_name_1, ptm_1, ptm_pos_1, ptm_residue_1, uniprot_id_2, sgd_name_2, common_name_2, ptm_2, ptm_pos_2, ptm_residue_2, 'Between protein PTMs', 'PTMcode']) + '\n'
                             mapped_ptms_lines.append(mapped_ptm_line)
                             summary_lines.append(summary_line)
     with open(mapped_between_prot_output, 'w') as mapped_ptms:
