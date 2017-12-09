@@ -266,6 +266,7 @@ def parse_biogrid(uniprot_biogrid_input):
     """Return dictionary mapping UniProt IDs to BioGrid IDs.""" 
     uniprot_biogrid_map = {}
     with open(uniprot_biogrid_input, 'r') as uniprot_biogrid:
+        next(uniprot_biogrid) # Skip the header
         for line in uniprot_biogrid:
             uniprot_id, biogrid_ids = line.rstrip(';\n').split('\t')
             biogrid_ids = biogrid_ids.split(';')
