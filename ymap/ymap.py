@@ -44,6 +44,208 @@ import time
 import webbrowser
 import re
 
+### DEFINE VARIABLES ###
+
+# Create Ontology and Annotation objects for use in GO enrichment (see enrich() function)
+ontology = go.Ontology()
+annotations = go.Annotations('sgd')
+
+wd = os.getcwd() 
+
+# Setup filenames
+# Input files
+mutation_prot_file = 'mutation.txt'
+mutation_gene_file = 'mutated_proteins.txt'
+
+# Downloaded files from UniProt and SGD (Saccharomyces Genome Database) and copied PTMfunc and PTMcode data files
+uniprot_file = 'uniprot_mod_raw.txt'
+gff_file = 'gff.txt'
+yeastID_file = 'yeastID.txt'
+
+interface_acet_file = '3DID_aceksites_interfaceRes_sc.txt'
+interface_phos_file = '3DID_phosphosites_interfaceRes_sc.txt'
+interface_ubiq_file = '3DID_ubisites_interfaceRessc_sc.txt'
+regulatory_hotspots_file = 'schotspot_updated.txt'
+interact_acet_file = 'SC_acet_interactions.txt'
+interact_phos_file = 'SC_psites_interactions_sc.txt'
+interact_ubiq_file = 'SC_ubi_interactions_sc.txt'
+within_prot_file = 'sc_within_proteins.txt'
+between_prot_zip_file = 'sc_btw_proteins.zip'
+between_prot_file = 'sc_btw_proteins.txt'
+
+uniprot_biogrid_file = 'uniprot_bioGrid.txt'
+
+# Intermediate processing files
+bact_file = 'bact.txt'
+ptms_file = 'PTMs.txt'
+domains_file = 'domains.txt'
+nucleotide_file = 'nucleotide.txt'
+pdb_file = 'pdb.txt'
+
+frmt_file = 'frmt.txt'
+
+d_id_map_file = 'd_id_map.txt' # Links Uniprot ID to Gene ID, ORF start, ORF stop, strand orientation 
+sites_id_file = 'sites_id.txt'
+ptm_id_file = 'PTM_id_file.txt'
+domain_id_file = 'id_domain.txt'
+nucleotide_id_file = 'id_nucleotide.txt' # Nucleotide binding sites
+struct_id_file = 'id_struct.txt' # Link UniProt ID to PDB IDs
+
+interface_acet_id_file = 'interface_acet_id.txt'
+interface_phos_id_file = 'interface_phos_id.txt'
+interface_ubiq_id_file = 'interface_ubiq_id.txt'
+regulatory_hotspots_id_file = 'regulatory_hotspots_id.txt'
+interact_acet_id_file = 'interact_acet_id.txt'
+interact_phos_id_file = 'interact_phos_id.txt'
+interact_ubiq_id_file = 'interact_ubiq_id.txt'
+within_prot_id_file = 'within_prot_id.txt'
+between_prot_id_file = 'between_prot_id.txt'
+
+# Output files
+summary_file = 'summary.txt'
+
+mapped_sites_file = 'ab_mutation_file.txt'
+mapped_ptms_file = 'mapped_ptms.txt'
+mapped_domains_file = 'domains_mapped.txt'
+mapped_nucleotide_file = 'nucleotide_map.txt'
+mapped_struct_file = 'stru_mutation.txt' # Structural regions of protein e.g. beta sheet, alpha helix, turn 
+
+general_mapped_interface_file = 'interface_mutation.txt' # This variable refers to the name of the file written by ymap.interface().
+# The mapped_interface variables are used in parts of this program for semantic clarity only
+mapped_interface_acet_file = general_mapped_interface_file
+mapped_interface_phos_file = general_mapped_interface_file
+mapped_interface_ubiq_file = general_mapped_interface_file
+general_mapped_ppi_file = 'ppi_mutation.txt'
+# The mapped_interact variables are used in parts of this program for semantic clarity only
+mapped_interact_acet_file = general_mapped_ppi_file
+mapped_interact_phos_file = general_mapped_ppi_file
+mapped_interact_ubiq_file = general_mapped_ppi_file
+mapped_hotspot_file = 'hotspot.txt'
+mapped_within_prot_file = 'within_protein.txt'
+mapped_between_prot_file = 'ptm_between_proteins.txt'
+
+p_value_file = 'pvalue.txt'
+biog_file = 'biog.txt'
+final_report_file = 'final_report.txt'
+errors_file = 'errors.txt'
+
+# Setup directory tree paths 
+# Data, input, output directories
+data_dir_path = os.path.join(wd, 'ymap_data')
+input_dir_path = os.path.join(wd, 'input')
+output_dir_path = os.path.join(wd, 'output') 
+
+# Paths for output directories
+domains_dir_path = os.path.join(output_dir_path, 'Domains') 
+ptms_dir_path = os.path.join(output_dir_path, 'PTMs')
+nuc_bind_dir_path = os.path.join(output_dir_path, 'Nucleotide_binding')
+ab_sites_dir_path = os.path.join(output_dir_path, 'A-B-sites')
+pdb_dir_path = os.path.join(output_dir_path, 'PDB')
+interface_dir_path = os.path.join(output_dir_path, 'Interface')
+interface_acet_dir_path = os.path.join(interface_dir_path, 'Acetylation')
+interface_phos_dir_path = os.path.join(interface_dir_path, 'Phosphorylation')
+interface_ubiq_dir_path = os.path.join(interface_dir_path, 'Ubiquitination')
+ppi_dir_path = os.path.join(output_dir_path, 'PPI')
+ppi_acet_dir_path = os.path.join(ppi_dir_path, 'Acetylation')
+ppi_phos_dir_path = os.path.join(ppi_dir_path, 'Phosphorylation')
+ppi_ubiq_dir_path = os.path.join(ppi_dir_path, 'Ubiquitination')
+ptm_within_dir_path = os.path.join(output_dir_path, 'PTMs_within_Proteins')
+ptm_between_dir_path = os.path.join(output_dir_path, 'PTMs_between_Proteins')
+ptm_hotspot_dir_path = os.path.join(output_dir_path, 'PTMs_hotSpots')
+
+dirs = [
+    domains_dir_path,  
+    ptms_dir_path, 
+    nuc_bind_dir_path, 
+    ab_sites_dir_path, 
+    pdb_dir_path, 
+    interface_dir_path, 
+    interface_acet_dir_path, 
+    interface_phos_dir_path, 
+    interface_ubiq_dir_path, 
+    ppi_dir_path, 
+    ppi_acet_dir_path, 
+    ppi_phos_dir_path, 
+    ppi_ubiq_dir_path, 
+    ptm_within_dir_path, 
+    ptm_between_dir_path, 
+    ptm_hotspot_dir_path
+]
+
+def makeDirTree(dirs):
+    for directory in dirs:
+        os.makedirs(directory)
+
+# Setup paths to data, input and output files
+# Input files
+mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file)
+mutation_gene_file_path = os.path.join(input_dir_path, mutation_gene_file)
+
+# Downloaded files from UniProt and SGD (Saccharomyces Genome Database) and copied PTMfunc and PTMcode data files
+uniprot_file_path = os.path.join(data_dir_path, uniprot_file)
+gff_file_path = os.path.join(data_dir_path, gff_file)
+yeastID_file_path = os.path.join(data_dir_path, yeastID_file)
+
+interface_acet_file_path = os.path.join(data_dir_path, interface_acet_file)
+interface_phos_file_path = os.path.join(data_dir_path, interface_phos_file)
+interface_ubiq_file_path = os.path.join(data_dir_path, interface_ubiq_file)
+regulatory_hotspots_file_path = os.path.join(data_dir_path, regulatory_hotspots_file)
+interact_acet_file_path = os.path.join(data_dir_path, interact_acet_file)
+interact_phos_file_path = os.path.join(data_dir_path, interact_phos_file)
+interact_ubiq_file_path = os.path.join(data_dir_path, interact_ubiq_file)
+within_prot_file_path = os.path.join(data_dir_path, within_prot_file)
+between_prot_zip_file_path = os.path.join(data_dir_path, between_prot_zip_file)
+between_prot_file_path = os.path.join(data_dir_path, between_prot_file)
+
+uniprot_biogrid_file_path = os.path.join(data_dir_path, uniprot_biogrid_file)
+
+# Intermediate processing files
+bact_file_path = os.path.join(data_dir_path, bact_file)
+ptms_file_path = os.path.join(data_dir_path, ptms_file)
+domains_file_path = os.path.join(data_dir_path, domains_file)
+nucleotide_file_path = os.path.join(data_dir_path, nucleotide_file)
+pdb_file_path = os.path.join(data_dir_path, pdb_file)
+
+frmt_file_path = os.path.join(data_dir_path, frmt_file)
+
+d_id_map_file_path = os.path.join(data_dir_path, d_id_map_file) 
+sites_id_file_path = os.path.join(data_dir_path, sites_id_file)
+ptm_id_file_path = os.path.join(data_dir_path, ptm_id_file)
+domain_id_file_path = os.path.join(data_dir_path, domain_id_file)
+nucleotide_id_file_path = os.path.join(data_dir_path, nucleotide_id_file)
+struct_id_file_path = os.path.join(data_dir_path, struct_id_file)
+
+interface_acet_id_file_path = os.path.join(data_dir_path, interface_acet_id_file)
+interface_phos_id_file_path = os.path.join(data_dir_path, interface_phos_id_file)
+interface_ubiq_id_file_path = os.path.join(data_dir_path, interface_ubiq_id_file)
+regulatory_hotspots_id_file_path = os.path.join(data_dir_path, regulatory_hotspots_id_file)
+interact_acet_id_file_path = os.path.join(data_dir_path, interact_acet_id_file)
+interact_phos_id_file_path = os.path.join(data_dir_path, interact_phos_id_file)
+interact_ubiq_id_file_path = os.path.join(data_dir_path, interact_ubiq_id_file)
+within_prot_id_file_path = os.path.join(data_dir_path, within_prot_id_file)
+between_prot_id_file_path = os.path.join(data_dir_path, between_prot_id_file)
+
+# Paths to output files
+summary_file_path = os.path.join(output_dir_path, summary_file)
+final_report_file_path = os.path.join(output_dir_path, final_report_file)
+errors_file_path = os.path.join(output_dir_path, errors_file)
+
+mapped_sites_file_path = os.path.join(output_dir_path, mapped_sites_file)
+mapped_ptms_file_path = os.path.join(output_dir_path, mapped_ptms_file)
+mapped_domains_file_path = os.path.join(output_dir_path, mapped_domains_file)
+mapped_nucleotide_file_path = os.path.join(output_dir_path, mapped_nucleotide_file)
+mapped_struct_file_path = os.path.join(output_dir_path, mapped_struct_file)
+
+mapped_interface_acet_file_path = os.path.join(output_dir_path, mapped_interface_acet_file)
+mapped_interface_phos_file_path = os.path.join(output_dir_path, mapped_interface_phos_file)
+mapped_interface_ubiq_file_path = os.path.join(output_dir_path, mapped_interface_ubiq_file)
+mapped_interact_acet_file_path = os.path.join(output_dir_path, mapped_interact_acet_file)
+mapped_interact_phos_file_path = os.path.join(output_dir_path, mapped_interact_phos_file)
+mapped_interact_ubiq_file_path = os.path.join(output_dir_path, mapped_interact_ubiq_file)
+mapped_hotspot_file_path = os.path.join(output_dir_path, mapped_hotspot_file)
+mapped_within_prot_file_path = os.path.join(output_dir_path, mapped_within_prot_file)
+mapped_between_prot_file_path = os.path.join(output_dir_path, mapped_between_prot_file)
+
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ Mutation type (Synon | Non-Synon | Stop codon) module (see exmple data) \\\\\\\\\\\\\\\\\\\\\
@@ -1085,206 +1287,6 @@ def extractZips(dir, extract_to_dir):
 #This usage strategy is optional, and a user can use above written codes in any convenient way as
 #required by experiemental settings and data interpretation (see README for proper use)
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-# Create Ontology and Annotation objects for use in GO enrichment (see enrich() function)
-ontology = go.Ontology()
-annotations = go.Annotations('sgd')
-
-wd = os.getcwd() 
-
-# Setup filenames
-# Input files
-mutation_prot_file = 'mutation.txt'
-mutation_gene_file = 'mutated_proteins.txt'
-
-# Downloaded files from UniProt and SGD (Saccharomyces Genome Database) and copied PTMfunc and PTMcode data files
-uniprot_file = 'uniprot_mod_raw.txt'
-gff_file = 'gff.txt'
-yeastID_file = 'yeastID.txt'
-
-interface_acet_file = '3DID_aceksites_interfaceRes_sc.txt'
-interface_phos_file = '3DID_phosphosites_interfaceRes_sc.txt'
-interface_ubiq_file = '3DID_ubisites_interfaceRessc_sc.txt'
-regulatory_hotspots_file = 'schotspot_updated.txt'
-interact_acet_file = 'SC_acet_interactions.txt'
-interact_phos_file = 'SC_psites_interactions_sc.txt'
-interact_ubiq_file = 'SC_ubi_interactions_sc.txt'
-within_prot_file = 'sc_within_proteins.txt'
-between_prot_zip_file = 'sc_btw_proteins.zip'
-between_prot_file = 'sc_btw_proteins.txt'
-
-uniprot_biogrid_file = 'uniprot_bioGrid.txt'
-
-# Intermediate processing files
-bact_file = 'bact.txt'
-ptms_file = 'PTMs.txt'
-domains_file = 'domains.txt'
-nucleotide_file = 'nucleotide.txt'
-pdb_file = 'pdb.txt'
-
-frmt_file = 'frmt.txt'
-
-d_id_map_file = 'd_id_map.txt' # Links Uniprot ID to Gene ID, ORF start, ORF stop, strand orientation 
-sites_id_file = 'sites_id.txt'
-ptm_id_file = 'PTM_id_file.txt'
-domain_id_file = 'id_domain.txt'
-nucleotide_id_file = 'id_nucleotide.txt' # Nucleotide binding sites
-struct_id_file = 'id_struct.txt' # Link UniProt ID to PDB IDs
-
-interface_acet_id_file = 'interface_acet_id.txt'
-interface_phos_id_file = 'interface_phos_id.txt'
-interface_ubiq_id_file = 'interface_ubiq_id.txt'
-regulatory_hotspots_id_file = 'regulatory_hotspots_id.txt'
-interact_acet_id_file = 'interact_acet_id.txt'
-interact_phos_id_file = 'interact_phos_id.txt'
-interact_ubiq_id_file = 'interact_ubiq_id.txt'
-within_prot_id_file = 'within_prot_id.txt'
-between_prot_id_file = 'between_prot_id.txt'
-
-# Output files
-summary_file = 'summary.txt'
-
-mapped_sites_file = 'ab_mutation_file.txt'
-mapped_ptms_file = 'mapped_ptms.txt'
-mapped_domains_file = 'domains_mapped.txt'
-mapped_nucleotide_file = 'nucleotide_map.txt'
-mapped_struct_file = 'stru_mutation.txt' # Structural regions of protein e.g. beta sheet, alpha helix, turn 
-
-general_mapped_interface_file = 'interface_mutation.txt' # This variable refers to the name of the file written by ymap.interface().
-# The mapped_interface variables are used in parts of this program for semantic clarity only
-mapped_interface_acet_file = general_mapped_interface_file
-mapped_interface_phos_file = general_mapped_interface_file
-mapped_interface_ubiq_file = general_mapped_interface_file
-general_mapped_ppi_file = 'ppi_mutation.txt'
-# The mapped_interact variables are used in parts of this program for semantic clarity only
-mapped_interact_acet_file = general_mapped_ppi_file
-mapped_interact_phos_file = general_mapped_ppi_file
-mapped_interact_ubiq_file = general_mapped_ppi_file
-mapped_hotspot_file = 'hotspot.txt'
-mapped_within_prot_file = 'within_protein.txt'
-mapped_between_prot_file = 'ptm_between_proteins.txt'
-
-p_value_file = 'pvalue.txt'
-biog_file = 'biog.txt'
-final_report_file = 'final_report.txt'
-errors_file = 'errors.txt'
-
-# Setup directory tree paths 
-# Data, input, output directories
-data_dir_path = os.path.join(wd, 'ymap_data')
-input_dir_path = os.path.join(wd, 'input')
-output_dir_path = os.path.join(wd, 'output') 
-
-# Paths for output directories
-domains_dir_path = os.path.join(output_dir_path, 'Domains') 
-ptms_dir_path = os.path.join(output_dir_path, 'PTMs')
-nuc_bind_dir_path = os.path.join(output_dir_path, 'Nucleotide_binding')
-ab_sites_dir_path = os.path.join(output_dir_path, 'A-B-sites')
-pdb_dir_path = os.path.join(output_dir_path, 'PDB')
-interface_dir_path = os.path.join(output_dir_path, 'Interface')
-interface_acet_dir_path = os.path.join(interface_dir_path, 'Acetylation')
-interface_phos_dir_path = os.path.join(interface_dir_path, 'Phosphorylation')
-interface_ubiq_dir_path = os.path.join(interface_dir_path, 'Ubiquitination')
-ppi_dir_path = os.path.join(output_dir_path, 'PPI')
-ppi_acet_dir_path = os.path.join(ppi_dir_path, 'Acetylation')
-ppi_phos_dir_path = os.path.join(ppi_dir_path, 'Phosphorylation')
-ppi_ubiq_dir_path = os.path.join(ppi_dir_path, 'Ubiquitination')
-ptm_within_dir_path = os.path.join(output_dir_path, 'PTMs_within_Proteins')
-ptm_between_dir_path = os.path.join(output_dir_path, 'PTMs_between_Proteins')
-ptm_hotspot_dir_path = os.path.join(output_dir_path, 'PTMs_hotSpots')
-
-dirs = [
-    domains_dir_path,  
-    ptms_dir_path, 
-    nuc_bind_dir_path, 
-    ab_sites_dir_path, 
-    pdb_dir_path, 
-    interface_dir_path, 
-    interface_acet_dir_path, 
-    interface_phos_dir_path, 
-    interface_ubiq_dir_path, 
-    ppi_dir_path, 
-    ppi_acet_dir_path, 
-    ppi_phos_dir_path, 
-    ppi_ubiq_dir_path, 
-    ptm_within_dir_path, 
-    ptm_between_dir_path, 
-    ptm_hotspot_dir_path
-]
-
-def makeDirTree(dirs):
-    for directory in dirs:
-        os.makedirs(directory)
-
-# Setup paths to data, input and output files
-# Input files
-mutation_prot_file_path = os.path.join(input_dir_path, mutation_prot_file)
-mutation_gene_file_path = os.path.join(input_dir_path, mutation_gene_file)
-
-# Downloaded files from UniProt and SGD (Saccharomyces Genome Database) and copied PTMfunc and PTMcode data files
-uniprot_file_path = os.path.join(data_dir_path, uniprot_file)
-gff_file_path = os.path.join(data_dir_path, gff_file)
-yeastID_file_path = os.path.join(data_dir_path, yeastID_file)
-
-interface_acet_file_path = os.path.join(data_dir_path, interface_acet_file)
-interface_phos_file_path = os.path.join(data_dir_path, interface_phos_file)
-interface_ubiq_file_path = os.path.join(data_dir_path, interface_ubiq_file)
-regulatory_hotspots_file_path = os.path.join(data_dir_path, regulatory_hotspots_file)
-interact_acet_file_path = os.path.join(data_dir_path, interact_acet_file)
-interact_phos_file_path = os.path.join(data_dir_path, interact_phos_file)
-interact_ubiq_file_path = os.path.join(data_dir_path, interact_ubiq_file)
-within_prot_file_path = os.path.join(data_dir_path, within_prot_file)
-between_prot_zip_file_path = os.path.join(data_dir_path, between_prot_zip_file)
-between_prot_file_path = os.path.join(data_dir_path, between_prot_file)
-
-uniprot_biogrid_file_path = os.path.join(data_dir_path, uniprot_biogrid_file)
-
-# Intermediate processing files
-bact_file_path = os.path.join(data_dir_path, bact_file)
-ptms_file_path = os.path.join(data_dir_path, ptms_file)
-domains_file_path = os.path.join(data_dir_path, domains_file)
-nucleotide_file_path = os.path.join(data_dir_path, nucleotide_file)
-pdb_file_path = os.path.join(data_dir_path, pdb_file)
-
-frmt_file_path = os.path.join(data_dir_path, frmt_file)
-
-d_id_map_file_path = os.path.join(data_dir_path, d_id_map_file) 
-sites_id_file_path = os.path.join(data_dir_path, sites_id_file)
-ptm_id_file_path = os.path.join(data_dir_path, ptm_id_file)
-domain_id_file_path = os.path.join(data_dir_path, domain_id_file)
-nucleotide_id_file_path = os.path.join(data_dir_path, nucleotide_id_file)
-struct_id_file_path = os.path.join(data_dir_path, struct_id_file)
-
-interface_acet_id_file_path = os.path.join(data_dir_path, interface_acet_id_file)
-interface_phos_id_file_path = os.path.join(data_dir_path, interface_phos_id_file)
-interface_ubiq_id_file_path = os.path.join(data_dir_path, interface_ubiq_id_file)
-regulatory_hotspots_id_file_path = os.path.join(data_dir_path, regulatory_hotspots_id_file)
-interact_acet_id_file_path = os.path.join(data_dir_path, interact_acet_id_file)
-interact_phos_id_file_path = os.path.join(data_dir_path, interact_phos_id_file)
-interact_ubiq_id_file_path = os.path.join(data_dir_path, interact_ubiq_id_file)
-within_prot_id_file_path = os.path.join(data_dir_path, within_prot_id_file)
-between_prot_id_file_path = os.path.join(data_dir_path, between_prot_id_file)
-
-# Paths to output files
-summary_file_path = os.path.join(output_dir_path, summary_file)
-final_report_file_path = os.path.join(output_dir_path, final_report_file)
-errors_file_path = os.path.join(output_dir_path, errors_file)
-
-mapped_sites_file_path = os.path.join(output_dir_path, mapped_sites_file)
-mapped_ptms_file_path = os.path.join(output_dir_path, mapped_ptms_file)
-mapped_domains_file_path = os.path.join(output_dir_path, mapped_domains_file)
-mapped_nucleotide_file_path = os.path.join(output_dir_path, mapped_nucleotide_file)
-mapped_struct_file_path = os.path.join(output_dir_path, mapped_struct_file)
-
-mapped_interface_acet_file_path = os.path.join(output_dir_path, mapped_interface_acet_file)
-mapped_interface_phos_file_path = os.path.join(output_dir_path, mapped_interface_phos_file)
-mapped_interface_ubiq_file_path = os.path.join(output_dir_path, mapped_interface_ubiq_file)
-mapped_interact_acet_file_path = os.path.join(output_dir_path, mapped_interact_acet_file)
-mapped_interact_phos_file_path = os.path.join(output_dir_path, mapped_interact_phos_file)
-mapped_interact_ubiq_file_path = os.path.join(output_dir_path, mapped_interact_ubiq_file)
-mapped_hotspot_file_path = os.path.join(output_dir_path, mapped_hotspot_file)
-mapped_within_prot_file_path = os.path.join(output_dir_path, mapped_within_prot_file)
-mapped_between_prot_file_path = os.path.join(output_dir_path, mapped_between_prot_file)
 
 
 def download(): #TODO: Directory as argument
