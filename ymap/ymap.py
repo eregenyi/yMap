@@ -1253,7 +1253,8 @@ def sum_file_map(summary_input, final_report_output):
 # but since we chdir in the download() function, it seems redundant - unless we chdir in each function called in download instead...
 def resc(output_dir):
     """Copy pre-downloaded data files (PTMfunc and PTMcode database files) from the ymap package to output dir."""
-    ymap_pkg = Requirement.parse('ymap') 
+    ymap_pkg = Requirement.parse('ymap')
+    pkg_data_dir = 'ymap/data/PTMcode+PTMfunc_data'
     #TODO: Above is a weird fix that lets you access installed ymap package resources even when 
     # ymap.py is run from some arbitrary directory (provided ymap package is in sys.path)... I think
     # It may not be necessary for deployment, because installed ymap should only ever be run from 
@@ -1261,10 +1262,10 @@ def resc(output_dir):
     # still have to cope with getting the PTMcode and PTMfunc data to the user. This was handled
     # by ymap.py before I changed parts, but I feel like it could be handled in a more tidy way
     # using this function and a check to see if ymap has been installed.
-    # Or just replace ptm_data_dir line with 'ptm_data_dir = resource_filename('ymap', 'data/PTMcode+PTMfunc_data')
+    # Replace ptm_data_dir line with 'ptm_data_dir = resource_filename(ymap_pkg, pkg_data_dir)' to see weird fix
+    # Replace with 'ptm_data_dir = resource_filename('ymap', 'data/PTMcode+PTMfunc_data')' for weird fix
     # which will work with both source code and installed version provided the data directory is
     # in the same folder as ymap.py
-    pkg_data_dir = 'ymap/data/PTMcode+PTMfunc_data'
     ptm_data_dir = resource_filename(ymap_pkg, pkg_data_dir)
     ptm_data_files = os.listdir(ptm_data_dir)
     for file in ptm_data_files:
