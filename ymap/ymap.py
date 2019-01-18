@@ -1355,6 +1355,11 @@ def data():
     
     return duration
 
+def ydata():
+    """Wrapper of download() and data() functions for console_script functionality.
+    """
+    download()
+    data()
 
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #////////////////////////////////// Following series of codes will return three files - mapped mutations, pvalue and biog.txt - for each type of data types \\\\\\\\\\\\\\\\\\\\
@@ -1782,8 +1787,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.ydata:
-        download()
-        data()
+        ydata()
     elif args.ygenes:
         ymap_genes()
     elif args.yproteins:

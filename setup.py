@@ -53,7 +53,7 @@ setup(
 	zip_safe = False,
 	entry_points = {
 		'console_scripts': [
-			'ydata = ymap.ymap:data',
+			'ydata = ymap.ymap:ydata',
 			'ygenes = ymap.ymap:ymap_genes',
 			'yproteins = ymap.ymap:ymap_proteins',
 			'yweb = ymap.ymap:web',
