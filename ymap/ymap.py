@@ -868,13 +868,19 @@ def preWeb(uniprot_biogrid_input, mapped_mut_input):
         biog.writelines(lines)
 
 
-def web(biog_input): 
+def web(biog_input):
     """For each BioGrid ID in biog_input, open the corresponding BioGrid database entry in web browser (one tab per entry).""" 
     url = 'http://thebiogrid.org/'
     biog = open(biog_input, 'r')
     for line in biog:
         biog_id = line.split('\t')[1] # Assumes BioGrid ID is in second column of input file
         webbrowser.open(url + biog_id)
+
+def console_web():
+    """Wrapper of web() function for console_script functionality."""
+    biog_path = input('Enter a path to a biog.txt file: ')
+    biog_path = biog_path.strip(' \t\v\r\n\'"') # strip whitespace or quotes from any input string
+    web(biog_path)
 
 
 def make_pdb_file(uniprot_input, pdb_output):

@@ -56,7 +56,7 @@ setup(
 			'ydata = ymap.ymap:ydata',
 			'ygenes = ymap.ymap:ymap_genes',
 			'yproteins = ymap.ymap:ymap_proteins',
-			'yweb = ymap.ymap:web',
+			'yweb = ymap.ymap:console_web',
 			'ytest = ymap.tests:main'
 		]
 	}
