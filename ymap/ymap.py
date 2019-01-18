@@ -868,7 +868,7 @@ def preWeb(uniprot_biogrid_input, mapped_mut_input):
         biog.writelines(lines)
 
 
-def bweb(biog_input): 
+def web(biog_input): 
     """For each BioGrid ID in biog_input, open the corresponding BioGrid database entry in web browser (one tab per entry).""" 
     url = 'http://thebiogrid.org/'
     biog = open(biog_input, 'r')
@@ -1794,6 +1794,6 @@ if __name__ == "__main__":
         ymap_proteins()
     elif args.yweb:
         if os.path.exists(args.yweb):    
-            bweb(args.yweb)
+            web(args.yweb)
     else:
         print("to run a function seek help")
